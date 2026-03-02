@@ -3,7 +3,7 @@
 
 	let copied = $state(false);
 
-    // Use raw GitHub URL until the domain is pointed to the script
+    // Use raw GitHub URL (preferred) to fetch installer directly from the repository
     const command = 'curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh';
 
 	async function copyCommand() {
