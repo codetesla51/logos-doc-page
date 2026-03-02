@@ -1,0 +1,74 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+@theme {
+	--color-bg: #000000;
+	--color-subtle: #1e1e1e;
+	--color-border: #2a2a2a;
+	--color-text: #f5f5f5;
+	--color-muted: #888888;
+	--color-accent: #ffffff;
+
+	--font-mono: 'Roboto Mono', monospace;
+	--font-code: 'Google Sans Code', monospace;
+}
+
+html {
+	scroll-behavior: smooth;
+}
+
+body {
+	font-family: var(--font-mono);
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	font-size: 16px;
+	line-height: 1.6;
+}
+
+@media (min-width: 640px) {
+	body {
+		font-size: 17px;
+	}
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+	width: 6px;
+	height: 6px;
+}
+
+::-webkit-scrollbar-track {
+	background: #0a0a0a;
+}
+
+::-webkit-scrollbar-thumb {
+	background: #333;
+	border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+	background: #555;
+}
+
+/* Firefox scrollbar */
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #333 #0a0a0a;
+}
+
+/* Code block styling */
+pre {
+	font-family: var(--font-code) !important;
+}
+
+code {
+	font-family: var(--font-code) !important;
+}
+
+/* Shiki code block overrides */
+pre.shiki {
+	background-color: var(--color-subtle) !important;
+	padding: 1.5rem;
+	border-radius: 0.5rem;
+	overflow-x: auto;
+}
