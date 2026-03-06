@@ -1,5 +1,5 @@
 <script>
-	import { Github, ArrowRight, Terminal } from 'lucide-svelte';
+	import { Github, ArrowRight, Terminal, Play } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { codeToHtml } from 'shiki';
 
@@ -55,15 +55,22 @@ if res.ok {
 					Get Started
 					<ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
 				</a>
-                    <a
-                        href="https://github.com/codetesla51/logos"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        class="border-border text-muted hover:text-text hover:border-muted/50 inline-flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-6 py-3 text-sm font-medium transition-all sm:w-auto sm:px-5 sm:py-2.5"
-                    >
-                        <Github class="h-4 w-4" />
-                        View on GitHub
-                    </a>
+				<a
+					href="/playground"
+					class="group border-border bg-subtle/50 text-text hover:bg-subtle hover:border-muted/50 inline-flex w-full items-center justify-center gap-2 rounded-lg border px-6 py-3 text-sm font-medium transition-all sm:w-auto sm:px-5 sm:py-2.5"
+				>
+					<Play class="h-4 w-4" />
+					Try Playground
+				</a>
+				<a
+					href="https://github.com/codetesla51/logos"
+					target="_blank"
+					rel="noopener noreferrer"
+					class="border-border text-muted hover:text-text hover:border-muted/50 inline-flex w-full items-center justify-center gap-2 rounded-lg border bg-transparent px-6 py-3 text-sm font-medium transition-all sm:w-auto sm:px-5 sm:py-2.5"
+				>
+					<Github class="h-4 w-4" />
+					View on GitHub
+				</a>
 			</div>
 
 			<!-- Install command -->
