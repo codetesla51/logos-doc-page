@@ -1,6 +1,9 @@
 <script>
 	import DocLayout from '$lib/components/DocLayout.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
+
+	const jsonExample = `let json = parseJson("{\\"name\\":\\"uthman\\",\\"age\\":20}")
+print(json["name"])  // uthman`;
 </script>
 
 <svelte:head>
@@ -11,7 +14,6 @@
 	prev={{ title: 'Installation', href: '/docs/install' }}
 	next={{ title: 'Standard Library', href: '/docs/stdlib' }}
 >
-	<!-- SYNTAX CONTENT HERE -->
 	<h1>Syntax & Types</h1>
 
 	<p>
@@ -231,11 +233,7 @@ fileWrite("output.txt", "Hello, World!")`}
 
 	<p>Parse and work with JSON:</p>
 
-	<CodeBlock
-		code={`let json = parseJson("{\"name\": \"uthman\", \"age\": 20}")
-print(json["name"])  // uthman`}
-		language="javascript"
-	/>
+	<CodeBlock code={jsonExample} language="javascript" />
 
 	<h2 id="modules">Modules</h2>
 

@@ -1,6 +1,41 @@
 <script>
 	import DocLayout from '$lib/components/DocLayout.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
+
+	const jsonExample = `let jsonStr = "{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}"
+let data = parseJson(jsonStr)
+
+print(data["name"])              // Bob
+print(toStr(data["scores"][0]))  // 95
+
+let obj = table{ "status": "ok", "count": 42 }
+let json = toJson(obj)
+print(json)  // {"count":42,"status":"ok"}`;
+
+	const prettyJsonExample = `let data = parseJson("{\\"name\\":\\"uthman\\",\\"age\\":20}")
+print(prettyJson(data))`;
+
+	const httpResultExample = `// ok: true/false
+// value: { body: "...", status: 200 }
+// error: ""`;
+
+	const confirmExample = `let ok = confirm("Delete this file?")
+if ok {
+    print("Deleting...")
+    fileDelete("data.txt")
+} else {
+    print("Cancelled")
+}`;
+
+	const selectExample = `let choice = select("Pick a color:", ["red", "green", "blue"])
+
+if choice == "red" {
+    print(colorRed("You picked red"))
+} else if choice == "green" {
+    print(colorGreen("You picked green"))
+} else {
+    print(colorBlue("You picked blue"))
+}`;
 </script>
 
 <svelte:head>
@@ -14,8 +49,8 @@
 	<h1>Builtins Reference</h1>
 
 	<p>
-		Logos provides a comprehensive set of built-in functions that are always available without any imports.
-		These cover I/O, file operations, string manipulation, math, HTTP, and more.
+		Logos provides a comprehensive set of built-in functions that are always available without any
+		imports. These cover I/O, file operations, string manipulation, math, HTTP, and more.
 	</p>
 
 	<nav class="border-border bg-subtle/50 my-6 rounded-lg border p-4">
@@ -63,6 +98,14 @@
 				<td class="px-4 py-2">Prints message and reads input</td>
 			</tr>
 			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>confirm(message)</code></td>
+				<td class="px-4 py-2">Prints message with (y/n) prompt, returns bool</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>select(message, options)</code></td>
+				<td class="px-4 py-2">Shows numbered options, returns chosen value</td>
+			</tr>
+			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>clear()</code></td>
 				<td class="px-4 py-2">Clears the terminal screen</td>
 			</tr>
@@ -80,6 +123,16 @@ print("Hello, " + name)
 clear()  // Clear the screen`}
 		language="javascript"
 	/>
+
+	<h3>confirm()</h3>
+	<p>Prompts the user with a yes/no question. Returns <code>true</code> if the user enters <code>y</code> or <code>yes</code>, <code>false</code> otherwise.</p>
+
+	<CodeBlock code={confirmExample} language="javascript" />
+
+	<h3>select()</h3>
+	<p>Shows a numbered list of options and waits for the user to pick one. Returns the chosen value directly.</p>
+
+	<CodeBlock code={selectExample} language="javascript" />
 
 	<!-- Color Output Section -->
 	<h2 id="color-output">Color Output</h2>
@@ -153,7 +206,10 @@ print(colorBold(colorYellow("Warning: Proceed with caution")))`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>type(value)</code></td>
-				<td class="px-4 py-2">Returns type name as string ("int", "float", "string", "bool", "array", "table", "function", "null")</td>
+				<td class="px-4 py-2"
+					>Returns type name as string ("int", "float", "string", "bool", "array", "table",
+					"function", "null")</td
+				>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>len(value)</code></td>
@@ -179,7 +235,7 @@ print(toStr(len([1,2,3])))   // 3`}
 
 	<p>
 		Comprehensive file system operations. Most file functions return a result object with
-		<code>{`{ok, value, error}`}</code> for safe error handling.
+		<code>ok</code>, <code>value</code>, and <code>error</code> fields for safe error handling.
 	</p>
 
 	<table class="w-full border-collapse text-left">
@@ -256,8 +312,7 @@ print(toStr(len([1,2,3])))   // 3`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`// Write and read files with error handling
-let writeRes = fileWrite("data.txt", "Hello, World!")
+		code={`let writeRes = fileWrite("data.txt", "Hello, World!")
 if !writeRes.ok {
     print("Write failed: " + writeRes.error)
 }
@@ -269,10 +324,8 @@ if readRes.ok {
     print("Read failed: " + readRes.error)
 }
 
-// Append to file
 fileAppend("log.txt", "Log entry\\n")
 
-// Check existence (returns bool directly)
 if fileExists("config.json") {
     let config = fileRead("config.json")
     if config.ok {
@@ -280,7 +333,6 @@ if fileExists("config.json") {
     }
 }
 
-// Directory operations
 fileMkdir("output/reports")
 let dirRes = fileReadDir(".")
 if dirRes.ok {
@@ -289,7 +341,6 @@ if dirRes.ok {
     }
 }
 
-// Glob pattern matching
 let globRes = fileGlob("*.lgs")
 if globRes.ok {
     for script in globRes.value {
@@ -453,7 +504,7 @@ print(type(text))  // string`}
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>pop(arr)</code></td>
-				<td class="px-4 py-2">Removes last element, returns new array</td>
+				<td class="px-4 py-2">Returns last element</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>first(arr)</code></td>
@@ -578,23 +629,24 @@ let merged = merge(user, table{ "email": "alice@example.com" })`}
 				<td class="px-4 py-2"><code>toJson(value)</code></td>
 				<td class="px-4 py-2">Converts value to JSON string</td>
 			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>prettyJson(table)</code></td>
+				<td class="px-4 py-2">Converts table to indented, colored JSON string</td>
+			</tr>
 		</tbody>
 	</table>
 
 	<h3>Example</h3>
 
-	<CodeBlock
-		code={`let jsonStr = '{"name": "Bob", "scores": [95, 87, 92]}'
-let data = parseJson(jsonStr)
+	<CodeBlock code={jsonExample} language="javascript" />
 
-print(data["name"])              // Bob
-print(toStr(data["scores"][0]))  // 95
+	<h3>prettyJson()</h3>
+	<p>
+		Takes a table (typically from <code>parseJson</code>) and returns a formatted, color-highlighted
+		JSON string. Keys are highlighted in green, values in blue.
+	</p>
 
-let obj = table{ "status": "ok", "count": 42 }
-let json = toJson(obj)
-print(json)  // {"count":42,"status":"ok"}`}
-		language="javascript"
-	/>
+	<CodeBlock code={prettyJsonExample} language="javascript" />
 
 	<!-- Math Section -->
 	<h2 id="math">Math</h2>
@@ -749,7 +801,6 @@ for arg in cliArgs {
 
 print(osname())                 // linux
 
-// Run commands
 let output = run("ls", "-la")
 print(output)
 
@@ -811,7 +862,6 @@ print(timeStr())           // 14:30:00
 print(dateStr())           // 2024-03-02
 print(dateTimeStr())       // 2024-03-02 14:30:00
 
-// Custom formatting (Go time layout)
 let ts = timeNow()
 print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 		language="javascript"
@@ -822,15 +872,7 @@ print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 
 	<p>HTTP client functions for making web requests. All HTTP functions return a result object:</p>
 
-	<CodeBlock
-		code={`// Result structure:
-{
-    ok: true/false,
-    value: { body: "...", status: 200 },
-    error: ""
-}`}
-		language="javascript"
-	/>
+	<CodeBlock code={httpResultExample} language="javascript" />
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -853,6 +895,10 @@ print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 				<td class="px-4 py-2">Makes PATCH request with JSON body</td>
 			</tr>
 			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>httpPut(url, body)</code></td>
+				<td class="px-4 py-2">Makes PUT request with JSON body</td>
+			</tr>
+			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>httpDelete(url)</code></td>
 				<td class="px-4 py-2">Makes DELETE request</td>
 			</tr>
@@ -862,8 +908,7 @@ print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`// GET request with error handling
-let res = httpGet("https://api.example.com/users")
+		code={`let res = httpGet("https://api.example.com/users")
 
 if res.ok {
     let users = parseJson(res.value.body)
@@ -875,7 +920,6 @@ if res.ok {
     print("Request failed: " + res.error)
 }
 
-// POST with JSON body
 let payload = toJson(table{
     "name": "Alice",
     "email": "alice@example.com"
@@ -886,11 +930,11 @@ if postRes.ok {
     print("Created! Status: " + toStr(postRes.value.status))
 }
 
-// PATCH request
 let update = toJson(table{ "name": "Alice Smith" })
+let putRes = httpPut("https://api.example.com/users/1", update)
+
 let patchRes = httpPatch("https://api.example.com/users/1", update)
 
-// DELETE request
 let delRes = httpDelete("https://api.example.com/users/1")
 if delRes.ok {
     print("Deleted successfully")
