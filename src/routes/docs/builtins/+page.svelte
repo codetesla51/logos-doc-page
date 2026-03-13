@@ -868,48 +868,62 @@ print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 	/>
 
 	<!-- HTTP Section -->
-	<h2 id="http">HTTP</h2>
-
-	<p>HTTP client functions for making web requests. All HTTP functions return a result object:</p>
-
-	<CodeBlock code={httpResultExample} language="javascript" />
-
-	<table class="w-full border-collapse text-left">
-		<thead>
-			<tr class="border-border border-b">
-				<th class="text-text px-4 py-2">Function</th>
-				<th class="text-text px-4 py-2">Description</th>
-			</tr>
-		</thead>
-		<tbody class="text-muted">
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>httpGet(url)</code></td>
-				<td class="px-4 py-2">Makes GET request</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>httpPost(url, body)</code></td>
-				<td class="px-4 py-2">Makes POST request with JSON body</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>httpPatch(url, body)</code></td>
-				<td class="px-4 py-2">Makes PATCH request with JSON body</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>httpPut(url, body)</code></td>
-				<td class="px-4 py-2">Makes PUT request with JSON body</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>httpDelete(url)</code></td>
-				<td class="px-4 py-2">Makes DELETE request</td>
-			</tr>
-		</tbody>
-	</table>
-
-	<h3>Example</h3>
-
-	<CodeBlock
-		code={`let res = httpGet("https://api.example.com/users")
-
+<h2 id="http">HTTP</h2>
+<p>HTTP client functions for making web requests. All HTTP functions return a result object:</p>
+<CodeBlock code={httpResultExample} language="javascript" />
+<table class="w-full border-collapse text-left">
+    <thead>
+        <tr class="border-border border-b">
+            <th class="text-text px-4 py-2">Function</th>
+            <th class="text-text px-4 py-2">Description</th>
+        </tr>
+    </thead>
+    <tbody class="text-muted">
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpGet(url)</code></td>
+            <td class="px-4 py-2">Makes GET request</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpGet(url, headers)</code></td>
+            <td class="px-4 py-2">Makes GET request with custom headers</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPost(url, body)</code></td>
+            <td class="px-4 py-2">Makes POST request with JSON body</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPost(url, body, headers)</code></td>
+            <td class="px-4 py-2">Makes POST request with JSON body and custom headers</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPatch(url, body)</code></td>
+            <td class="px-4 py-2">Makes PATCH request with JSON body</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPatch(url, body, headers)</code></td>
+            <td class="px-4 py-2">Makes PATCH request with JSON body and custom headers</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPut(url, body)</code></td>
+            <td class="px-4 py-2">Makes PUT request with JSON body</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpPut(url, body, headers)</code></td>
+            <td class="px-4 py-2">Makes PUT request with JSON body and custom headers</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpDelete(url)</code></td>
+            <td class="px-4 py-2">Makes DELETE request</td>
+        </tr>
+        <tr class="border-border border-b">
+            <td class="px-4 py-2"><code>httpDelete(url, headers)</code></td>
+            <td class="px-4 py-2">Makes DELETE request with custom headers</td>
+        </tr>
+    </tbody>
+</table>
+<h3>Example</h3>
+<CodeBlock
+    code={`let res = httpGet("https://api.example.com/users")
 if res.ok {
     let users = parseJson(res.value.body)
     for user in users {
@@ -920,25 +934,34 @@ if res.ok {
     print("Request failed: " + res.error)
 }
 
-let payload = toJson(table{
+let payload = toJson(table {
     "name": "Alice",
     "email": "alice@example.com"
 })
-let postRes = httpPost("https://api.example.com/users", payload)
 
+let postRes = httpPost("https://api.example.com/users", payload)
 if postRes.ok {
     print("Created! Status: " + toStr(postRes.value.status))
 }
 
-let update = toJson(table{ "name": "Alice Smith" })
+let update = toJson(table { "name": "Alice Smith" })
 let putRes = httpPut("https://api.example.com/users/1", update)
-
 let patchRes = httpPatch("https://api.example.com/users/1", update)
-
 let delRes = httpDelete("https://api.example.com/users/1")
 if delRes.ok {
     print("Deleted successfully")
+}
+
+let headers = table {
+    "Authorization": "Bearer " + env("API_TOKEN")
+}
+
+let authRes = httpGet("https://api.example.com/protected", headers)
+if authRes.ok {
+    print(authRes.value.body)
+} else {
+    print(colorRed("Auth failed: " + authRes.error))
 }`}
-		language="javascript"
-	/>
+    language="javascript"
+/>
 </DocLayout>

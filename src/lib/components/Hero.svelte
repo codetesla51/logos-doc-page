@@ -5,7 +5,13 @@
 
 	let highlightedCode = $state('');
 
-	const heroCode = `let res = httpGet("https://api.example.com/users")
+	const heroCode = `let token = env("API_TOKEN")
+
+let headers = table {
+    "Authorization": "Bearer " + token
+}
+
+let res = httpGet("https://api.example.com/users", headers)
 
 if !res.ok {
     print(colorRed("Error: " + res.error))
@@ -103,9 +109,9 @@ for user in users {
 
 				<!-- Footer bar -->
 				<div class="border-border/30 flex items-center gap-3 border-t px-4 py-2">
-					<span class="text-muted/40 text-xs">logos v0.2.0</span>
+					<span class="text-muted/40 text-xs">logos v0.2.3</span>
 					<span class="text-muted/20 text-xs">·</span>
-					<span class="text-muted/40 text-xs">HTTP · JSON · color output · pretty print</span>
+					<span class="text-muted/40 text-xs">HTTP · JSON · auth headers · color output</span>
 				</div>
 			</div>
 		</div>
