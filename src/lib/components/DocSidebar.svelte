@@ -26,7 +26,8 @@
 			items: [
 				{ title: 'Embedding', href: '/docs/embedding' },
 				{ title: 'Building Binaries', href: '/docs/building' },
-				{ title: 'Examples', href: '/docs/examples' }
+				{ title: 'Examples', href: '/docs/examples' },
+				{ title: 'LLM Reference', href: '/docs/llm' }
 			]
 		}
 	];

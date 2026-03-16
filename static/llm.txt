@@ -1,0 +1,758 @@
+# Logos Language — LLM Reference
+
+Logos is a dynamically-typed, interpreted scripting language written in Go.
+It uses a Pratt parser and a tree-walking interpreter.
+File extension: `.lgs`
+CLI: `lgs run file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
+GitHub: https://github.com/codetesla51/logos
+Docs: https://logos-lang.vercel.app/docs
+Version: 0.2.3
+
+---
+
+## SYNTAX OVERVIEW
+
+### Variables
+```
+let x = 10
+let name = "Uthman"
+let pi = 3.14
+let flag = true
+let nothing = null
+```
+Variables are mutable. No `const`. Reassign with `=`.
+
+### Compound Assignment
+```
+x += 5
+x -= 2
+x *= 3
+x /= 2
+x %= 4
+```
+
+### Strings
+```
+let s = "hello world"
+let raw = `raw string with \n not escaped`
+```
+
+### Arrays
+```
+let arr = [1, 2, 3, "four", true]
+let first = arr[0]
+let last = arr[len(arr) - 1]
+```
+
+### Tables (Maps/Objects)
+```
+let user = table{
+  name: "Uthman",
+  age: 20,
+  active: true
+}
+```
+
+**Dot access** — works with string-keyed tables only:
+```
+user.name       // "Uthman"
+user.age        // 20
+```
+
+**Bracket access** — works on tables and is type-aware. The key type matters:
+```
+user["name"]          // works — string key lookup
+table{1: "one"}[1]    // works — integer key lookup
+table{1: "one"}["1"]  // returns null — different type, different key
+```
+Internally, table keys are stored as `"TYPE:keyname"` (e.g. `"STRING:name"`, `"INTEGER:1"`).
+String keys and integer keys with the same value are distinct entries.
+When a table is printed raw via `print()`, you will see the internal format — that is expected.
+
+Nested tables:
+```
+let config = table{
+  db: table{
+    host: "localhost",
+    port: 5432
+  }
+}
+config.db.host    // "localhost"
+config.db["host"] // "localhost"
+```
+
+---
+
+## CONTROL FLOW
+
+### If / Else
+```
+if x > 10 {
+  print("big")
+} else {
+  print("small")
+}
+```
+No `else if` — use nested `if` or `switch`.
+
+### Switch
+```
+switch x {
+  case 1 {
+    print("one")
+  }
+  case 2 {
+    print("two")
+  }
+  default {
+    print("other")
+  }
+}
+```
+
+### For Loop (while-style)
+```
+for i < 10 {
+  i += 1
+}
+```
+Infinite loop:
+```
+for {
+  if done { break }
+}
+```
+
+### For-In Loop
+```
+for item in arr {
+  print(item)
+}
+```
+Iterates over arrays, tables, and strings.
+
+When iterating a table, each `item` is a 2-element array `[key, value]`:
+```
+for pair in user {
+  print(pair[0])   // key string
+  print(pair[1])   // value
+}
+```
+
+### Break / Continue
+```
+for item in arr {
+  if item == 3 { break }
+  if item == 1 { continue }
+  print(item)
+}
+```
+
+---
+
+## FUNCTIONS
+
+### Anonymous Function
+```
+let add = fn(x, y) {
+  return x + y
+}
+add(2, 3)   // 5
+```
+
+### Named Function
+```
+fn greet(name) {
+  return "Hello " + name
+}
+greet("Uthman")
+```
+Named functions are syntactic sugar for `let name = fn(...) { ... }`.
+
+### Arrow Function (single expression)
+```
+let double = fn(x) -> x * 2
+let square = fn(x) -> x * x
+```
+
+### Closures
+```
+fn makeCounter() {
+  let count = 0
+  return fn() {
+    count += 1
+    return count
+  }
+}
+let counter = makeCounter()
+counter()   // 1
+counter()   // 2
+```
+
+---
+
+## OPERATORS
+
+Arithmetic: `+`, `-`, `*`, `/`, `%`
+Comparison: `==`, `!=`, `<`, `>`, `<=`, `>=`
+Logical: `&&`, `||`, `!`
+
+### Precedence (low to high)
+`||` -> `&&` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> unary `- !` -> function calls `()` -> dot access `.`
+
+---
+
+## MODULES
+
+```
+use "filename"       // loads filename.lgs from same directory
+use "std/math"       // loads from stdlib
+use "std/array"
+use "std/string"
+use "std/path"
+use "std/time"
+use "std/type"
+use "std/log"
+use "std/testing"
+```
+Exports are implicit — everything defined at top level is accessible after `use`.
+
+---
+
+## CONCURRENCY
+
+### Spawn Block
+Runs each statement concurrently as a goroutine. Waits for all to finish.
+```
+spawn {
+  print("task 1")
+  print("task 2")
+}
+```
+
+### Spawn For-In
+Runs each iteration concurrently. Arrays only.
+```
+spawn for item in jobs {
+  process(item)
+}
+```
+
+---
+
+## RESULT PATTERN
+
+All HTTP, file, and shell builtins return a result table:
+```
+table{
+  ok: true/false,
+  value: <data or null>,
+  error: "<message or empty string>"
+}
+```
+Always check `ok` before using `value`:
+```
+let res = httpGet("https://api.example.com/data")
+if res.ok {
+  print(res.value.body)
+  print(res.value.status)
+} else {
+  print(res.error)
+}
+```
+
+---
+
+## BUILTINS REFERENCE
+
+### I/O
+| Function | Signature | Description |
+|---|---|---|
+| `print` | `print(args...)` | Prints args separated by spaces |
+| `input` | `input(prompt?)` | Reads line from stdin, optional prompt |
+| `prompt` | `prompt(msg)` | Prints msg then reads a line |
+| `confirm` | `confirm(msg)` | Prints "msg (y/n):", returns bool |
+| `select` | `select(msg, options[])` | Numbered menu, returns chosen element |
+| `clear` | `clear()` | Clears terminal screen |
+
+### Color Output
+All take 1 string argument and return string wrapped in ANSI codes.
+| Function | Color |
+|---|---|
+| `colorRed(str)` | Red |
+| `colorGreen(str)` | Green |
+| `colorYellow(str)` | Yellow |
+| `colorBlue(str)` | Blue |
+| `colorMagenta(str)` | Magenta |
+| `colorCyan(str)` | Cyan |
+| `colorWhite(str)` | White |
+| `colorBold(str)` | Bold |
+
+### Type / Inspection
+| Function | Signature | Returns |
+|---|---|---|
+| `type(val)` | `type(val)` | Type name string: `"INTEGER"`, `"FLOAT"`, `"STRING"`, `"BOOLEAN"`, `"NULL"`, `"ARRAY"`, `"TABLE"`, `"FUNCTION"` |
+| `len(val)` | `len(str\|arr)` | Length of string or array |
+| `keys(t)` | `keys(table)` | Array of table keys as strings (without type prefix) |
+| `values(t)` | `values(table)` | Array of table values |
+| `has(t, key)` | `has(table, key)` | Returns bool — true if string key exists |
+
+### Type Conversion
+| Function | Description |
+|---|---|
+| `toInt(val)` | Converts string/float/bool to integer. Returns null on failure |
+| `toFloat(val)` | Converts string/int/bool to float. Returns null on failure |
+| `toBool(val)` | Converts value to boolean. Returns null on failure |
+| `toStr(val)` | Converts any value to its string representation |
+
+### String
+| Function | Signature | Description |
+|---|---|---|
+| `upper(s)` | `upper(str)` | Uppercase |
+| `lower(s)` | `lower(str)` | Lowercase |
+| `trim(s)` | `trim(str)` | Trim leading/trailing whitespace |
+| `replace(s, old, new)` | `replace(str, old, new)` | Replace all occurrences |
+| `split(s, sep)` | `split(str, sep)` | Split string into array |
+| `join(arr, sep)` | `join(arr, sep)` | Join array of strings into one string |
+| `contains(val, sub)` | `contains(str\|arr, val)` | True if string contains substring OR array contains value |
+| `startsWith(s, prefix)` | `startsWith(str, prefix)` | Returns bool |
+| `endsWith(s, suffix)` | `endsWith(str, suffix)` | Returns bool |
+| `indexOf(s, sub)` | `indexOf(str, sub)` | Index of first occurrence, -1 if not found |
+| `repeat(s, n)` | `repeat(str, n)` | Repeat string n times |
+| `slice(val, s, e)` | `slice(str\|arr, start, end)` | Substring or sub-array (end is exclusive) |
+| `format(tmpl, args...)` | `format(template, args...)` | Printf-style formatting with `%s %d %f` |
+
+### Array
+| Function | Signature | Description |
+|---|---|---|
+| `push(arr, val)` | `push(arr, val)` | Returns new array with val appended |
+| `pop(arr)` | `pop(arr)` | Returns last element, null if empty |
+| `first(arr)` | `first(arr)` | Returns first element, null if empty |
+| `last(arr)` | `last(arr)` | Returns last element, null if empty |
+| `tail(arr)` | `tail(arr)` | Returns all but first, null if empty |
+| `prepend(arr, val)` | `prepend(arr, val)` | Returns new array with val at front |
+| `reverse(arr)` | `reverse(arr)` | Returns reversed array |
+| `sort(arr)` | `sort(arr)` | Returns sorted array (numbers only) |
+| `slice(arr, s, e)` | `slice(arr, start, end)` | Sub-array from start to end (exclusive) |
+| `contains(arr, val)` | `contains(arr, val)` | Returns bool |
+
+### Table
+| Function | Signature | Description |
+|---|---|---|
+| `keys(t)` | `keys(table)` | Returns array of key strings |
+| `values(t)` | `values(table)` | Returns array of values |
+| `has(t, key)` | `has(table, key)` | Returns bool |
+| `tableDelete(t, key)` | `tableDelete(table, key)` | Returns new table without that key |
+| `merge(t1, t2)` | `merge(table, table)` | Merges two tables; t2 overwrites on conflict |
+
+### Math
+| Function | Signature | Description |
+|---|---|---|
+| `mathAbs(n)` | `mathAbs(n)` | Absolute value |
+| `mathSqrt(n)` | `mathSqrt(n)` | Square root |
+| `mathPow(base, exp)` | `mathPow(base, exp)` | Power |
+| `mathFloor(n)` | `mathFloor(n)` | Floor (returns integer) |
+| `mathCeil(n)` | `mathCeil(n)` | Ceiling (returns integer) |
+| `mathRound(n)` | `mathRound(n)` | Round (returns integer) |
+| `mathMin(a, b)` | `mathMin(a, b)` | Minimum of two numbers (returns float) |
+| `mathMax(a, b)` | `mathMax(a, b)` | Maximum of two numbers (returns float) |
+| `mathRandom()` | `mathRandom()` | Random float between 0.0 and 1.0 |
+| `mathRandomInt(min, max)` | `mathRandomInt(min, max)` | Random integer between min and max inclusive |
+| `mathPi()` | `mathPi()` | Returns pi (3.14159...) |
+
+### JSON
+| Function | Signature | Description |
+|---|---|---|
+| `parseJson(str)` | `parseJson(str)` | Parses JSON string. Arrays -> Array, objects -> Table. Returns null on failure |
+| `toJson(val)` | `toJson(val)` | Converts Logos value to compact JSON string |
+| `prettyJson(val)` | `prettyJson(val)` | Pretty-printed JSON string with color |
+
+### File I/O (disabled in sandbox)
+All file builtins except `fileExists` and `fileExt` return a result table `{ok, value, error}`.
+| Function | Signature | Description |
+|---|---|---|
+| `fileRead(path)` | `fileRead(path)` | Returns result with file content as string in `value` |
+| `fileWrite(path, content)` | `fileWrite(path, content)` | Overwrites file |
+| `fileAppend(path, content)` | `fileAppend(path, content)` | Appends to file |
+| `fileDelete(path)` | `fileDelete(path)` | Deletes file or empty directory |
+| `fileDeleteAll(path)` | `fileDeleteAll(path)` | Deletes directory and all contents recursively |
+| `fileCopy(src, dst)` | `fileCopy(src, dst)` | Copies file |
+| `fileMove(src, dst)` | `fileMove(src, dst)` | Moves/renames file or directory |
+| `fileRename(old, new)` | `fileRename(old, new)` | Renames file |
+| `fileMkdir(path)` | `fileMkdir(path)` | Creates directory and all parents |
+| `fileRmdir(path)` | `fileRmdir(path)` | Removes empty directory |
+| `fileReadDir(path)` | `fileReadDir(path)` | Returns result with array of filenames in `value` |
+| `fileGlob(pattern)` | `fileGlob(pattern)` | Returns result with matching path strings in `value` |
+| `fileChmod(path, mode)` | `fileChmod(path, mode)` | Changes permissions. mode is octal string e.g. `"0755"` |
+| `fileExt(path)` | `fileExt(path)` | Returns file extension string e.g. `".lgs"` (not a result table) |
+| `fileExists(path)` | `fileExists(path)` | Returns bool directly (not a result table) |
+
+### HTTP (disabled in sandbox)
+All HTTP builtins return a result table: `{ok, value: {body, status}, error}`
+`body` is a string. `status` is an integer HTTP status code.
+
+| Function | Signature |
+|---|---|
+| `httpGet` | `httpGet(url, headers?)` |
+| `httpPost` | `httpPost(url, body, headers?)` |
+| `httpPut` | `httpPut(url, body, headers?)` |
+| `httpPatch` | `httpPatch(url, body, headers?)` |
+| `httpDelete` | `httpDelete(url, headers?)` |
+
+`headers` is an optional table of string key-value pairs.
+`body` must be a string (typically JSON).
+
+### Time
+| Function | Signature | Description |
+|---|---|---|
+| `timeNow()` | `timeNow()` | Current Unix timestamp in seconds (integer) |
+| `timeMs()` | `timeMs()` | Current Unix timestamp in milliseconds (integer) |
+| `timeStr()` | `timeStr()` | Current time string e.g. `"15:04:05"` |
+| `dateStr()` | `dateStr()` | Current date string e.g. `"2026-03-16"` |
+| `dateTimeStr()` | `dateTimeStr()` | Current date+time string e.g. `"2026-03-16 15:04:05"` |
+| `timeFormat(ts, fmt)` | `timeFormat(ts, fmt)` | Formats a unix timestamp using Go time layout string |
+| `sleep(ms)` | `sleep(ms)` | Pauses execution for given milliseconds |
+
+### System / OS (disabled in sandbox)
+| Function | Signature | Description |
+|---|---|---|
+| `osname()` | `osname()` | Returns OS string: `"linux"`, `"darwin"`, `"windows"` |
+| `pwd()` | `pwd()` | Returns current working directory string |
+| `cd(path)` | `cd(path)` | Changes current working directory |
+| `env(key)` | `env(key)` | Returns env variable value string or null |
+| `setenv(key, val)` | `setenv(key, val)` | Sets environment variable |
+| `args()` | `args()` | Returns array of command-line argument strings |
+| `exit(code?)` | `exit(code?)` | Exits process, optional integer code (default 0) |
+| `shell(cmd)` | `shell(cmd)` | Runs shell command string, returns result table with output string in `value` |
+| `run(cmd, args...)` | `run(cmd, args...)` | Runs command with separate args, returns output string or null |
+
+---
+
+## STDLIB REFERENCE
+
+Stdlib modules must be imported with `use` before their functions are available.
+
+### std/array
+```
+use "std/array"
+```
+| Function | Signature | Description |
+|---|---|---|
+| `arrayMap(arr, fn)` | `arrayMap(arr, func)` | Returns new array with func applied to each element |
+| `arrayFilter(arr, fn)` | `arrayFilter(arr, func)` | Returns new array with only elements where func returns true |
+| `arrayReduce(arr, fn, init)` | `arrayReduce(arr, func, initial)` | Reduces array to single value |
+| `arrayUnique(arr)` | `arrayUnique(arr)` | Returns array with duplicate values removed |
+| `arrayFlat(arr)` | `arrayFlat(arr)` | Flattens nested arrays one level deep |
+| `arrayCopy(arr)` | `arrayCopy(arr)` | Returns a shallow copy of array |
+| `arraySum(arr)` | `arraySum(arr)` | Returns sum of all elements |
+| `arrayMin(arr)` | `arrayMin(arr)` | Returns minimum value |
+| `arrayMax(arr)` | `arrayMax(arr)` | Returns maximum value |
+| `arrayContainsAll(arr, items)` | `arrayContainsAll(arr, items)` | Returns true if arr contains all items |
+| `arrayChunk(arr, size)` | `arrayChunk(arr, size)` | Splits array into chunks of given size |
+| `arrayIndexOf(arr, val)` | `arrayIndexOf(arr, val)` | Returns index of val, -1 if not found |
+
+Also available as short aliases: `map`, `filter`, `reduce`, `unique`, `flat`, `copy`, `sum`, `min`, `max`, `containsAll`, `chunk`, `indexOf` (after import).
+
+### std/string
+```
+use "std/string"
+```
+| Function | Signature | Description |
+|---|---|---|
+| `strPadStart(str, len, char)` | `strPadStart(str, length, char)` | Pads start of string until it reaches length |
+| `strPadEnd(str, len, char)` | `strPadEnd(str, length, char)` | Pads end of string until it reaches length |
+| `strCapitalize(str)` | `strCapitalize(str)` | Capitalizes first character |
+| `strIsEmpty(str)` | `strIsEmpty(str)` | Returns true if string is empty or only whitespace |
+| `strCount(str, sub)` | `strCount(str, sub)` | Returns count of non-overlapping occurrences of sub |
+| `strReverse(str)` | `strReverse(str)` | Returns reversed string |
+| `strIsPalindrome(str)` | `strIsPalindrome(str)` | Returns true if string reads same forwards and backwards |
+| `strRepeat(str, n)` | `strRepeat(str, n)` | Repeats string n times |
+
+### std/math
+```
+use "std/math"
+```
+Note: `std/math` automatically imports `std/array` internally.
+| Function | Signature | Description |
+|---|---|---|
+| `mathFib(n)` | `mathFib(n)` | Returns nth Fibonacci number (recursive) |
+| `mathFactorial(n)` | `mathFactorial(n)` | Returns n! |
+| `mathMean(arr)` | `mathMean(arr)` | Returns arithmetic mean of array |
+| `mathMedian(arr)` | `mathMedian(arr)` | Returns median of array |
+| `mathMode(arr)` | `mathMode(arr)` | Returns most frequent value as string |
+| `mathClamp(n, min, max)` | `mathClamp(n, min, max)` | Clamps n between min and max |
+| `mathLerp(a, b, t)` | `mathLerp(a, b, t)` | Linear interpolation |
+| `mathIsPrime(n)` | `mathIsPrime(n)` | Returns true if n is prime |
+| `mathGcd(a, b)` | `mathGcd(a, b)` | Greatest common divisor |
+| `mathLcm(a, b)` | `mathLcm(a, b)` | Least common multiple |
+
+### std/path
+```
+use "std/path"
+```
+| Function | Signature | Description |
+|---|---|---|
+| `pathJoin(parts)` | `pathJoin(arr)` | Joins array of path parts with `/` |
+| `pathBase(path)` | `pathBase(path)` | Returns filename portion of path |
+| `pathDir(path)` | `pathDir(path)` | Returns directory portion of path |
+| `pathExt(path)` | `pathExt(path)` | Returns file extension e.g. `".lgs"` |
+| `pathIsAbs(path)` | `pathIsAbs(path)` | Returns true if path starts with `/` |
+| `pathClean(path)` | `pathClean(path)` | Cleans `.`, `..`, double slashes from path |
+| `pathExists(path)` | `pathExists(path)` | Returns true if path exists (wraps `fileExists`) |
+| `pathWithoutExt(path)` | `pathWithoutExt(path)` | Returns path with extension removed |
+
+### std/time
+```
+use "std/time"
+```
+All datetime functions work with datetime objects: `table{timestamp, str, date, time}`.
+| Function | Signature | Description |
+|---|---|---|
+| `datetimeNow()` | `datetimeNow()` | Returns datetime object for current time |
+| `datetimeFromTimestamp(ts)` | `datetimeFromTimestamp(ts)` | Returns datetime object from unix timestamp |
+| `datetimeFormat(dt, fmt)` | `datetimeFormat(dt, fmt)` | Formats datetime using Go time layout string |
+| `datetimeIsAfter(dt1, dt2)` | `datetimeIsAfter(dt1, dt2)` | Returns bool |
+| `datetimeIsBefore(dt1, dt2)` | `datetimeIsBefore(dt1, dt2)` | Returns bool |
+| `datetimeIsEqual(dt1, dt2)` | `datetimeIsEqual(dt1, dt2)` | Returns bool |
+| `datetimeDiff(dt1, dt2, unit)` | `datetimeDiff(dt1, dt2, unit)` | Returns difference as integer. unit: `"seconds"`, `"minutes"`, `"hours"`, `"days"`, `"weeks"` |
+| `datetimeAdd(dt, amount, unit)` | `datetimeAdd(dt, amount, unit)` | Returns new datetime with time added |
+| `datetimeSubtract(dt, amount, unit)` | `datetimeSubtract(dt, amount, unit)` | Returns new datetime with time subtracted |
+| `datetimeToStr(dt)` | `datetimeToStr(dt)` | Returns datetime string |
+
+### std/type
+```
+use "std/type"
+```
+| Function | Signature | Description |
+|---|---|---|
+| `isNull(val)` | `isNull(val)` | Returns true if type is NULL |
+| `isString(val)` | `isString(val)` | Returns true if type is STRING |
+| `isInt(val)` | `isInt(val)` | Returns true if type is INTEGER |
+| `isFloat(val)` | `isFloat(val)` | Returns true if type is FLOAT |
+| `isBool(val)` | `isBool(val)` | Returns true if type is BOOLEAN |
+| `isArray(val)` | `isArray(val)` | Returns true if type is ARRAY |
+| `isTable(val)` | `isTable(val)` | Returns true if type is TABLE |
+| `isNumber(val)` | `isNumber(val)` | Returns true if type is INTEGER or FLOAT |
+| `isCallable(val)` | `isCallable(val)` | Returns true if type is FUNCTION |
+
+### std/log
+```
+use "std/log"
+```
+| Function / Variable | Description |
+|---|---|
+| `LOG_DEBUG` | Level constant `"DEBUG"` |
+| `LOG_INFO` | Level constant `"INFO"` |
+| `LOG_WARN` | Level constant `"WARN"` |
+| `LOG_ERROR` | Level constant `"ERROR"` |
+| `_logLevel` | Current log level (default `"DEBUG"`) — set to control output |
+| `_logToFile` | Bool — if true, logs are also written to `_logFile` (default false) |
+| `_logFile` | Log file path (default `"app.log"`) |
+| `logDebug(msg)` | Prints white debug message |
+| `logInfo(msg)` | Prints green info message |
+| `logWarn(msg)` | Prints yellow warning message |
+| `logError(msg)` | Prints red error message |
+
+### std/testing
+```
+use "std/testing"
+```
+| Function | Signature | Description |
+|---|---|---|
+| `assert(name, got, expected)` | `assert(name, got, expected)` | Compares got to expected via string comparison. Prints failure if mismatch |
+| `suite(name, fn)` | `suite(name, func)` | Groups assertions under a named suite |
+| `summary()` | `summary()` | Prints pass/fail summary. Calls `exit(1)` if any tests failed |
+
+---
+
+## EMBEDDING LOGOS IN GO
+
+```go
+import "github.com/codetesla51/logos/logos"
+
+// Create VM (all capabilities enabled)
+vm := logos.New()
+
+// Create sandboxed VM
+vm := logos.NewWithConfig(logos.SandboxConfig{
+    AllowFileIO:  false,
+    AllowNetwork: false,
+    AllowShell:   false,
+    AllowExit:    false,
+})
+
+// Register a Go function callable from Logos
+vm.Register("greet", func(args ...logos.Object) logos.Object {
+    name := args[0].(*logos.String).Value
+    return &logos.String{Value: "Hello, " + name}
+})
+
+// Set a variable in the Logos environment
+vm.SetVar("count", 42)
+vm.SetVar("config", map[string]interface{}{"port": 8080})
+
+// Run a script string
+err := vm.Run(`print(greet("World"))`)
+
+// Get a variable back as a Go value
+result := vm.GetVar("count") // returns interface{}
+
+// Call a Logos function from Go
+result, err := vm.Call("myFunction", arg1, arg2)
+```
+
+Supported Go <-> Logos type conversions:
+- `int`, `int64` <-> `Integer`
+- `float64` <-> `Float`
+- `string` <-> `String`
+- `bool` <-> `Bool`
+- `[]interface{}` <-> `Array`
+- `map[string]interface{}` <-> `Table`
+- `nil` <-> `Null`
+
+---
+
+## SANDBOX MODE
+
+When running in the Logos playground (web), sandbox mode is active:
+- File I/O builtins disabled (`fileRead`, `fileWrite`, etc.)
+- HTTP builtins disabled (`httpGet`, `httpPost`, etc.)
+- Shell/exec builtins disabled (`shell`, `run`)
+- `exit()` disabled
+- Calling a sandboxed function returns an error object: `"function 'X' is not available in sandbox mode"`
+
+---
+
+## COMMON PATTERNS
+
+### HTTP + JSON
+```
+let res = httpGet("https://api.example.com/users")
+if res.ok {
+  let users = parseJson(res.value.body)["data"]
+  for user in users {
+    print(user.name)
+  }
+} else {
+  print(colorRed("Error: " + res.error))
+}
+```
+
+### Authenticated Request
+```
+let res = httpGet("https://api.example.com/profile", table{
+  Authorization: "Bearer mytoken123"
+})
+```
+
+### POST Request
+```
+let payload = toJson(table{name: "Uthman", age: 20})
+let res = httpPost("https://api.example.com/users", payload, table{
+  Authorization: "Bearer token"
+})
+if res.ok {
+  print("Status: " + toStr(res.value.status))
+}
+```
+
+### Table Iteration
+```
+let person = table{name: "Uthman", age: 20}
+for pair in person {
+  print(pair[0] + ": " + toStr(pair[1]))
+}
+```
+
+### Error Handling Pattern
+```
+fn safeFetch(url) {
+  let res = httpGet(url)
+  if !res.ok {
+    print(colorRed("Failed: " + res.error))
+    return null
+  }
+  return parseJson(res.value.body)
+}
+```
+
+### File Operations
+```
+let res = fileRead("config.json")
+if res.ok {
+  let config = parseJson(res.value)
+  print(config.port)
+}
+
+let writeRes = fileWrite("output.txt", "hello world")
+if !writeRes.ok {
+  print(colorRed("Write failed: " + writeRes.error))
+}
+```
+
+### Using Stdlib
+```
+use "std/array"
+use "std/math"
+use "std/string"
+
+let nums = [3, 1, 4, 1, 5, 9, 2]
+let doubled = arrayMap(nums, fn(x) -> x * 2)
+let evens = arrayFilter(nums, fn(x) -> x % 2 == 0)
+let total = arraySum(nums)
+let isPrime = mathIsPrime(7)
+let padded = strPadStart("5", 3, "0")   // "005"
+```
+
+### Logging
+```
+use "std/log"
+
+_logLevel = "INFO"   // suppress DEBUG messages
+logInfo("Server started")
+logWarn("Low memory")
+logError("Connection failed")
+```
+
+---
+
+## KNOWN LIMITATIONS
+
+- Dot access only works with string-keyed table fields. Integer or boolean keys must use bracket access.
+- Bracket access on tables is type-aware: `t["1"]` and `t[1]` are different keys.
+- No try/catch — use the result pattern for error handling.
+- No classes or structs — use tables as data containers.
+- No variadic user-defined functions — only builtins support `args...`.
+- `spawn` waits for all goroutines (no fire-and-forget).
+- `spawn for item in` only supports arrays, not tables or strings.
+- `sort()` only works on numeric arrays — non-numbers are silently skipped.
+- No reference semantics — tables and arrays are copied when passed to functions.
+
+---
+
+## QUICK EXAMPLE SCRIPT
+
+```
+use "std/array"
+
+fn fetchLocations(baseUrl) {
+  let res = httpGet(baseUrl + "/details/locations")
+  if !res.ok {
+    print(colorRed("fetch failed: " + res.error))
+    return []
+  }
+  return parseJson(res.value.body)["data"]
+}
+
+let BASE_URL = "https://api.example.com"
+let locations = fetchLocations(BASE_URL)
+
+print(colorBold("Locations: " + toStr(len(locations))))
+print("")
+
+for loc in locations {
+  print(colorGreen(loc.name) + " (" + loc.abbv + ")")
+  print("  lat: " + toStr(loc.location.lat))
+  print("  lng: " + toStr(loc.location.lng))
+}
+```

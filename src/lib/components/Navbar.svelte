@@ -32,6 +32,12 @@
 			<!-- Desktop Nav -->
 			<div class="hidden items-center gap-4 md:flex">
 				<a
+					href="/playground"
+					class="text-muted hover:text-text flex items-center gap-1.5 text-base transition-colors"
+				>
+					Playground
+				</a>
+				<a
 					href="https://github.com/codetesla51/logos"
 					target="_blank"
 					rel="noopener noreferrer"
@@ -70,6 +76,12 @@
 	{#if mobileMenuOpen}
 		<div class="border-border bg-bg border-t md:hidden">
 			<div class="space-y-3 px-4 py-4">
+				<a
+					href="/playground"
+					class="text-muted hover:text-text flex items-center gap-2 text-base transition-colors"
+				>
+					Playground
+				</a>
 				<a
 					href="https://github.com/codetesla51/logos"
 					target="_blank"
