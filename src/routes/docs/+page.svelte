@@ -12,6 +12,14 @@ if !res.ok {
 let config = parseJson(res.value)
 print("App: " + config["name"])
 
+if config.age > 18 {
+    print("adult")
+} else if config.age > 13 {
+    print("teenager")
+} else {
+    print("child")
+}
+
 // Run tasks concurrently
 spawn for task in tasks {
     print("Processing: " + task)

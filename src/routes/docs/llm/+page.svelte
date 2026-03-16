@@ -29,6 +29,8 @@ user["name"]    // "Uthman" (bracket access)`;
 
 	const ifElseCode = `if x > 10 {
   print("big")
+} else if x > 5 {
+  print("medium")
 } else {
   print("small")
 }`;

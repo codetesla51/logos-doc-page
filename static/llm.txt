@@ -93,7 +93,17 @@ if x > 10 {
   print("small")
 }
 ```
-No `else if` — use nested `if` or `switch`.
+
+You can chain `else if`:
+```
+if x > 10 {
+  print("big")
+} else if x > 5 {
+  print("medium")
+} else {
+  print("small")
+}
+```
 
 ### Switch
 ```
