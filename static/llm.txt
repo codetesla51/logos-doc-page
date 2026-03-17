@@ -6,7 +6,7 @@ File extension: `.lgs`
 CLI: `lgs run file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
 GitHub: https://github.com/codetesla51/logos
 Docs: https://logos-lang.vercel.app/docs
-Version: 0.2.3
+Version: 0.3.0
 
 ---
 

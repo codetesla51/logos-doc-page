@@ -101,7 +101,7 @@ fileDelete("unwanted.txt")`;
 // Always check .ok before using the value!
 
 // Parse JSON string to table/array
-let result = parseJson('{"name": "Bob", "scores": [95, 87, 92]}')
+	let result = parseJson("{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}")
 if result.ok {
     let data = result.value
     print(data["name"])              // Bob
@@ -121,7 +121,7 @@ if jsonRes.ok {
 }
 
 // Pretty print with colors (great for debugging!)
-let parseResult = parseJson('{"user": {"name": "Alice", "age": 30}}')
+	let parseResult = parseJson("{\\"user\\": {\\"name\\": \\"Alice\\", \\"age\\": 30}}")
 if parseResult.ok {
     print(prettyJson(parseResult.value))
     // Output has color codes - keys in green, values in blue
@@ -130,7 +130,7 @@ if parseResult.ok {
 	const prettyJsonExample = `// prettyJson() returns {ok, value, error}
 // Great for debugging - shows formatted, colored JSON
 
-let result = parseJson('{"name": "Alice", "skills": ["Go", "Rust", "JS"]}')
+	let result = parseJson("{\\"name\\": \\"Alice\\", \\"skills\\": [\\"Go\\", \\"Rust\\", \\"JS\\"]}")
 if result.ok {
     print(prettyJson(result.value))
 }`;
