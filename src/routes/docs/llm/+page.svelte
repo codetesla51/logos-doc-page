@@ -158,7 +158,7 @@ result := vm.GetVar("count")`;
 		<li><strong>File extension:</strong> <code>.lgs</code></li>
 		<li><strong>CLI:</strong> <code>lgs run file.lgs</code> | <code>lgs build file.lgs</code> | <code>lgs fmt file.lgs</code></li>
 		<li><strong>GitHub:</strong> <a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener">github.com/codetesla51/logos</a></li>
-		<li><strong>Version:</strong> 0.3.0</li>
+		<li><strong>Version:</strong> 0.3.2</li>
 	</ul>
 
 	<h2 id="variables">Variables</h2>
@@ -175,6 +175,7 @@ result := vm.GetVar("count")`;
 	<p><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></p>
 	<p><strong>Comparison:</strong> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></p>
 	<p><strong>Logical:</strong> <code>&amp;&amp;</code>, <code>||</code>, <code>!</code></p>
+	<p><strong>Ternary:</strong> <code>? :</code> (e.g., <code>condition ? valueIfTrue : valueIfFalse</code>)</p>
 
 	<h2 id="strings">Strings</h2>
 

@@ -20,6 +20,9 @@ if config.age > 18 {
     print("child")
 }
 
+// Ternary operator
+let status = config.age >= 18 ? "adult" : "minor"
+
 // Dot assignment on tables
 config.active = false
 

@@ -100,6 +100,20 @@ if age < 13 {
 		language="javascript"
 	/>
 
+	<h3>Ternary Operator</h3>
+
+	<p>Use <code>? :</code> for inline conditional expressions:</p>
+
+	<CodeBlock
+		code={`let age = 20
+let status = age >= 18 ? "adult" : "minor"
+print(status)
+
+// in expressions
+print("You are " + (age >= 18 ? "an adult" : "a minor"))`}
+		language="javascript"
+	/>
+
 	<h3>For Loops</h3>
 
 	<CodeBlock

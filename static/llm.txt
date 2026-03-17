@@ -6,7 +6,7 @@ File extension: `.lgs`
 CLI: `lgs run file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
 GitHub: https://github.com/codetesla51/logos
 Docs: https://logos-lang.vercel.app/docs
-Version: 0.3.0
+Version: 0.3.2
 
 ---
 
@@ -219,9 +219,10 @@ counter()   // 2
 Arithmetic: `+`, `-`, `*`, `/`, `%`
 Comparison: `==`, `!=`, `<`, `>`, `<=`, `>=`
 Logical: `&&`, `||`, `!`
+Ternary: `? :` (e.g., `condition ? valueIfTrue : valueIfFalse`)
 
 ### Precedence (low to high)
-`||` -> `&&` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> unary `- !` -> function calls `()` -> dot access `.`
+`||` -> `&&` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> ternary `? :` -> unary `- !` -> function calls `()` -> dot access `.`
 
 ---
 
