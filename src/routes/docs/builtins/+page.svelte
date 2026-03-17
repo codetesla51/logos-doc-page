@@ -1111,11 +1111,11 @@ print(toStr(mathPi()))           // 3.141592653589793`}
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>run(cmd, ...args)</code></td>
-				<td class="px-4 py-2">Executes command directly (no shell). Returns <code>{ok, value, error}</code></td>
+				<td class="px-4 py-2">Executes command directly (no shell). Returns <code>{'{'}"ok", "value", "error"{'}'}</code></td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>shell(cmd)</code></td>
-				<td class="px-4 py-2">Executes command through shell (sh -c). Returns <code>{ok, value, error}</code></td>
+				<td class="px-4 py-2">Executes command through shell (sh -c). Returns <code>{'{'}"ok", "value", "error"{'}'}</code></td>
 			</tr>
 		</tbody>
 	</table>
