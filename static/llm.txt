@@ -53,10 +53,16 @@ let user = table{
 }
 ```
 
-**Dot access** — works with string-keyed tables only:
+**Dot access** — works with string-keyed tables:
 ```
 user.name       // "Uthman"
 user.age        // 20
+```
+
+**Dot assignment** — mutate table fields:
+```
+user.name = "New Name"
+user.age = 21
 ```
 
 **Bracket access** — works on tables and is type-aware. The key type matters:
@@ -140,6 +146,13 @@ for item in arr {
 }
 ```
 Iterates over arrays, tables, and strings.
+
+Use index variable with `for i, v in`:
+```
+for i, v in arr {
+  print(i + ": " + toStr(v))
+}
+```
 
 When iterating a table, each `item` is a 2-element array `[key, value]`:
 ```
@@ -431,7 +444,7 @@ All HTTP builtins return a result table: `{ok, value: {body, status}, error}`
 | `cd(path)` | `cd(path)` | Changes current working directory |
 | `env(key)` | `env(key)` | Returns env variable value string or null |
 | `setenv(key, val)` | `setenv(key, val)` | Sets environment variable |
-| `args()` | `args()` | Returns array of command-line argument strings |
+| `args()` | `args()` | Returns array of command-line argument strings (index 2 onwards, skips interpreter and script) |
 | `exit(code?)` | `exit(code?)` | Exits process, optional integer code (default 0) |
 | `shell(cmd)` | `shell(cmd)` | Runs shell command string, returns result table with output string in `value` |
 | `run(cmd, args...)` | `run(cmd, args...)` | Runs command with separate args, returns output string or null |

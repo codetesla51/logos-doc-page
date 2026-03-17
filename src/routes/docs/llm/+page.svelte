@@ -24,8 +24,11 @@ let last = arr[len(arr) - 1]`;
   active: true
 }
 
-user.name       // "Uthman" (dot access for string keys)
-user["name"]    // "Uthman" (bracket access)`;
+user.name = "New Name"  // dot assignment mutates field
+user.age = 21
+
+user.name       // "New Name" (dot access for string keys)
+user["name"]    // "New Name" (bracket access)`;
 
 	const ifElseCode = `if x > 10 {
   print("big")
@@ -47,6 +50,10 @@ user["name"]    // "Uthman" (bracket access)`;
 
 	const forInCode = `for item in arr {
   print(item)
+}
+
+for i, v in arr {
+  print(i + ": " + toStr(v))
 }
 
 for pair in user {

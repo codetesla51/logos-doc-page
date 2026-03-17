@@ -119,6 +119,11 @@ for i < 5 {
 let nums = [1, 2, 3, 4, 5]
 for n in nums {
     print(toStr(n))
+}
+
+// with index variable
+for i, v in nums {
+    print(toStr(i) + ": " + toStr(v))
 }`}
 		language="javascript"
 	/>
@@ -150,8 +155,13 @@ let mixed = [1, "hello", true, null]`}
     "active": true,
 }
 
-// access values
+// access values (bracket or dot)
 print(user["name"])  // uthman
+print(user.name)     // uthman
+
+// dot assignment
+user.name = "new name"
+print(user.name)     // new name
 
 // nested tables
 let data = table{

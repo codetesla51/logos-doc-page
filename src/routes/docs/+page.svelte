@@ -20,6 +20,14 @@ if config.age > 18 {
     print("child")
 }
 
+// Dot assignment on tables
+config.active = false
+
+// For-in with index
+for i, task in tasks {
+    print(toStr(i) + ": " + task)
+}
+
 // Run tasks concurrently
 spawn for task in tasks {
     print("Processing: " + task)
