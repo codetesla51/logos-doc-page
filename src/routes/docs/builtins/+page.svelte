@@ -1191,10 +1191,12 @@ print(toStr(mathPi()))           // 3.141592653589793`}
 	/>
 
 	<!-- HTTP Section -->
-<h2 id="http">HTTP</h2>
-<p>HTTP client functions for making web requests. All HTTP functions return a result object:</p>
-<CodeBlock code={httpResultExample} language="javascript" />
-<table class="w-full border-collapse text-left">
+	<h2 id="http">HTTP</h2>
+
+	<p>HTTP client functions for making web requests. All HTTP functions return a result object:</p>
+
+	<CodeBlock code={httpResultExample} language="javascript" />
+	<table class="w-full border-collapse text-left">
     <thead>
         <tr class="border-border border-b">
             <th class="text-text px-4 py-2">Function</th>
