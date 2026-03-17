@@ -25,7 +25,7 @@
 			</div>
 			<span class="text-muted ml-2 text-xs">Terminal</span>
 		</div>
-        <span class="bg-white/5 text-muted rounded px-1.5 py-0.5 text-[10px]">v0.0.1</span>
+		<span class="bg-white/5 text-muted rounded px-1.5 py-0.5 text-[10px]">v0.3.0</span>
 	</div>
 
 	<div class="flex items-center justify-between gap-3 p-4 sm:gap-4 sm:p-5">

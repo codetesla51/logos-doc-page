@@ -116,7 +116,7 @@ print("Hello, " + name + "!")`}
 	<p>This starts the interactive shell:</p>
 
 	<CodeBlock
-		code={`>_ Logos v0.0.1 (Mar 02 2026, 12:52:39) on linux
+		code={`>_ Logos v0.3.0 (Mar 02 2026, 12:52:39) on linux
 Type "help" for more information
 >>>`}
 		language="text"
