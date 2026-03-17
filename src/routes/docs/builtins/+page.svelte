@@ -2,18 +2,30 @@
 	import DocLayout from '$lib/components/DocLayout.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 
-	const jsonExample = `let jsonStr = "{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}"
-let data = parseJson(jsonStr)
+	const jsonExample = `// parseJson returns {ok, value, error}
+let result = parseJson("{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}")
+if result.ok {
+    let data = result.value
+    print(data["name"])              // Bob
+    print(toStr(data["scores"][0]))  // 95
+} else {
+    print("Parse error: " + result.error)
+}
 
-print(data["name"])              // Bob
-print(toStr(data["scores"][0]))  // 95
-
+// toJson returns {ok, value, error}
 let obj = table{ "status": "ok", "count": 42 }
-let json = toJson(obj)
-print(json)  // {"count":42,"status":"ok"}`;
+let jsonRes = toJson(obj)
+if jsonRes.ok {
+    print(jsonRes.value)  // {"count":42,"status":"ok"}
+} else {
+    print("JSON error: " + jsonRes.error)
+}`;
 
-	const prettyJsonExample = `let data = parseJson("{\\"name\\":\\"uthman\\",\\"age\\":20}")
-print(prettyJson(data))`;
+	const prettyJsonExample = `// prettyJson returns {ok, value, error}
+let result = parseJson("{\\"name\\":\\"uthman\\",\\"age\\":20}")
+if result.ok {
+    print(prettyJson(result.value))
+}`;
 
 	const httpResultExample = `// ok: true/false
 // value: { body: "...", status: 200 }
@@ -611,7 +623,7 @@ let merged = merge(user, table{ "email": "alice@example.com" })`}
 	<!-- JSON Section -->
 	<h2 id="json">JSON</h2>
 
-	<p>JSON parsing and serialization.</p>
+	<p>JSON parsing and serialization. All JSON functions return a result object with <code>ok</code>, <code>value</code>, and <code>error</code> fields.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -642,8 +654,7 @@ let merged = merge(user, table{ "email": "alice@example.com" })`}
 
 	<h3>prettyJson()</h3>
 	<p>
-		Takes a table (typically from <code>parseJson</code>) and returns a formatted, color-highlighted
-		JSON string. Keys are highlighted in green, values in blue.
+		Takes a table (typically from <code>parseJson</code>) and returns a result object with a formatted, color-highlighted JSON string. Keys are highlighted in green, values in blue. Check <code>.ok</code> before using <code>.value</code>.
 	</p>
 
 	<CodeBlock code={prettyJsonExample} language="javascript" />
@@ -925,26 +936,31 @@ print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
 <CodeBlock
     code={`let res = httpGet("https://api.example.com/users")
 if res.ok {
-    let users = parseJson(res.value.body)
-    for user in users {
-        print(user["name"])
+    let parseResult = parseJson(res.value.body)
+    if parseResult.ok {
+        let users = parseResult.value
+        for user in users {
+            print(user["name"])
+        }
     }
     print("Status: " + toStr(res.value.status))
 } else {
     print("Request failed: " + res.error)
 }
 
-let payload = toJson(table {
+let jsonRes = toJson(table {
     "name": "Alice",
     "email": "alice@example.com"
 })
+let payload = jsonRes.ok ? jsonRes.value : "{}"
 
 let postRes = httpPost("https://api.example.com/users", payload)
 if postRes.ok {
     print("Created! Status: " + toStr(postRes.value.status))
 }
 
-let update = toJson(table { "name": "Alice Smith" })
+let updateRes = toJson(table { "name": "Alice Smith" })
+let update = updateRes.ok ? updateRes.value : "{}"
 let putRes = httpPut("https://api.example.com/users/1", update)
 let patchRes = httpPatch("https://api.example.com/users/1", update)
 let delRes = httpDelete("https://api.example.com/users/1")
