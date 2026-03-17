@@ -2,34 +2,376 @@
 	import DocLayout from '$lib/components/DocLayout.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 
-	const jsonExample = `// parseJson returns {ok, value, error}
-let result = parseJson("{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}")
+	// -----------------
+	// RUN & SHELL EXAMPLES
+	// -----------------
+	const runExample = `// run() - executes a command directly (no shell)
+// Returns {ok, value, error}
+// Use when you know the exact command and arguments
+
+// Simple command
+let result = run("ls", "-la")
+if result.ok {
+    print(result.value)  // prints directory listing
+} else {
+    print("Error: " + result.error)
+}
+
+// With arguments - each arg is a separate string
+let gitResult = run("git", "status")
+if gitResult.ok {
+    print(gitResult.value)
+}
+
+// Check exit code by looking at error
+let echoResult = run("echo", "hello")
+print(echoResult.value)  // "hello\\n"`;
+
+	const shellExample = `// shell() - executes command through shell (sh -c)
+// Returns {ok, value, error}
+// Use when you need shell features like pipes, redirects, globbing
+
+// Simple command
+let dateResult = shell("date")
+if dateResult.ok {
+    print(dateResult.value)
+}
+
+// Shell features work!
+let psResult = shell("ps aux | grep node")
+print(psResult.value)
+
+// Variables and command substitution
+let pathResult = shell("echo $HOME")
+print(pathResult.value)
+
+// Multiple commands
+let multiResult = shell("echo 'First' && echo 'Second'")
+print(multiResult.value)`;
+
+	// -----------------
+	// FILE OPERATIONS EXAMPLES
+	// -----------------
+	const fileOpsExample = `// Most file functions return {ok, value, error}
+// Always check .ok before using .value!
+
+// Read a file
+let readRes = fileRead("config.json")
+if readRes.ok {
+    let content = readRes.value
+    print("File has " + toStr(len(content)) + " characters")
+} else {
+    print("Failed to read: " + readRes.error)
+}
+
+// Write to a file
+let writeRes = fileWrite("output.txt", "Hello, World!")
+if !writeRes.ok {
+    print("Write failed: " + writeRes.error)
+}
+
+// Append to file
+fileAppend("log.txt", "New log entry\\n")
+
+// Check if file exists (returns true/false, no error possible)
+if fileExists("data.json") {
+    print("Data file exists!")
+}
+
+// Create directory (with all parent dirs)
+fileMkdir("backup/2024/january")
+
+// List directory contents
+let dirRes = fileReadDir(".")
+if dirRes.ok {
+    for item in dirRes.value {
+        print("Found: " + item)
+    }
+}
+
+// Copy, move, delete
+fileCopy("old.txt", "new.txt")
+fileMove("temp.txt", "final.txt")
+fileDelete("unwanted.txt")`;
+
+	// -----------------
+	// JSON EXAMPLES
+	// -----------------
+	const jsonExample = `// parseJson, toJson, prettyJson ALL return {ok, value, error}
+// Always check .ok before using the value!
+
+// Parse JSON string to table/array
+let result = parseJson('{"name": "Bob", "scores": [95, 87, 92]}')
 if result.ok {
     let data = result.value
     print(data["name"])              // Bob
     print(toStr(data["scores"][0]))  // 95
+    print(toStr(len(data["scores"]))) // 3 (array length)
 } else {
-    print("Parse error: " + result.error)
+    print("JSON parse error: " + result.error)
 }
 
-// toJson returns {ok, value, error}
-let obj = table{ "status": "ok", "count": 42 }
+// Convert table to JSON string
+let obj = table{ "status": "ok", "count": 42, "tags": ["a", "b"] }
 let jsonRes = toJson(obj)
 if jsonRes.ok {
-    print(jsonRes.value)  // {"count":42,"status":"ok"}
+    print(jsonRes.value)  // {"count":42,"status":"ok","tags":["a","b"]}
 } else {
-    print("JSON error: " + jsonRes.error)
+    print("JSON encode error: " + jsonRes.error)
+}
+
+// Pretty print with colors (great for debugging!)
+let parseResult = parseJson('{"user": {"name": "Alice", "age": 30}}')
+if parseResult.ok {
+    print(prettyJson(parseResult.value))
+    // Output has color codes - keys in green, values in blue
 }`;
 
-	const prettyJsonExample = `// prettyJson returns {ok, value, error}
-let result = parseJson("{\\"name\\":\\"uthman\\",\\"age\\":20}")
+	const prettyJsonExample = `// prettyJson() returns {ok, value, error}
+// Great for debugging - shows formatted, colored JSON
+
+let result = parseJson('{"name": "Alice", "skills": ["Go", "Rust", "JS"]}')
 if result.ok {
     print(prettyJson(result.value))
 }`;
 
-	const httpResultExample = `// ok: true/false
-// value: { body: "...", status: 200 }
-// error: ""`;
+	// -----------------
+	// HTTP EXAMPLES
+	// -----------------
+	const httpExample = `// All HTTP functions return {ok, value, error}
+// value contains: { body: "...", status: 200 }
+
+// GET request
+let res = httpGet("https://api.example.com/users")
+if res.ok {
+    // Parse the JSON response
+    let parseResult = parseJson(res.value.body)
+    if parseResult.ok {
+        let users = parseResult.value
+        for user in users {
+            print(user["name"])
+        }
+    }
+    print("Status: " + toStr(res.value.status))  // e.g., 200
+} else {
+    print("Request failed: " + res.error)
+}
+
+// POST with JSON body
+let payloadRes = toJson(table {
+    "name": "Alice",
+    "email": "alice@example.com"
+})
+let payload = payloadRes.ok ? payloadRes.value : "{}"
+
+let postRes = httpPost("https://api.example.com/users", payload)
+if postRes.ok {
+    print("Created! Status: " + toStr(postRes.value.status))
+}
+
+// Custom headers
+let headers = table {
+    "Authorization": "Bearer " + env("API_TOKEN"),
+    "Content-Type": "application/json"
+}
+let authRes = httpGet("https://api.example.com/private", headers)`;
+
+	// -----------------
+	// I/O EXAMPLES
+	// -----------------
+	const ioExample = `// print() - outputs to console (most common)
+print("Hello!")
+print("Value:", 42)  // prints "Value: 42"
+
+// input() - reads one line from user (no prompt)
+let name = input()
+print("You typed: " + name)
+
+// prompt(message) - shows message AND reads input
+let age = prompt("Enter your age: ")
+print("You are " + age)
+
+// confirm() - yes/no question, returns true/false
+let sure = confirm("Delete all files?")
+if sure {
+    print("Deleted!")
+}
+
+// select() - numbered menu, returns chosen value
+let choice = select("Pick a color:", ["red", "green", "blue"])
+print("You chose: " + choice)
+
+// clear() - clear the terminal
+clear()`;
+
+	// -----------------
+	// ARRAY EXAMPLES
+	// -----------------
+	const arrayExample = `let nums = [1, 2, 3, 4, 5]
+
+// Add to end/front
+nums = push(nums, 6)      // [1,2,3,4,5,6]
+nums = prepend(nums, 0)   // [0,1,2,3,4,5,6]
+
+// Get elements
+print(first(nums))        // 0
+print(last(nums))         // 6
+print(toStr(pop(nums)))   // 6, nums is now [0,1,2,3,4,5]
+
+// Remove first element
+let rest = tail(nums)     // [1,2,3,4,5]
+
+// Transform
+let reversed = reverse([1, 2, 3])  // [3, 2, 1]
+let sorted = sort([3, 1, 4, 1, 5]) // [1, 1, 3, 4, 5]
+
+// Check contents
+print(toStr(contains([1, 2, 3], 2)))  // true
+print(toStr(contains(["a", "b"], "c"))) // false`;
+
+	// -----------------
+	// TABLE EXAMPLES
+	// -----------------
+	const tableExample = `// Create a table (like a dictionary/hash map)
+let user = table{
+    "name": "Alice",
+    "age": 30,
+    "active": true
+}
+
+// Access values
+print(user["name"])  // Alice
+print(user["age"])   // 30
+
+// Check if key exists
+print(toStr(has(user, "email")))  // false
+print(toStr(has(user, "name")))    // true
+
+// Get all keys/values
+let k = keys(user)   // ["name", "age", "active"]
+let v = values(user) // ["Alice", 30, true]
+
+// Modify
+let updated = tableDelete(user, "age")  // removes "age" key
+
+// Merge tables (second overwrites first)
+let extra = table{ "role": "admin", "age": 31 }
+let merged = merge(user, extra)
+// Result: {name: "Alice", active: true, role: "admin", age: 31}`;
+
+	// -----------------
+	// STRING EXAMPLES
+	// -----------------
+	const stringExample = `let s = "  Hello, World!  "
+
+// Case conversion
+print(upper(s))  // "  HELLO, WORLD!  "
+print(lower(s))  // "  hello, world!  "
+
+// Trim whitespace
+print(trim(s))   // "Hello, World!"
+
+// Search and replace
+print(replace("banana", "a", "o"))  // "bonono"
+print(contains("hello", "ell"))     // true
+print(startsWith("hello", "he"))    // true
+print(endsWith("hello", "lo"))     // true
+
+// Split and join
+let words = split("a,b,c,d", ",")  // ["a", "b", "c", "d"]
+print(join(words, "-"))             // "a-b-c-d"
+
+// Position
+print(toStr(indexOf("hello", "l")))    // 2 (first occurrence)
+print(toStr(indexOf("hello", "z")))    // -1 (not found)
+
+// Repeat and slice
+print(repeat("ha", 3))        // "hahaha"
+print(slice("hello", 1, 4))   // "ell" (chars at index 1,2,3)
+
+// Format (like printf)
+print(format("Name: {}, Age: {}", "Bob", 25))`;
+
+	// -----------------
+	// TIME EXAMPLES
+	// -----------------
+	const timeExample = `// Get current time
+print(toStr(timeNow()))    // Unix timestamp (seconds): 1709395200
+print(toStr(timeMs()))     // Unix timestamp (ms): 1709395200123
+
+// Human-readable strings
+print(timeStr())           // "14:30:00"
+print(dateStr())           // "2024-03-02"
+print(dateTimeStr())       // "2024-03-02 14:30:00"
+
+// Custom formatting (Go time format)
+let ts = timeNow()
+print(timeFormat(ts, "January 2, 2006"))    // "March 2, 2024"
+print(timeFormat(ts, "02/01/2006"))          // "02/03/2024"
+print(timeFormat(ts, "Mon Jan 2 15:04:05"))  // "Sat Mar 2 14:30:00"`;
+
+	// -----------------
+	// TYPE CONVERSION EXAMPLES
+	// -----------------
+	const typeConvExample = `// String to number
+let n = toInt("42")       // 42
+let f = toFloat("3.14")   // 3.14
+
+// Number to string
+let s1 = toStr(42)        // "42"
+let s2 = toStr(3.14)      // "3.14"
+
+// Bool to number/string
+let b1 = toInt(true)     // 1
+let b2 = toInt(false)    // 0
+let b3 = toStr(true)     // "true"
+
+// String to bool
+let b4 = toBool("true")  // true
+let b5 = toBool("false") // false
+let b6 = toBool("maybe") // null (invalid!)
+
+// Check type
+print(type(42))        // "INTEGER"
+print(type("hello"))   // "STRING"
+print(type(true))      // "BOOL"
+print(type([1,2,3]))   // "ARRAY"
+print(type(table{}))   // "TABLE"`;
+
+	// -----------------
+	// OS/SYSTEM EXAMPLES
+	// -----------------
+	const osExample = `// Working directory
+print(pwd())                    // "/home/user/project"
+cd("/tmp")                      // change directory
+
+// Environment variables
+let home = env("HOME")          // get value
+setenv("MY_VAR", "hello")       // set value
+
+// Command line arguments
+let args = args()               // ["program.lgs", "arg1", "arg2"]
+print(args[0])                  // program name
+
+// Wait/sleep
+sleep(1000)                    // wait 1000ms (1 second)
+
+// Get OS
+print(osname())                // "linux", "darwin", or "windows"
+
+// Exit program
+exit(0)                         // success
+exit(1)                         // error`;
+
+	// -----------------
+	// HTTP RESULT EXAMPLE
+	// -----------------
+	const httpResultExample = `// HTTP functions return a table like:
+// {
+//     ok: true/false,
+//     value: { body: "...", status: 200 },
+//     error: "" (empty if ok)
+// }`;
 
 	const confirmExample = `let ok = confirm("Delete this file?")
 if ok {
@@ -87,7 +429,7 @@ if choice == "red" {
 	<!-- I/O Section -->
 	<h2 id="io">I/O</h2>
 
-	<p>Basic input and output functions for terminal interaction.</p>
+	<p>Functions for reading input and displaying output in the terminal. These are your primary way to interact with users.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -99,27 +441,27 @@ if choice == "red" {
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>print(value)</code></td>
-				<td class="px-4 py-2">Prints value to stdout with newline</td>
+				<td class="px-4 py-2">Prints value to stdout with a newline. Can print multiple values separated by spaces.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>input()</code></td>
-				<td class="px-4 py-2">Reads a line from stdin</td>
+				<td class="px-4 py-2">Reads a line from stdin (user typing). Returns the entered text as a string.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>prompt(message)</code></td>
-				<td class="px-4 py-2">Prints message and reads input</td>
+				<td class="px-4 py-2">Prints the message, then waits for user to type and press Enter. Returns what was typed.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>confirm(message)</code></td>
-				<td class="px-4 py-2">Prints message with (y/n) prompt, returns bool</td>
+				<td class="px-4 py-2">Shows message with "(y/n)" prompt. Returns <code>true</code> if user types "y" or "yes", <code>false</code> otherwise.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>select(message, options)</code></td>
-				<td class="px-4 py-2">Shows numbered options, returns chosen value</td>
+				<td class="px-4 py-2">Displays numbered list, user picks a number. Returns the chosen array element directly.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>clear()</code></td>
-				<td class="px-4 py-2">Clears the terminal screen</td>
+				<td class="px-4 py-2">Clears the terminal screen (sends escape codes). Useful for creating clean UI.</td>
 			</tr>
 		</tbody>
 	</table>
@@ -127,22 +469,17 @@ if choice == "red" {
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`print("Hello, World!")
-
-let name = prompt("What is your name? ")
-print("Hello, " + name)
-
-clear()  // Clear the screen`}
+		code={ioExample}
 		language="javascript"
 	/>
 
 	<h3>confirm()</h3>
-	<p>Prompts the user with a yes/no question. Returns <code>true</code> if the user enters <code>y</code> or <code>yes</code>, <code>false</code> otherwise.</p>
+	<p>Perfect for yes/no decisions in scripts. The user must type "y" or "yes" (case insensitive) for true, anything else returns false.</p>
 
 	<CodeBlock code={confirmExample} language="javascript" />
 
 	<h3>select()</h3>
-	<p>Shows a numbered list of options and waits for the user to pick one. Returns the chosen value directly.</p>
+	<p>Creates an interactive menu. Users see numbered options, type a number, and you get that array element back. Great for simple CLI apps!</p>
 
 	<CodeBlock code={selectExample} language="javascript" />
 
@@ -365,7 +702,7 @@ if globRes.ok {
 	<!-- String Operations Section -->
 	<h2 id="string-operations">String Operations</h2>
 
-	<p>String manipulation functions.</p>
+	<p>Work with text - change case, search, replace, split, and format strings.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -377,23 +714,23 @@ if globRes.ok {
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>upper(s)</code></td>
-				<td class="px-4 py-2">Converts string to uppercase</td>
+				<td class="px-4 py-2">Converts entire string to uppercase</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>lower(s)</code></td>
-				<td class="px-4 py-2">Converts string to lowercase</td>
+				<td class="px-4 py-2">Converts entire string to lowercase</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>trim(s)</code></td>
-				<td class="px-4 py-2">Removes leading/trailing whitespace</td>
+				<td class="px-4 py-2">Removes whitespace from start and end only</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>replace(s, old, new)</code></td>
-				<td class="px-4 py-2">Replaces all occurrences</td>
+				<td class="px-4 py-2">Replaces ALL occurrences of "old" with "new"</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>split(s, sep)</code></td>
-				<td class="px-4 py-2">Splits string by separator, returns array</td>
+				<td class="px-4 py-2">Splits string into array at each separator</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>join(arr, sep)</code></td>
@@ -453,7 +790,7 @@ print(format("Hello, {}!", "World"))  // Hello, World!`}
 	<!-- Type Conversion Section -->
 	<h2 id="type-conversion">Type Conversion</h2>
 
-	<p>Functions for converting between types.</p>
+	<p>Convert values from one type to another. Essential for working with user input (which always comes as strings) and for formatting output.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -465,19 +802,27 @@ print(format("Hello, {}!", "World"))  // Hello, World!`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>toInt(value)</code></td>
-				<td class="px-4 py-2">Converts to integer</td>
+				<td class="px-4 py-2">Converts to integer. Returns null if conversion fails (e.g., "abc" → null)</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>toFloat(value)</code></td>
-				<td class="px-4 py-2">Converts to float</td>
+				<td class="px-4 py-2">Converts to floating-point number. Returns null if invalid.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>toBool(value)</code></td>
-				<td class="px-4 py-2">Converts to boolean</td>
+				<td class="px-4 py-2">Converts to boolean. Only "true"/"false" strings work. Returns null otherwise.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>toStr(value)</code></td>
-				<td class="px-4 py-2">Converts to string</td>
+				<td class="px-4 py-2">Converts any value to its string representation. Always succeeds.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>type(value)</code></td>
+				<td class="px-4 py-2">Returns the type name as a string: "INTEGER", "FLOAT", "STRING", "BOOL", "ARRAY", "TABLE", "FUNCTION", "NULL"</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>len(value)</code></td>
+				<td class="px-4 py-2">Returns length: character count for strings, element count for arrays/tables.</td>
 			</tr>
 		</tbody>
 	</table>
@@ -485,22 +830,14 @@ print(format("Hello, {}!", "World"))  // Hello, World!`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`let num = toInt("42")
-let pi = toFloat("3.14")
-let flag = toBool("true")
-let text = toStr(123)
-
-print(type(num))   // int
-print(type(pi))    // float
-print(type(flag))  // bool
-print(type(text))  // string`}
+		code={typeConvExample}
 		language="javascript"
 	/>
 
 	<!-- Array Operations Section -->
 	<h2 id="array-operations">Array Operations</h2>
 
-	<p>Functions for array manipulation.</p>
+	<p>Work with lists of values. Arrays are ordered - each element has a position (0, 1, 2...).</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -512,35 +849,39 @@ print(type(text))  // string`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>push(arr, value)</code></td>
-				<td class="px-4 py-2">Adds element to end, returns new array</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>pop(arr)</code></td>
-				<td class="px-4 py-2">Returns last element</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>first(arr)</code></td>
-				<td class="px-4 py-2">Returns first element</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>last(arr)</code></td>
-				<td class="px-4 py-2">Returns last element</td>
-			</tr>
-			<tr class="border-border border-b">
-				<td class="px-4 py-2"><code>tail(arr)</code></td>
-				<td class="px-4 py-2">Returns array without first element</td>
+				<td class="px-4 py-2">Adds element to the END. Returns a NEW array (original unchanged).</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>prepend(arr, value)</code></td>
-				<td class="px-4 py-2">Adds element to start, returns new array</td>
+				<td class="px-4 py-2">Adds element to the START. Returns new array.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>pop(arr)</code></td>
+				<td class="px-4 py-2">Returns last element. Array unchanged. Returns null if empty.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>first(arr)</code></td>
+				<td class="px-4 py-2">Returns first element. Null if empty.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>last(arr)</code></td>
+				<td class="px-4 py-2">Returns last element. Null if empty.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>tail(arr)</code></td>
+				<td class="px-4 py-2">Returns all elements except the first. Null if empty.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>reverse(arr)</code></td>
-				<td class="px-4 py-2">Returns reversed array</td>
+				<td class="px-4 py-2">Returns new array with elements in reverse order.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>sort(arr)</code></td>
-				<td class="px-4 py-2">Returns sorted array</td>
+				<td class="px-4 py-2">Returns new sorted array (numeric sort). Original unchanged.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>contains(arr, value)</code></td>
+				<td class="px-4 py-2">Returns true if value exists in array (compares as strings).</td>
 			</tr>
 		</tbody>
 	</table>
@@ -548,26 +889,14 @@ print(type(text))  // string`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`let nums = [1, 2, 3]
-
-nums = push(nums, 4)        // [1, 2, 3, 4]
-nums = prepend(nums, 0)     // [0, 1, 2, 3, 4]
-
-print(toStr(first(nums)))   // 0
-print(toStr(last(nums)))    // 4
-
-let rest = tail(nums)       // [1, 2, 3, 4]
-let rev = reverse(nums)     // [4, 3, 2, 1, 0]
-
-let unsorted = [3, 1, 4, 1, 5]
-let sorted = sort(unsorted) // [1, 1, 3, 4, 5]`}
+		code={arrayExample}
 		language="javascript"
 	/>
 
 	<!-- Table Operations Section -->
 	<h2 id="table-operations">Table Operations</h2>
 
-	<p>Functions for working with tables (key-value maps).</p>
+	<p>Tables are like dictionaries or hash maps - they store key-value pairs. Keys are always strings, values can be anything.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -579,23 +908,31 @@ let sorted = sort(unsorted) // [1, 1, 3, 4, 5]`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>keys(table)</code></td>
-				<td class="px-4 py-2">Returns array of keys</td>
+				<td class="px-4 py-2">Returns array of all keys</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>values(table)</code></td>
-				<td class="px-4 py-2">Returns array of values</td>
+				<td class="px-4 py-2">Returns array of all values</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>has(table, key)</code></td>
-				<td class="px-4 py-2">Checks if key exists</td>
+				<td class="px-4 py-2">Returns true if key exists in table</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>tableDelete(table, key)</code></td>
-				<td class="px-4 py-2">Removes key, returns new table</td>
+				<td class="px-4 py-2">Returns NEW table without the key (original unchanged)</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>merge(table1, table2)</code></td>
-				<td class="px-4 py-2">Merges tables, returns new table</td>
+				<td class="px-4 py-2">Returns new table with both merged. table2 values override table1 on conflict.</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>len(table)</code></td>
+				<td class="px-4 py-2">Returns number of key-value pairs</td>
+			</tr>
+			<tr class="border-border border-b">
+				<td class="px-4 py-2"><code>contains(table, key)</code></td>
+				<td class="px-4 py-2">Same as has() - checks if key exists</td>
 			</tr>
 		</tbody>
 	</table>
@@ -603,20 +940,7 @@ let sorted = sort(unsorted) // [1, 1, 3, 4, 5]`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`let user = table{
-    "name": "Alice",
-    "age": 30,
-    "role": "admin"
-}
-
-let k = keys(user)      // ["name", "age", "role"]
-let v = values(user)    // ["Alice", 30, "admin"]
-
-print(toStr(has(user, "name")))  // true
-print(toStr(has(user, "email"))) // false
-
-let updated = tableDelete(user, "age")
-let merged = merge(user, table{ "email": "alice@example.com" })`}
+		code={tableExample}
 		language="javascript"
 	/>
 
@@ -743,7 +1067,7 @@ print(toStr(mathPi()))           // 3.141592653589793`}
 	<!-- OS/System Section -->
 	<h2 id="os-system">OS/System</h2>
 
-	<p>System interaction and process control.</p>
+	<p>Interact with the operating system - run commands, manage files, handle environment variables, and control program flow.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -755,78 +1079,74 @@ print(toStr(mathPi()))           // 3.141592653589793`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>pwd()</code></td>
-				<td class="px-4 py-2">Returns current working directory</td>
+				<td class="px-4 py-2">Returns current working directory as string</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>cd(path)</code></td>
-				<td class="px-4 py-2">Changes current directory</td>
+				<td class="px-4 py-2">Changes current directory. Returns null.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>env(name)</code></td>
-				<td class="px-4 py-2">Gets environment variable</td>
+				<td class="px-4 py-2">Gets environment variable value. Returns null if not set.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>setenv(name, value)</code></td>
-				<td class="px-4 py-2">Sets environment variable</td>
+				<td class="px-4 py-2">Sets environment variable. Returns null.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>args()</code></td>
-				<td class="px-4 py-2">Returns command line arguments as array</td>
+				<td class="px-4 py-2">Returns command line arguments as array. First element is program name.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>exit(code)</code></td>
-				<td class="px-4 py-2">Exits with status code</td>
+				<td class="px-4 py-2">Exits program immediately with status code (0 = success).</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>sleep(ms)</code></td>
-				<td class="px-4 py-2">Pauses execution for milliseconds</td>
+				<td class="px-4 py-2">Pauses execution for milliseconds. Returns null.</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>osname()</code></td>
-				<td class="px-4 py-2">Returns OS name ("linux", "darwin", "windows")</td>
+				<td class="px-4 py-2">Returns OS name: "linux", "darwin" (macOS), or "windows"</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>run(cmd, ...args)</code></td>
-				<td class="px-4 py-2">Runs command with args, returns output</td>
+				<td class="px-4 py-2">Executes command directly (no shell). Returns <code>{ok, value, error}</code></td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>shell(cmd)</code></td>
-				<td class="px-4 py-2">Runs command in shell, returns output</td>
+				<td class="px-4 py-2">Executes command through shell (sh -c). Returns <code>{ok, value, error}</code></td>
 			</tr>
 		</tbody>
 	</table>
 
-	<h3>Example</h3>
+	<h3>run() vs shell() - When to use which?</h3>
+
+	<p><strong>Use run()</strong> when you know the exact command and arguments - safer, no shell interpretation:</p>
 
 	<CodeBlock
-		code={`print(pwd())                    // /home/user/project
-cd("/tmp")
+		code={runExample}
+		language="javascript"
+	/>
 
-let home = env("HOME")
-setenv("MY_VAR", "hello")
+	<p><strong>Use shell()</strong> when you need shell features like pipes, redirects, or wildcards:</p>
 
-let cliArgs = args()
-for arg in cliArgs {
-    print(arg)
-}
+	<CodeBlock
+		code={shellExample}
+		language="javascript"
+	/>
 
-print(osname())                 // linux
+	<h3>Other System Functions</h3>
 
-let output = run("ls", "-la")
-print(output)
-
-let result = shell("echo $HOME && pwd")
-print(result)
-
-sleep(1000)  // Wait 1 second
-exit(0)`}
+	<CodeBlock
+		code={osExample}
 		language="javascript"
 	/>
 
 	<!-- Time Section -->
 	<h2 id="time">Time</h2>
 
-	<p>Time and date functions.</p>
+	<p>Get the current time, format dates, and measure elapsed time in your programs.</p>
 
 	<table class="w-full border-collapse text-left">
 		<thead>
@@ -838,27 +1158,27 @@ exit(0)`}
 		<tbody class="text-muted">
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>timeNow()</code></td>
-				<td class="px-4 py-2">Returns current Unix timestamp (seconds)</td>
+				<td class="px-4 py-2">Returns current Unix timestamp in seconds (large integer)</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>timeMs()</code></td>
-				<td class="px-4 py-2">Returns current time in milliseconds</td>
+				<td class="px-4 py-2">Returns current Unix timestamp in milliseconds (even larger integer)</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>timeStr()</code></td>
-				<td class="px-4 py-2">Returns current time as HH:MM:SS</td>
+				<td class="px-4 py-2">Returns current time as "HH:MM:SS" (e.g., "14:30:00")</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>dateStr()</code></td>
-				<td class="px-4 py-2">Returns current date as YYYY-MM-DD</td>
+				<td class="px-4 py-2">Returns current date as "YYYY-MM-DD" (e.g., "2024-03-02")</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>dateTimeStr()</code></td>
-				<td class="px-4 py-2">Returns current datetime</td>
+				<td class="px-4 py-2">Returns current date and time as "YYYY-MM-DD HH:MM:SS"</td>
 			</tr>
 			<tr class="border-border border-b">
 				<td class="px-4 py-2"><code>timeFormat(timestamp, format)</code></td>
-				<td class="px-4 py-2">Formats timestamp with Go layout</td>
+				<td class="px-4 py-2">Formats Unix timestamp using Go time layout string</td>
 			</tr>
 		</tbody>
 	</table>
@@ -866,15 +1186,7 @@ exit(0)`}
 	<h3>Example</h3>
 
 	<CodeBlock
-		code={`print(toStr(timeNow()))    // 1709395200
-print(toStr(timeMs()))     // 1709395200123
-
-print(timeStr())           // 14:30:00
-print(dateStr())           // 2024-03-02
-print(dateTimeStr())       // 2024-03-02 14:30:00
-
-let ts = timeNow()
-print(timeFormat(ts, "Jan 2, 2006"))  // Mar 2, 2024`}
+		code={timeExample}
 		language="javascript"
 	/>
 
