@@ -222,7 +222,7 @@ Logical: `&&`, `||`, `!`
 Ternary: `? :` (e.g., `condition ? valueIfTrue : valueIfFalse`)
 
 ### Precedence (low to high)
-`||` -> `&&` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> ternary `? :` -> unary `- !` -> function calls `()` -> dot access `.`
+`||` -> `&&` -> ternary `? :` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> unary `- !` -> function calls `()` -> dot access `.`
 
 ---
 
@@ -750,7 +750,6 @@ logError("Connection failed")
 - `spawn` waits for all goroutines (no fire-and-forget).
 - `spawn for item in` only supports arrays, not tables or strings.
 - `sort()` only works on numeric arrays — non-numbers are silently skipped.
-- No reference semantics — tables and arrays are copied when passed to functions.
 
 ---
 
