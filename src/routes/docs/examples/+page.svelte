@@ -46,34 +46,26 @@ let saveTodos = fn() {
     return res.ok
 }
 
-let listTodos = fn() {
+	let listTodos = fn() {
     if len(todos) == 0 {
         print(colorYellow("  No todos yet!"))
         return null
     }
-    let i = 0
-    for i < len(todos) {
-        let todo = todos[i]
-        let status = ""
-        if todo["done"] {
-            status = colorGreen("[x]")
-        } else {
-            status = colorYellow("[ ]")
-        }
-        print("  " + toStr(i + 1) + ". " + status + " " + todo["task"])
-        i = i + 1
+    for i, todo in todos {
+        let status = todo["done"] ? colorGreen("[x]") : colorYellow("[ ]")
+        print("  \${i + 1}. \${status} \${todo["task"]}")
     }
 }
 
 let addTodo = fn(task) {
     let todo = table{
-        "task": task,
-        "done": false,
-        "created": dateTimeStr(),
+        task: task,
+        done: false,
+        created: dateTimeStr(),
     }
     todos = push(todos, todo)
     saveTodos()
-    print(colorGreen("Added: " + task))
+    print(colorGreen("Added: \${task}"))
 }
 
 let completeTodo = fn(index) {
@@ -83,15 +75,14 @@ let completeTodo = fn(index) {
     }
     let todo = todos[index - 1]
     todo["done"] = true
-    todos[index - 1] = todo
     saveTodos()
-    print(colorGreen("Completed: " + todo["task"]))
+    print(colorGreen("Completed: \${todo["task"]}"))
 }
 
 // Main loop
 print(colorBold(colorCyan("Todo App")))
 todos = loadTodos()
-print(colorGreen("Loaded " + toStr(len(todos)) + " todo(s)"))
+print(colorGreen("Loaded \${len(todos)} todo(s)"))
 
 let running = true
 for running {
@@ -212,29 +203,29 @@ let config = null
 
 if fileExists(configPath) {
     config = loadConfig(configPath)
-    print(colorGreen("Loaded config from: " + configPath))
+    print(colorGreen("Loaded config from: \${configPath}"))
 } else {
     print(colorYellow("Creating default config..."))
     config = table{
-        "app": table{
-            "name": "MyApp",
-            "version": "1.0.0",
-            "debug": false,
+        app: table{
+            name: "MyApp",
+            version: "1.0.0",
+            debug: false,
         },
-        "server": table{
-            "host": "localhost",
-            "port": 8080,
+        server: table{
+            host: "localhost",
+            port: 8080,
         },
     }
     saveConfig(configPath, config)
 }
 
-// Access config values with defaults
-let appName = getConfigValue(config["app"], "name", "Unknown")
-let port = getConfigValue(config["server"], "port", 3000)
+// Access config values with dot notation
+let appName = config.app.name
+let port = config.server.port
 
-print("Application: " + appName)
-print("Port: " + toStr(port))`}
+print("Application: \${appName}")
+print("Port: \${port}")`}
 		language="javascript"
 		filename="json_config.lgs"
 	/>
@@ -256,29 +247,24 @@ let searchFiles = fn(dir, pattern, searchText) {
     for entry in dirRes.value {
         let path = dir + "/" + entry
         
-        // Check if filename matches pattern
         if contains(lower(entry), lower(pattern)) {
             if len(searchText) == 0 {
-                // Just matching filename
                 results = push(results, table{
-                    "path": path,
-                    "match": "filename",
+                    path: path,
+                    match: "filename",
                 })
             } else {
-                // Also search file contents
                 let fileRes = fileRead(path)
                 if fileRes.ok {
                     let lines = split(fileRes.value, "\\n")
-                    let lineNum = 1
-                    for line in lines {
+                    for lineNum, line in lines {
                         if contains(lower(line), lower(searchText)) {
                             results = push(results, table{
-                                "path": path,
-                                "line": lineNum,
-                                "match": trim(line),
+                                path: path,
+                                line: lineNum + 1,
+                                match: trim(line),
                             })
                         }
-                        lineNum = lineNum + 1
                     }
                 }
             }
@@ -292,7 +278,7 @@ let dir = "."
 let pattern = ".lgs"
 let searchText = "fn"
 
-print(colorYellow("Searching for '" + pattern + "' files containing '" + searchText + "'..."))
+print(colorYellow("Searching for '\${pattern}' files containing '\${searchText}'..."))
 print("")
 
 let results = searchFiles(dir, pattern, searchText)
@@ -300,13 +286,13 @@ let results = searchFiles(dir, pattern, searchText)
 if len(results) == 0 {
     print(colorYellow("No matches found"))
 } else {
-    print(colorBold("Found " + toStr(len(results)) + " match(es):"))
+    print(colorBold("Found \${len(results)} match(es):"))
     for result in results {
         if has(result, "line") {
-            print(colorGreen("  " + result["path"]) + ":" + toStr(result["line"]))
-            print("    " + result["match"])
+            print(colorGreen("  \${result.path}:\${result.line}"))
+            print("    \${result.match}")
         } else {
-            print(colorGreen("  " + result["path"]))
+            print(colorGreen("  \${result.path}"))
         }
     }
 }`}
@@ -323,9 +309,8 @@ if len(results) == 0 {
 use "std/math"
 
 let processItem = fn(item) {
-    // Simulate some computation
     let result = mathFactorial(item)
-    print("Processed " + toStr(item) + "! = " + toStr(result))
+    print("Processed \${item}! = \${result}")
     return result
 }
 
@@ -334,7 +319,6 @@ let items = [5, 6, 7, 8, 9, 10]
 print("Processing items concurrently...")
 print("")
 
-// Process all items in parallel using spawn for
 spawn for item in items {
     processItem(item)
 }
@@ -342,7 +326,6 @@ spawn for item in items {
 print("")
 print("All items queued for processing!")
 
-// You can also spawn individual blocks
 spawn {
     sleep(100)
     print("This runs in the background")
@@ -397,18 +380,12 @@ summary()
 		code={`// fizzbuzz.lgs - Classic FizzBuzz
 
 let fizzbuzz = fn(n) {
-    let i = 1
-    for i <= n {
-        if i % 15 == 0 {
-            print("FizzBuzz")
-        } else if i % 3 == 0 {
-            print("Fizz")
-        } else if i % 5 == 0 {
-            print("Buzz")
-        } else {
-            print(toStr(i))
-        }
-        i = i + 1
+    for i, _ in range(1, n + 1) {
+        let result = i % 15 == 0 ? "FizzBuzz" 
+            : i % 3 == 0 ? "Fizz" 
+            : i % 5 == 0 ? "Buzz" 
+            : toStr(i)
+        print(result)
     }
 }
 
@@ -423,10 +400,8 @@ fizzbuzz(30)`}
 
 	<CodeBlock
 		code={`// greet.lgs - CLI tool example
-
 let cliArgs = args()
 
-// First arg is the script name, skip it
 if len(cliArgs) < 2 {
     print("Usage: lgs greet.lgs <name> [--loud]")
     exit(1)
@@ -435,26 +410,14 @@ if len(cliArgs) < 2 {
 let name = cliArgs[1]
 let loud = false
 
-// Check for flags
-let i = 2
-for i < len(cliArgs) {
-    if cliArgs[i] == "--loud" {
+for i, arg in cliArgs {
+    if i > 1 && arg == "--loud" {
         loud = true
     }
-    i = i + 1
 }
 
-let greeting = "Hello, " + name + "!"
-
-if loud {
-    print(colorBold(upper(greeting)))
-} else {
-    print(greeting)
-}
-
-// Usage:
-// lgs greet.lgs World           -> Hello, World!
-// lgs greet.lgs World --loud    -> HELLO, WORLD!`}
+let greeting = "Hello, \${name}!"
+print(loud ? colorBold(upper(greeting)) : greeting)`}
 		language="javascript"
 		filename="greet.lgs"
 	/>
