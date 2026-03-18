@@ -459,6 +459,51 @@ if loud {
 		filename="greet.lgs"
 	/>
 
+	<h2 id="modern-features">Modern Features (v0.4.0+)</h2>
+
+	<p>Demonstrates string interpolation, pipe operator, try expression, and postfix operators:</p>
+
+	<CodeBlock
+		code={`// modern.lgs - String interpolation, pipe, try, postfix
+
+// String interpolation
+let name = "world"
+let greeting = "Hello \${name}!"
+let age = 25
+let bio = "\${name} is \${age} years old"
+print(greeting)
+print(bio)
+
+// Pipe operator - chain transformations
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+let result = nums
+    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
+    |> map(fn(x) -> x * x)            // [4, 16, 36, 64, 100]
+    |> filter(fn(x) -> x > 30)        // [36, 64, 100]
+
+print("Filtered and mapped: " + toStr(result))
+
+// Try expression - unwraps errors automatically
+fn safeFetch(url) {
+    let res = try httpGet(url)
+    return res.value.body
+}
+
+// Postfix increment/decrement
+let count = 0
+count++
+count++
+print("Count: " + toStr(count))  // 2
+
+// For-in with index
+for i, num in nums {
+    print(toStr(i) + ": " + toStr(num))
+}`}
+		language="javascript"
+		filename="modern.lgs"
+	/>
+
 	<h2>More Examples</h2>
 
 	<p>
