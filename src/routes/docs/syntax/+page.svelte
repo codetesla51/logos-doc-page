@@ -180,13 +180,12 @@ print(result)  // [4, 8]`}
 
 	<CodeBlock
 		code={`let user = table{
-    "name": "uthman",
-    "age": 20,
-    "active": true,
+    name: "uthman",
+    age: 20,
+    active: true,
 }
 
-// access values (bracket or dot)
-print(user["name"])  // uthman
+// access values (dot notation)
 print(user.name)     // uthman
 
 // dot assignment
@@ -195,9 +194,9 @@ print(user.name)     // new name
 
 // nested tables
 let data = table{
-    "user": table{
-        "name": "uthman",
-        "role": "admin",
+    user: table{
+        name: "uthman",
+        role: "admin",
     },
 }`}
 		language="javascript"

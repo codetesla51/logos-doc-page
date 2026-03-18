@@ -233,14 +233,14 @@ print(toStr(contains(["a", "b"], "c"))) // false`;
 	// -----------------
 	const tableExample = `// Create a table (like a dictionary/hash map)
 let user = table{
-    "name": "Alice",
-    "age": 30,
-    "active": true
+    name: "Alice",
+    age: 30,
+    active: true,
 }
 
-// Access values
-print(user["name"])  // Alice
-print(user["age"])   // 30
+// Access values with dot notation
+print(user.name)  // Alice
+print(user.age)   // 30
 
 // Check if key exists
 print(toStr(has(user, "email")))  // false
@@ -254,7 +254,7 @@ let v = values(user) // ["Alice", 30, true]
 let updated = tableDelete(user, "age")  // removes "age" key
 
 // Merge tables (second overwrites first)
-let extra = table{ "role": "admin", "age": 31 }
+let extra = table{ role: "admin", age: 31 }
 let merged = merge(user, extra)
 // Result: {name: "Alice", active: true, role: "admin", age: 31}`;
 
@@ -1271,8 +1271,7 @@ if postRes.ok {
     print("Created! Status: \${postRes.value.status}")
 }
 
-let updateRes = toJson(table { "name": "Alice Smith" })
-let update = updateRes.ok ? updateRes.value : "{}"
+let update = toJson(table { name: "Alice Smith" })
 let putRes = httpPut("https://api.example.com/users/1", update)
 let patchRes = httpPatch("https://api.example.com/users/1", update)
 let delRes = httpDelete("https://api.example.com/users/1")
