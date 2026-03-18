@@ -9,32 +9,38 @@
 		{
 			icon: 'Code2',
 			title: 'String interpolation',
-			description: 'Use ${variable} directly in strings. No more concatenation hell.'
+			description: 'Use ${variable} directly in strings. No more concatenation hell.',
+			color: 'blue'
 		},
 		{
 			icon: 'Zap',
 			title: 'Pipe operator',
-			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)'
+			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)',
+			color: 'yellow'
 		},
 		{
 			icon: 'Shield',
 			title: 'Try expressions',
-			description: 'Error handling without boilerplate. try httpGet() propagates errors.'
+			description: 'Error handling without boilerplate. try httpGet() propagates errors.',
+			color: 'green'
 		},
 		{
 			icon: 'Terminal',
 			title: 'Built-in HTTP/JSON',
-			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.'
+			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.',
+			color: 'purple'
 		},
 		{
 			icon: 'Box',
 			title: 'Compiles to binary',
-			description: 'lgs build script.lgs produces a single standalone executable.'
+			description: 'lgs build script.lgs produces a single standalone executable.',
+			color: 'pink'
 		},
 		{
 			icon: 'FileCode',
 			title: 'Readable syntax',
-			description: 'C-like syntax that reads like prose. You will actually understand it next week.'
+			description: 'C-like syntax that reads like prose. You will actually understand it next week.',
+			color: 'red'
 		}
 	];
 
@@ -107,6 +113,7 @@ spawn for url in urls {
 						icon={feature.icon}
 						title={feature.title}
 						description={feature.description}
+						color={feature.color}
 					/>
 				</div>
 			{/each}
