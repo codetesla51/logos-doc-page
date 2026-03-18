@@ -281,9 +281,9 @@ fileWrite("output.txt", "Hello, World!")`}
 
 	<CodeBlock
 		code={`let name = "world"
-let greeting = "hello ${name}"
+let greeting = "hello \${name}"
 let age = 25
-let bio = "${name} is ${age} years old"`}
+let bio = "\${name} is \${age} years old"`}
 		language="javascript"
 	/>
 

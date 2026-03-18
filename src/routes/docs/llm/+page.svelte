@@ -16,7 +16,7 @@ let raw = \`raw string with \\n not escaped\`
 
 // String interpolation
 let name = "world"
-let greeting = "hello ${name}"`;
+let greeting = "hello \${name}"`;
 
 	const arraysCode = `let arr = [1, 2, 3, "four", true]
 let first = arr[0]

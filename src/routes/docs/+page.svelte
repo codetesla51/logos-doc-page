@@ -13,10 +13,12 @@ let config = parseJson(res.value)
 print("App: " + config["name"])
 
 // String interpolation
-let greeting = "Hello ${config["name"]}"
+let name = "world"
+let greeting = "hello \${name}"
 
 // Ternary operator
-let status = config.age >= 18 ? "adult" : "minor"
+let age = 25
+let status = age >= 18 ? "adult" : "minor"
 
 // Try expression - unwraps errors automatically
 fn getData() {
@@ -28,6 +30,7 @@ fn getData() {
 config.active = false
 
 // For-in with index
+let tasks = ["task1", "task2", "task3"]
 for i, task in tasks {
     print(toStr(i) + ": " + task)
 }
