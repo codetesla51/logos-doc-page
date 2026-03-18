@@ -9,38 +9,32 @@
 		{
 			icon: 'Code2',
 			title: 'String interpolation',
-			description: 'Use ${variable} directly in strings. No more concatenation hell.',
-			color: 'blue'
+			description: 'Use ${variable} directly in strings. No more concatenation hell.'
 		},
 		{
 			icon: 'Zap',
 			title: 'Pipe operator',
-			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)',
-			color: 'yellow'
+			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)'
 		},
 		{
 			icon: 'Shield',
 			title: 'Try expressions',
-			description: 'Error handling without boilerplate. try httpGet() propagates errors.',
-			color: 'green'
+			description: 'Error handling without boilerplate. try httpGet() propagates errors.'
 		},
 		{
 			icon: 'Terminal',
 			title: 'Built-in HTTP/JSON',
-			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.',
-			color: 'purple'
+			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.'
 		},
 		{
 			icon: 'Box',
 			title: 'Compiles to binary',
-			description: 'lgs build script.lgs produces a single standalone executable.',
-			color: 'pink'
+			description: 'lgs build script.lgs produces a single standalone executable.'
 		},
 		{
 			icon: 'FileCode',
 			title: 'Readable syntax',
-			description: 'C-like syntax that reads like prose. You will actually understand it next week.',
-			color: 'red'
+			description: 'C-like syntax that reads like prose. You will actually understand it next week.'
 		}
 	];
 
@@ -93,16 +87,16 @@ spawn for url in urls {
 
 <Hero />
 
-<section class="bg-bg border-t border-border/30 py-20">
+<section class="bg-bg border-t border-border/30 py-12 sm:py-20">
 	<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-12 text-center">
+		<div class="mb-8 text-center sm:mb-12">
 			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Modern features. Zero setup.</h2>
-			<p class="text-muted mt-3 text-base">
+			<p class="text-muted mt-3 text-sm sm:text-base">
 				v0.4.0 brings string interpolation, pipe operators, and try expressions.
 			</p>
 		</div>
 
-		<div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+		<div class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
 			{#each features as feature, i}
 				<div
 					bind:this={featureCards[i]}
@@ -113,7 +107,6 @@ spawn for url in urls {
 						icon={feature.icon}
 						title={feature.title}
 						description={feature.description}
-						color={feature.color}
 					/>
 				</div>
 			{/each}
@@ -121,11 +114,11 @@ spawn for url in urls {
 	</div>
 </section>
 
-<section class="bg-subtle/30 border-t border-border/30 py-20">
+<section class="bg-subtle/30 border-t border-border/30 py-12 sm:py-20">
 	<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-10 text-center">
+		<div class="mb-8 text-center sm:mb-10">
 			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Clean and readable</h2>
-			<p class="text-muted mt-3 text-base">
+			<p class="text-muted mt-3 text-sm sm:text-base">
 				No boilerplate. No ceremony. Just code.
 			</p>
 		</div>
@@ -134,25 +127,25 @@ spawn for url in urls {
 	</div>
 </section>
 
-<section class="bg-bg border-t border-border/30 py-20">
+<section class="bg-bg border-t border-border/30 py-12 sm:py-20">
 	<div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-10 text-center">
+		<div class="mb-8 text-center sm:mb-10">
 			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Install</h2>
-			<p class="text-muted mt-3 text-base">One command. Linux and macOS.</p>
+			<p class="text-muted mt-3 text-sm sm:text-base">One command. Linux and macOS.</p>
 		</div>
 
 		<InstallBlock />
 	</div>
 </section>
 
-<section class="border-t border-border/30 py-20">
+<section class="border-t border-border/30 py-12 sm:py-20">
 	<div class="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
 		<h2 class="text-text text-2xl font-semibold sm:text-3xl">Ready to start?</h2>
-		<p class="text-muted mt-3 text-base">Read the docs and write your first script in minutes.</p>
-		<div class="mt-8 flex flex-wrap items-center justify-center gap-4">
+		<p class="text-muted mt-3 text-sm sm:text-base">Read the docs and write your first script in minutes.</p>
+		<div class="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
 			<a
 				href="/docs"
-				class="bg-text text-bg hover:bg-text/90 rounded-lg px-6 py-2.5 text-sm font-medium transition-colors"
+				class="bg-text text-bg hover:bg-text/90 w-full rounded-lg px-6 py-3 text-sm font-medium transition-colors sm:w-auto"
 			>
 				Read the Docs
 			</a>

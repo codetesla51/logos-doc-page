@@ -45,9 +45,9 @@
 	<SearchModal isOpen={searchOpen} onClose={closeSearch} />
 
 	<main class="lg:pl-[240px]">
-		<div class="mx-auto max-w-[800px] px-4 py-8 sm:px-6 lg:px-8 lg:py-12">
+		<div class="mx-auto max-w-[800px] px-4 py-6 sm:px-6 sm:py-8 lg:px-8 lg:py-12">
 			<article
-				class="prose-headings:text-text prose-p:text-muted prose-a:text-accent prose-strong:text-text prose-code:text-accent prose-code:bg-subtle prose prose-lg max-w-none prose-invert prose-code:rounded prose-code:px-1.5 prose-code:py-1 prose-code:before:content-[''] prose-code:after:content-['']"
+				class="prose prose-sm sm:prose-lg max-w-none prose-invert prose-headings:text-text prose-p:text-muted prose-a:text-white prose-a:underline-offset-2 hover:prose-a:text-white/80 prose-strong:text-text prose-code:text-white prose-code:bg-subtle prose-pre:bg-subtle prose-pre:rounded-lg"
 			>
 				{@render children()}
 			</article>

@@ -1,6 +1,6 @@
 <script>
 	import { page } from '$app/stores';
-	import { X, Sparkles } from 'lucide-svelte';
+	import { X } from 'lucide-svelte';
 	import logo from '$lib/assets/logo.png';
 
 	let { isOpen = false, onClose } = $props();
@@ -32,7 +32,7 @@
 		{
 			title: 'Resources',
 			items: [
-				{ title: 'LLM Reference', href: '/docs/llm', icon: 'Sparkles', highlight: true }
+				{ title: 'LLM Reference', href: '/docs/llm', highlight: true }
 			]
 		}
 	];
@@ -46,15 +46,15 @@
 	}
 </script>
 
-<aside class="bg-bg border-border fixed top-0 left-0 z-40 hidden h-screen w-[240px] border-r pt-14 lg:block">
-	<nav class="space-y-1 p-3">
+<aside class="bg-black border-r border-white/10 fixed top-0 left-0 z-40 hidden h-screen w-[240px] overflow-y-auto pt-14 lg:block">
+	<nav class="space-y-1 p-3 pb-20">
 		<a href="/" class="mb-4 flex items-center gap-2 px-2 py-1">
 			<img src={logo} alt="Logos" class="h-5 w-auto" />
 		</a>
 
 		{#each navSections as section}
 			<div class="pt-4">
-				<h3 class="text-muted/60 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
+				<h3 class="text-white/40 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
 					{section.title}
 				</h3>
 				<ul class="space-y-0.5">
@@ -63,17 +63,14 @@
 							<a
 								href={item.href}
 								class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all {isActive(item.href)
-									? 'bg-subtle text-text font-medium'
+									? 'bg-white text-black font-medium'
 									: item.highlight
-										? 'text-purple-400 hover:bg-purple-500/10 hover:text-purple-300'
-										: 'text-muted hover:bg-subtle/50 hover:text-text'}"
+										? 'text-white/70 hover:bg-white/5 hover:text-white'
+										: 'text-white/50 hover:bg-white/5 hover:text-white'}"
 							>
-								{#if item.icon === 'Sparkles'}
-									<Sparkles class="h-3.5 w-3.5" />
-								{/if}
 								{item.title}
 								{#if item.highlight}
-									<span class="ml-auto rounded bg-purple-500/20 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
+									<span class="ml-auto rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
 								{/if}
 							</a>
 						</li>
@@ -87,19 +84,19 @@
 {#if isOpen}
 	<div class="fixed inset-0 z-50 lg:hidden">
 		<button
-			class="absolute inset-0 bg-black/60 backdrop-blur-sm"
+			class="absolute inset-0 bg-black/80"
 			onclick={onClose}
 			aria-label="Close sidebar"
 		></button>
 
-		<aside class="bg-bg border-border absolute top-0 left-0 h-full w-[280px] border-r">
-			<div class="flex items-center justify-between border-b border-border/50 p-4">
+		<aside class="bg-black absolute top-0 left-0 h-full w-[280px] border-r border-white/10">
+			<div class="flex items-center justify-between border-b border-white/10 p-4">
 				<a href="/" class="flex items-center gap-2">
 					<img src={logo} alt="Logos" class="h-5 w-auto" />
 				</a>
 				<button
 					onclick={onClose}
-					class="text-muted hover:text-text rounded-lg p-1.5 transition-colors hover:bg-subtle"
+					class="rounded-lg p-1.5 text-white/50 transition-colors hover:bg-white/5 hover:text-white"
 					aria-label="Close menu"
 				>
 					<X class="h-5 w-5" />
@@ -109,7 +106,7 @@
 			<nav class="space-y-1 p-3">
 				{#each navSections as section}
 					<div class="pt-4">
-						<h3 class="text-muted/60 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
+						<h3 class="text-white/40 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
 							{section.title}
 						</h3>
 						<ul class="space-y-0.5">
@@ -119,17 +116,14 @@
 										href={item.href}
 										onclick={onClose}
 										class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all {isActive(item.href)
-											? 'bg-subtle text-text font-medium'
+											? 'bg-white text-black font-medium'
 											: item.highlight
-												? 'text-purple-400 hover:bg-purple-500/10 hover:text-purple-300'
-												: 'text-muted hover:bg-subtle/50 hover:text-text'}"
+												? 'text-white/70 hover:bg-white/5 hover:text-white'
+												: 'text-white/50 hover:bg-white/5 hover:text-white'}"
 									>
-										{#if item.icon === 'Sparkles'}
-											<Sparkles class="h-3.5 w-3.5" />
-										{/if}
 										{item.title}
 										{#if item.highlight}
-											<span class="ml-auto rounded bg-purple-500/20 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
+											<span class="ml-auto rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
 										{/if}
 									</a>
 								</li>

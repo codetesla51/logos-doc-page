@@ -3,9 +3,9 @@
 
 @theme {
 	--color-bg: #000000;
-	--color-subtle: #1e1e1e;
-	--color-border: #2a2a2a;
-	--color-text: #f5f5f5;
+	--color-subtle: #111111;
+	--color-border: #222222;
+	--color-text: #ffffff;
 	--color-muted: #888888;
 	--color-accent: #ffffff;
 
@@ -47,7 +47,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #555;
+	background: #444;
 }
 
 /* Firefox scrollbar */
@@ -67,7 +67,7 @@ code {
 
 /* Shiki code block overrides */
 pre.shiki {
-	background-color: var(--color-subtle) !important;
+	background-color: #0d1117 !important;
 	padding: 1.5rem;
 	border-radius: 0.5rem;
 	overflow-x: auto;
