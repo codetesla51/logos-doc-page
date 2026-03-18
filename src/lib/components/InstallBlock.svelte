@@ -29,9 +29,9 @@
 	</div>
 
 	<div class="flex items-center justify-between gap-2 p-3 sm:gap-4 sm:p-4">
-		<code class="font-code text-text flex items-center gap-1 text-xs sm:text-sm overflow-x-auto">
-			<span class="text-muted">$</span>
-			<span class="whitespace-nowrap">{command}</span>
+		<code class="font-code text-text flex items-center gap-1 text-xs overflow-x-auto max-w-full sm:text-sm">
+			<span class="text-muted shrink-0">$</span>
+			<span class="whitespace-nowrap break-all">{command}</span>
 		</code>
 		<button
 			onclick={copyCommand}

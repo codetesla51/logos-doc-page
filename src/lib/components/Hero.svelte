@@ -55,7 +55,7 @@ for user in users {
 			</div>
 
 			<div class="mt-6 px-2 sm:mt-8 sm:px-0">
-				<pre class="inline-flex items-center gap-2 overflow-x-auto rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs sm:text-sm"><code class="font-mono text-green-400">curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh</code></pre>
+				<pre class="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs overflow-x-auto sm:text-sm max-w-full box-border"><code class="font-mono text-green-400 whitespace-nowrap sm:whitespace-normal">curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh</code></pre>
 			</div>
 		</div>
 
@@ -77,9 +77,11 @@ for user in users {
 					</a>
 				</div>
 
-				<div class="font-mono text-[10px] leading-relaxed sm:text-xs">
+				<div class="font-mono text-[10px] leading-relaxed overflow-x-auto sm:text-xs">
 					{#if highlightedCode}
-						{@html highlightedCode}
+						<div class="min-w-0">
+							{@html highlightedCode}
+						</div>
 					{:else}
 						<pre class="p-3 text-white/60 sm:p-4"><code>{heroCode}</code></pre>
 					{/if}
@@ -101,8 +103,14 @@ for user in users {
 		margin: 0;
 		padding: 0.75rem;
 		background-color: transparent !important;
+		overflow-x: auto;
+		max-width: 100%;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
+	}
+	:global(pre.shiki span) {
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 </style>

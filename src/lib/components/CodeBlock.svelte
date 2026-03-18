@@ -54,11 +54,13 @@
 		</button>
 	{/if}
 
-	<div class="font-code overflow-x-auto text-sm sm:text-base">
+	<div class="font-code overflow-x-auto text-sm sm:text-base max-w-full">
 		{#if highlightedCode}
-			{@html highlightedCode}
+			<div class="min-w-0">
+				{@html highlightedCode}
+			</div>
 		{:else}
-			<pre class="bg-subtle p-4"><code>{code}</code></pre>
+			<pre class="bg-subtle p-3 sm:p-4 overflow-x-auto"><code>{code}</code></pre>
 		{/if}
 	</div>
 </div>
@@ -68,5 +70,14 @@
 		margin: 0;
 		padding: 0.75rem;
 		background-color: transparent !important;
+		overflow-x: auto;
+		max-width: 100%;
+	}
+	:global(pre.shiki code) {
+		background: transparent !important;
+	}
+	:global(pre.shiki span) {
+		white-space: pre-wrap;
+		word-break: break-word;
 	}
 </style>
