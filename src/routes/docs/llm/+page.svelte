@@ -12,7 +12,11 @@ x += 5
 x -= 2`;
 
 	const stringsCode = `let s = "hello world"
-let raw = \`raw string with \\n not escaped\``;
+let raw = \`raw string with \\n not escaped\`
+
+// String interpolation
+let name = "world"
+let greeting = "hello ${name}"`;
 
 	const arraysCode = `let arr = [1, 2, 3, "four", true]
 let first = arr[0]
@@ -158,7 +162,7 @@ result := vm.GetVar("count")`;
 		<li><strong>File extension:</strong> <code>.lgs</code></li>
 		<li><strong>CLI:</strong> <code>lgs run file.lgs</code> | <code>lgs build file.lgs</code> | <code>lgs fmt file.lgs</code></li>
 		<li><strong>GitHub:</strong> <a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener">github.com/codetesla51/logos</a></li>
-		<li><strong>Version:</strong> 0.3.2</li>
+		<li><strong>Version:</strong> v0.4.0</li>
 	</ul>
 
 	<h2 id="variables">Variables</h2>
@@ -170,12 +174,16 @@ result := vm.GetVar("count")`;
 	<h3>Compound Assignment</h3>
 	<p><code>x += 5</code> · <code>x -= 2</code> · <code>x *= 3</code> · <code>x /= 2</code> · <code>x %= 4</code></p>
 
+	<h3>Postfix Increment/Decrement</h3>
+	<p><code>i++</code> · <code>i--</code></p>
+
 	<h2 id="operators">Operators</h2>
 
 	<p><strong>Arithmetic:</strong> <code>+</code>, <code>-</code>, <code>*</code>, <code>/</code>, <code>%</code></p>
 	<p><strong>Comparison:</strong> <code>==</code>, <code>!=</code>, <code>&lt;</code>, <code>&gt;</code>, <code>&lt;=</code>, <code>&gt;=</code></p>
 	<p><strong>Logical:</strong> <code>&amp;&amp;</code>, <code>||</code>, <code>!</code></p>
 	<p><strong>Ternary:</strong> <code>? :</code> (e.g., <code>condition ? valueIfTrue : valueIfFalse</code>)</p>
+	<p><strong>Pipe:</strong> <code>|></code> (e.g., <code>arr |> filter(fn) |> map(fn)</code>)</p>
 
 	<h2 id="strings">Strings</h2>
 
@@ -229,6 +237,20 @@ result := vm.GetVar("count")`;
 
 	<CodeBlock code={resultPatternCode} language="javascript" />
 
+	<h3>Try Expression</h3>
+	<p>Unwraps result tables and propagates errors up the call stack:</p>
+	<pre><code>fn fetchData() &#123;
+  let res = try httpGet("https://api.example.com/data")
+  return res.value.body
+&#125;
+
+// Without try, you need:
+fn fetchData() &#123;
+  let res = httpGet("https://api.example.com/data")
+  if !res.ok &#123; return res &#125;
+  return res.value.body
+&#125;</code></pre>
+
 	<h2 id="builtins">Builtins Reference</h2>
 
 	<h3>I/O</h3>
@@ -263,6 +285,7 @@ result := vm.GetVar("count")`;
 
 	<h3>System</h3>
 	<p><code>osname()</code> · <code>pwd()</code> · <code>cd(path)</code> · <code>env(key)</code> · <code>setenv(key, val)</code> · <code>args()</code> · <code>exit(code?)</code> · <code>shell(cmd)</code> · <code>run(cmd, args...)</code></p>
+	<p><strong>Note:</strong> <code>args()</code> does not work in compiled binaries. Use <code>lgs script.lgs</code> instead.</p>
 
 	<h3>Color</h3>
 	<p><code>colorRed(str)</code> · <code>colorGreen(str)</code> · <code>colorYellow(str)</code> · <code>colorBlue(str)</code> · <code>colorMagenta(str)</code> · <code>colorCyan(str)</code> · <code>colorWhite(str)</code> · <code>colorBold(str)</code></p>

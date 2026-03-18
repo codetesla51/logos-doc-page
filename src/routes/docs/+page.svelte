@@ -12,16 +12,17 @@ if !res.ok {
 let config = parseJson(res.value)
 print("App: " + config["name"])
 
-if config.age > 18 {
-    print("adult")
-} else if config.age > 13 {
-    print("teenager")
-} else {
-    print("child")
-}
+// String interpolation
+let greeting = "Hello ${config["name"]}"
 
 // Ternary operator
 let status = config.age >= 18 ? "adult" : "minor"
+
+// Try expression - unwraps errors automatically
+fn getData() {
+    let res = try httpGet("https://api.example.com/data")
+    return res.value.body
+}
 
 // Dot assignment on tables
 config.active = false
@@ -30,6 +31,10 @@ config.active = false
 for i, task in tasks {
     print(toStr(i) + ": " + task)
 }
+
+// Pipe operator - chain transformations
+let nums = [1, 2, 3, 4, 5]
+let result = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
 
 // Run tasks concurrently
 spawn for task in tasks {

@@ -40,7 +40,12 @@ let score = 3.14
 let active = true
 
 // null
-let nothing = null`}
+let nothing = null
+
+// postfix increment/decrement
+let i = 0
+i++     // 1
+i--     // 0`}
 		language="javascript"
 	/>
 
@@ -158,6 +163,17 @@ let mixed = [1, "hello", true, null]`}
 		language="javascript"
 	/>
 
+	<h3>Pipe Operator</h3>
+
+	<p>Chain function calls left to right with <code>|></code>:</p>
+
+	<CodeBlock
+		code={`let nums = [1, 2, 3, 4, 5]
+let result = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
+print(result)  // [4, 8]`}
+		language="javascript"
+	/>
+
 	<h2 id="tables">Tables (Hashmaps)</h2>
 
 	<p>Tables are key-value collections, similar to objects or dictionaries.</p>
@@ -258,6 +274,30 @@ fileWrite("output.txt", "Hello, World!")`}
 	<p>Parse and work with JSON:</p>
 
 	<CodeBlock code={jsonExample} language="javascript" />
+
+	<h2 id="string-interpolation">String Interpolation</h2>
+
+	<p>Embed expressions directly in strings with <code>{'$'}{'{'}{'}'}</code>:</p>
+
+	<CodeBlock
+		code={`let name = "world"
+let greeting = "hello ${name}"
+let age = 25
+let bio = "${name} is ${age} years old"`}
+		language="javascript"
+	/>
+
+	<h2 id="try">Try Expression</h2>
+
+	<p>Unwrap result tables and propagate errors:</p>
+
+	<CodeBlock
+		code={`fn fetchData() {
+    let res = try httpGet("https://api.example.com/data")
+    return res.value.body
+}`}
+		language="javascript"
+	/>
 
 	<h2 id="modules">Modules</h2>
 
