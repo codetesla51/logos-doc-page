@@ -11,9 +11,179 @@
 	<h1>Examples</h1>
 
 	<p>
-		Here are practical examples to help you get started with Logos. Each example demonstrates
-		different features of the language.
+		Practical examples demonstrating Logos features. These examples use v0.4.0 syntax including
+		string interpolation, pipe operators, and try expressions.
 	</p>
+
+	<h2 id="modern-pipeline">Modern Pipeline with Try <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Fetch, parse, filter, and transform data with pipes and try expressions:</p>
+
+	<CodeBlock
+		code={`// modern_api.lgs - Pipe operator + try expressions
+
+// Fetch users and filter active ones
+let getActiveUsers = fn() {
+    return try httpGet("https://api.example.com/users")
+        |> parseJson
+        |> filter(fn(u) -> u.active && u.role != "guest")
+        |> map(fn(u) -> table{
+            name: u.name,
+            email: u.email,
+            role: u.role,
+        })
+}
+
+// Display formatted user list
+let users = getActiveUsers()
+
+for i, user in users {
+    print("\${i + 1}. \${user.name} <\${user.email}> [\${user.role}]")
+}
+
+// Count statistics
+let roles = users |> map(fn(u) -> u.role)
+print("\${len(users)} active users across \${len(roles)} roles")`}
+		language="javascript"
+		filename="modern_api.lgs"
+	/>
+
+	<h2 id="string-interpolation-examples">String Interpolation Examples <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Clean, readable string formatting with embedded expressions:</p>
+
+	<CodeBlock
+		code={`// formatting.lgs - String interpolation showcase
+
+let user = table{
+    name: "Alice",
+    age: 28,
+    scores: [95, 87, 92],
+}
+
+let product = table{
+    name: "Widget",
+    price: 29.99,
+    qty: 5,
+}
+
+// Basic interpolation
+print("Hello, \${user.name}!")
+print("\${user.name} is \${user.age} years old")
+
+// In expressions
+let total = product.price * product.qty
+print("Order: \${product.name} x \${product.qty} = \$\${total}")
+
+// Array access in strings
+let avgScore = arraySum(user.scores) / len(user.scores)
+print("\${user.name}'s average score: \${avgScore}")
+
+// Nested interpolation
+let greeting = "Welcome back, \${user.name}!"
+print(greeting)
+
+// In function parameters
+let formatDate = fn(day, month, year) {
+    return "\${month}/\${day}/\${year}"
+}
+print("Today: \${formatDate(15, "March", 2024)}")`}
+		language="javascript"
+		filename="formatting.lgs"
+	/>
+
+	<h2 id="error-handling">Error Handling with Try <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Clean error propagation using try expressions:</p>
+
+	<CodeBlock
+		code={`// error_handling.lgs - Try expression examples
+
+// Safe file operations
+fn readConfig(path) {
+    let content = try fileRead(path)
+    let json = try parseJson(content)
+    return json
+}
+
+// Safe HTTP requests
+fn fetchUser(id) {
+    let res = try httpGet("https://api.example.com/users/" + toStr(id))
+    return try parseJson(res.value.body)
+}
+
+// Chained operations with try
+fn processData(url, key) {
+    return try httpGet(url)
+        |> try parseJson
+        |> filter(fn(d) -> d.active)
+        |> map(fn(d) -> d[key])
+}
+
+// Multiple fallbacks
+fn getSetting(key, default) {
+    let config = try fileRead("config.json")
+        |> try parseJson
+    return has(config, key) ? config[key] : default
+}
+
+// HTTP with proper error handling
+fn downloadAndSave(url, path) {
+    let res = try httpGet(url)
+    let data = try parseJson(res.value.body)
+    let content = toJson(data)
+    let saved = try fileWrite(path, content)
+    return saved
+}`}
+		language="javascript"
+		filename="error_handling.lgs"
+	/>
+
+	<h2 id="pipe-transformations">Data Transformations with Pipes <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Chain array operations with the pipe operator:</p>
+
+	<CodeBlock
+		code={`// transformations.lgs - Pipe operator examples
+
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// Filter and transform
+let evensSquared = numbers
+    |> filter(fn(x) -> x % 2 == 0)
+    |> map(fn(x) -> x * x)
+
+print("Evens squared: \${evensSquared}")
+
+// Complex pipeline
+let data = [100, 25, 50, 75, 125]
+    |> filter(fn(x) -> x > 30)
+    |> map(fn(x) -> x * 1.1)     // add 10%
+    |> filter(fn(x) -> x > 50)   // filter again
+    |> map(fn(x) -> toInt(x))    // convert to int
+
+// String processing pipeline
+let words = ["hello", "WORLD", "LoGoS"]
+    |> map(fn(w) -> lower(w))    // "hello", "world", "logos"
+    |> map(fn(w) -> upper(w))    // "HELLO", "WORLD", "LOGOS"
+    |> filter(fn(w) -> len(w) > 4)
+
+print("Long words: \${words}")
+
+// Object transformation
+let users = [
+    table{ firstName: "John", lastName: "Doe", age: 30 },
+    table{ firstName: "Jane", lastName: "Smith", age: 25 },
+]
+
+let names = users
+    |> map(fn(u) -> u.firstName + " " + u.lastName)
+    |> map(fn(name) -> upper(name))
+
+print("Names: \${names}")`}
+		language="javascript"
+		filename="transformations.lgs"
+	/>
 
 	<h2 id="todo-app">Todo CLI App</h2>
 
@@ -46,7 +216,7 @@ let saveTodos = fn() {
     return res.ok
 }
 
-	let listTodos = fn() {
+let listTodos = fn() {
     if len(todos) == 0 {
         print(colorYellow("  No todos yet!"))
         return null
@@ -334,66 +504,6 @@ spawn {
 		filename="concurrent.lgs"
 	/>
 
-	<h2 id="testing">Testing Example</h2>
-
-	<p>Write tests using the testing standard library:</p>
-
-	<CodeBlock
-		code={`// test_math.lgs - Example test file
-use "std/testing"
-use "std/math"
-
-let add = fn(a, b) -> a + b
-let multiply = fn(a, b) -> a * b
-
-suite("arithmetic", fn() {
-    assert("add positive", add(2, 3), 5)
-    assert("add negative", add(-1, 1), 0)
-    assert("add zero", add(0, 0), 0)
-    assert("multiply", multiply(3, 4), 12)
-    assert("multiply by zero", multiply(5, 0), 0)
-})
-
-suite("math stdlib", fn() {
-    assert("factorial 5", mathFactorial(5), 120)
-    assert("factorial 0", mathFactorial(0), 1)
-    assert("fib 10", mathFib(10), 55)
-    assert("isPrime 17", mathIsPrime(17), true)
-    assert("isPrime 4", mathIsPrime(4), false)
-    assert("gcd", mathGcd(48, 18), 6)
-})
-
-summary()
-
-// Run with: lgs test_math.lgs
-// Output:
-// ok    arithmetic, math stdlib    11 tests passed`}
-		language="javascript"
-		filename="test_math.lgs"
-	/>
-
-	<h2 id="fizzbuzz">FizzBuzz</h2>
-
-	<p>The classic FizzBuzz problem:</p>
-
-	<CodeBlock
-		code={`// fizzbuzz.lgs - Classic FizzBuzz
-
-let fizzbuzz = fn(n) {
-    for i, _ in range(1, n + 1) {
-        let result = i % 15 == 0 ? "FizzBuzz" 
-            : i % 3 == 0 ? "Fizz" 
-            : i % 5 == 0 ? "Buzz" 
-            : toStr(i)
-        print(result)
-    }
-}
-
-fizzbuzz(30)`}
-		language="javascript"
-		filename="fizzbuzz.lgs"
-	/>
-
 	<h2 id="cli-tool">CLI Tool with Arguments</h2>
 
 	<p>Build command-line tools that accept arguments:</p>
@@ -422,49 +532,26 @@ print(loud ? colorBold(upper(greeting)) : greeting)`}
 		filename="greet.lgs"
 	/>
 
-	<h2 id="modern-features">Modern Features (v0.4.0+)</h2>
+	<h2 id="fizzbuzz">FizzBuzz</h2>
 
-	<p>Demonstrates string interpolation, pipe operator, try expression, and postfix operators:</p>
+	<p>The classic FizzBuzz problem:</p>
 
 	<CodeBlock
-		code={`// modern.lgs - String interpolation, pipe, try, postfix
+		code={`// fizzbuzz.lgs - Classic FizzBuzz
 
-// String interpolation
-let name = "world"
-let greeting = "Hello \${name}!"
-let age = 25
-let bio = "\${name} is \${age} years old"
-print(greeting)
-print(bio)
-
-// Pipe operator - chain transformations
-let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-let result = nums
-    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
-    |> map(fn(x) -> x * x)            // [4, 16, 36, 64, 100]
-    |> filter(fn(x) -> x > 30)        // [36, 64, 100]
-
-print("Filtered and mapped: \${result}")
-
-// Try expression - unwraps errors automatically
-fn safeFetch(url) {
-    let res = try httpGet(url)
-    return res.value.body
+let fizzbuzz = fn(n) {
+    for i, _ in range(1, n + 1) {
+        let result = i % 15 == 0 ? "FizzBuzz" 
+            : i % 3 == 0 ? "Fizz" 
+            : i % 5 == 0 ? "Buzz" 
+            : toStr(i)
+        print(result)
+    }
 }
 
-// Postfix increment/decrement
-let count = 0
-count++
-count++
-print("Count: \${count}")
-
-// For-in with index
-for i, num in nums {
-    print("\${i}: \${num}")
-}`}
+fizzbuzz(30)`}
 		language="javascript"
-		filename="modern.lgs"
+		filename="fizzbuzz.lgs"
 	/>
 
 	<h2>More Examples</h2>

@@ -17,9 +17,31 @@ print(json["name"])  // uthman`;
 	<h1>Syntax & Types</h1>
 
 	<p>
-		This page covers the complete syntax of Logos. The language is designed to be minimal and
-		expressive, with a focus on readability.
+		Logos is a lightweight scripting language designed for clarity. This page covers the complete
+		syntax, including v0.4.0 features like string interpolation, pipe operators, and try expressions.
 	</p>
+
+	<h2 id="v04">v0.4.0 Highlights</h2>
+
+	<p>Logos v0.4.0 introduces powerful features that make code cleaner and more expressive:</p>
+
+	<div class="grid gap-4 my-4">
+		<div class="bg-subtle border border-white/10 rounded-lg p-4">
+			<h3 class="text-base font-semibold text-white mb-2">String Interpolation</h3>
+			<p class="text-muted text-sm mb-2">Embed variables directly in strings with <code>{'$'}{'{'}{'}'}</code></p>
+			<code class="text-xs text-green-400">let greeting = "Hello ${'${name}'}!"</code>
+		</div>
+		<div class="bg-subtle border border-white/10 rounded-lg p-4">
+			<h3 class="text-base font-semibold text-white mb-2">Pipe Operator</h3>
+			<p class="text-muted text-sm mb-2">Chain function calls left to right with <code>|></code></p>
+			<code class="text-xs text-green-400">nums |> filter(fn) |> map(fn)</code>
+		</div>
+		<div class="bg-subtle border border-white/10 rounded-lg p-4">
+			<h3 class="text-base font-semibold text-white mb-2">Try Expressions</h3>
+			<p class="text-muted text-sm mb-2">Handle errors elegantly without verbose checks</p>
+			<code class="text-xs text-green-400">let res = try httpGet(url)</code>
+		</div>
+	</div>
 
 	<h2 id="variables">Variables</h2>
 
@@ -163,14 +185,102 @@ let mixed = [1, "hello", true, null]`}
 		language="javascript"
 	/>
 
-	<h3>Pipe Operator</h3>
+	<h2 id="string-interpolation">String Interpolation <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
 
-	<p>Chain function calls left to right with <code>|></code>:</p>
+	<p>Embed expressions directly in strings with <code>{'$'}{'{'}{'}'}</code>. No more concatenation!</p>
 
 	<CodeBlock
-		code={`let nums = [1, 2, 3, 4, 5]
-let result = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
-print(result)  // [4, 8]`}
+		code={`let name = "world"
+let greeting = "Hello \${name}!"  // "Hello world!"
+
+let age = 25
+let year = 2024
+let bio = "\${name} is \${age} in \${year}"
+// "world is 25 in 2024"
+
+// works with any expression
+let nums = [1, 2, 3]
+print("Sum: \${nums[0] + nums[1] + nums[2]}")  // "Sum: 6"
+
+// in function calls
+let formatUser = fn(user) {
+    return "\${user.name} (\${user.role})"
+}`}
+		language="javascript"
+	/>
+
+	<h2 id="pipe-operator">Pipe Operator <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Chain function calls left to right with <code>|></code>. Makes data transformations readable!</p>
+
+	<CodeBlock
+		code={`let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+// chain transformations
+let result = nums
+    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
+    |> map(fn(x) -> x * x)           // [4, 16, 36, 64, 100]
+    |> filter(fn(x) -> x > 30)      // [36, 64, 100]
+
+print(result)  // [36, 64, 100]
+
+// with HTTP and JSON
+let users = httpGet("https://api.example.com/users")
+    |> parseJson
+    |> filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)
+
+// with arrays
+let sum = [1, 2, 3, 4, 5]
+    |> filter(fn(x) -> x % 2 == 1)   // [1, 3, 5]
+    |> map(fn(x) -> x * 10)          // [10, 30, 50]
+    |> reduce(fn(acc, x) -> acc + x, 0)  // 90`}
+		language="javascript"
+	/>
+
+	<h2 id="try-expression">Try Expression <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Unwrap result tables and propagate errors automatically with <code>try</code>.</p>
+
+	<CodeBlock
+		code={`// Instead of verbose error checking:
+let res = httpGet("https://api.example.com/data")
+if !res.ok {
+    print("Error: " + res.error)
+    return
+}
+let data = res.value.body
+
+// Use try to unwrap and propagate:
+fn fetchUser(id) {
+    let res = try httpGet("https://api.example.com/users/" + toStr(id))
+    return parseJson(res.value.body)
+}
+
+// Try works with any function that returns Result
+fn safeRead(path) {
+    let content = try fileRead(path)
+    return content
+}
+
+// In pipes - errors propagate automatically
+let data = httpGet("https://api.example.com/users")
+    |> try parseJson
+    |> try filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)`}
+		language="javascript"
+	/>
+
+	<h2 id="postfix-operators">Postfix Operators <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
+
+	<p>Postfix increment and decrement operators:</p>
+
+	<CodeBlock
+		code={`let count = 0
+count++   // 1
+count++   // 2
+count--   // 1
+print(toStr(count))  // 1`}
 		language="javascript"
 	/>
 
@@ -242,13 +352,17 @@ spawn for item in items {
 	<p>Make HTTP requests with built-in functions:</p>
 
 	<CodeBlock
-		code={`let res = httpGet("https://api.example.com/data")
-
+		code={`// Basic usage
+let res = httpGet("https://api.example.com/data")
 if res.ok {
     print(res.value.body)
-} else {
-    print("request failed")
-}`}
+}
+
+// With try expression (v0.4)
+let data = try httpGet("https://api.example.com/users")
+
+// POST request
+let res = httpPost("https://api.example.com/users", "{\"name\": \"test\"}")`}
 		language="javascript"
 	/>
 
@@ -264,7 +378,10 @@ if file.ok {
 }
 
 // write to a file
-fileWrite("output.txt", "Hello, World!")`}
+fileWrite("output.txt", "Hello, World!")
+
+// with try (v0.4)
+let content = try fileRead("data.txt")`}
 		language="javascript"
 	/>
 
@@ -273,30 +390,6 @@ fileWrite("output.txt", "Hello, World!")`}
 	<p>Parse and work with JSON:</p>
 
 	<CodeBlock code={jsonExample} language="javascript" />
-
-	<h2 id="string-interpolation">String Interpolation</h2>
-
-	<p>Embed expressions directly in strings with <code>{'$'}{'{'}{'}'}</code>:</p>
-
-	<CodeBlock
-		code={`let name = "world"
-let greeting = "hello \${name}"
-let age = 25
-let bio = "\${name} is \${age} years old"`}
-		language="javascript"
-	/>
-
-	<h2 id="try">Try Expression</h2>
-
-	<p>Unwrap result tables and propagate errors:</p>
-
-	<CodeBlock
-		code={`fn fetchData() {
-    let res = try httpGet("https://api.example.com/data")
-    return res.value.body
-}`}
-		language="javascript"
-	/>
 
 	<h2 id="modules">Modules</h2>
 
