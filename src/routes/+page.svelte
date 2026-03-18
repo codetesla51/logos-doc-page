@@ -7,54 +7,52 @@
 
 	const features = [
 		{
-			icon: 'Terminal',
-			title: 'CLI First',
-			description: 'File I/O, HTTP, JSON, and shell execution built in. No imports needed.'
-		},
-		{
-			icon: 'Package',
-			title: 'Embeddable',
-			description: 'Embed in Go apps like Lua. Register functions and call scripts from Go.'
-		},
-		{
-			icon: 'FileCode',
-			title: 'Readable',
-			description: 'C-like syntax that reads like prose. No boilerplate, no surprises.'
+			icon: 'Code2',
+			title: 'String interpolation',
+			description: 'Use ${variable} directly in strings. No more concatenation hell.'
 		},
 		{
 			icon: 'Zap',
-			title: 'Concurrent',
-			description: 'First-class concurrency with spawn blocks. Parallelize with ease.'
-		},
-		{
-			icon: 'Binary',
-			title: 'Compiles',
-			description: 'Build to a single standalone binary. No runtime dependencies.'
+			title: 'Pipe operator',
+			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)'
 		},
 		{
 			icon: 'Shield',
-			title: 'Sandboxed',
-			description: 'Restrict file, network, and shell access when embedding.'
+			title: 'Try expressions',
+			description: 'Error handling without boilerplate. try httpGet() propagates errors.'
+		},
+		{
+			icon: 'Terminal',
+			title: 'Built-in HTTP/JSON',
+			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.'
+		},
+		{
+			icon: 'Box',
+			title: 'Compiles to binary',
+			description: 'lgs build script.lgs produces a single standalone executable.'
+		},
+		{
+			icon: 'FileCode',
+			title: 'Readable syntax',
+			description: 'C-like syntax that reads like prose. You will actually understand it next week.'
 		}
 	];
 
-	const exampleCode = `// Fetch and process data
-let res = httpGet("https://api.example.com/data")
+	const exampleCode = `// Fetch and filter with pipe operator
+let users = try httpGet("https://api.example.com/users")
+    |> parseJson
+    |> filter(fn(u) -> u.active)
 
-if res.ok {
-    let data = parseJson(res.value.body)
-    
-    for item in data["items"] {
-        print(item["name"])
-    }
+// String interpolation - no concatenation needed
+for user in users {
+    print("\${user.name} - \${user.role}")
 }
 
 // Concurrent processing
 spawn for url in urls {
-    let r = httpGet(url)
-    if r.ok {
-        fileWrite("cache/" + hash(url), r.value.body)
-    }
+    let r = try httpGet(url)
+    let data = r.value.body |> parseJson
+    fileWrite("cache/\${url}.json", toJson(data))
 }`;
 
 	let featureCards = [];
@@ -80,23 +78,21 @@ spawn for url in urls {
 </script>
 
 <svelte:head>
-	<title>Logos - A readable scripting language</title>
+	<title>Logos - A scripting language that doesn't hurt your brain</title>
 	<meta
 		name="description"
-		content="A readable scripting language with C-like syntax, sane error handling, built-in concurrency, and build-to-binary support."
+		content="A lightweight scripting language with string interpolation, pipe operators, and try expressions. Built-in HTTP, JSON, concurrency. Compiles to binary."
 	/>
 </svelte:head>
 
-<!-- Hero Section -->
 <Hero />
 
-<!-- Features Section -->
 <section class="bg-bg border-t border-border/30 py-20">
 	<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-12 text-center">
-			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Why Logos?</h2>
+			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Modern features. Zero setup.</h2>
 			<p class="text-muted mt-3 text-base">
-				Everything you need for scripting. Nothing you don't.
+				v0.4.0 brings string interpolation, pipe operators, and try expressions.
 			</p>
 		</div>
 
@@ -118,13 +114,12 @@ spawn for url in urls {
 	</div>
 </section>
 
-<!-- Code Example Section -->
 <section class="bg-subtle/30 border-t border-border/30 py-20">
 	<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-10 text-center">
 			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Clean and readable</h2>
 			<p class="text-muted mt-3 text-base">
-				Logos syntax stays out of your way.
+				No boilerplate. No ceremony. Just code.
 			</p>
 		</div>
 
@@ -132,7 +127,6 @@ spawn for url in urls {
 	</div>
 </section>
 
-<!-- Install Section -->
 <section class="bg-bg border-t border-border/30 py-20">
 	<div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
 		<div class="mb-10 text-center">
@@ -144,7 +138,6 @@ spawn for url in urls {
 	</div>
 </section>
 
-<!-- CTA Section -->
 <section class="border-t border-border/30 py-20">
 	<div class="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
 		<h2 class="text-text text-2xl font-semibold sm:text-3xl">Ready to start?</h2>
