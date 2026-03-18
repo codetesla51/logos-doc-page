@@ -57,7 +57,7 @@ user["name"]    // "New Name" (bracket access)`;
 }
 
 for i, v in arr {
-  print(i + ": " + toStr(v))
+  print("\${i}: \${v}")
 }
 
 for pair in user {

@@ -366,13 +366,13 @@ func main() {
     // Run game script
     vm.Run(\`
         let p = getPlayer()
-        print("Player: " + p["name"] + " (HP: " + toStr(p["health"]) + ")")
+        print("Player: \${p.name} (HP: \${p.health})")
 
         setName("Warrior")
         print(heal(20))
 
         let updated = getPlayer()
-        print("Now: " + updated["name"] + " (HP: " + toStr(updated["health"]) + ")")
+        print("Now: \${updated.name} (HP: \${updated.health})")
     \`)
 }`}
 		language="go"

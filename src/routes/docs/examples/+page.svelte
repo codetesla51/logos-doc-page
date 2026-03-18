@@ -155,7 +155,7 @@ if len(users) > 0 {
         displayUser(user)
     }
     print("---")
-    print(colorGreen("Total users: " + toStr(len(users))))
+    print(colorGreen("Total users: \${len(users)}"))
 }`}
 		language="javascript"
 		filename="http_client.lgs"
@@ -175,7 +175,7 @@ let loadConfig = fn(path) {
     }
     let parsed = parseJson(res.value)
     if parsed == null {
-        print(colorRed("Error: invalid JSON in " + path))
+        print(colorRed("Error: invalid JSON in \${path}"))
         return null
     }
     return parsed
@@ -445,7 +445,7 @@ let result = nums
     |> map(fn(x) -> x * x)            // [4, 16, 36, 64, 100]
     |> filter(fn(x) -> x > 30)        // [36, 64, 100]
 
-print("Filtered and mapped: " + toStr(result))
+print("Filtered and mapped: \${result}")
 
 // Try expression - unwraps errors automatically
 fn safeFetch(url) {
@@ -457,11 +457,11 @@ fn safeFetch(url) {
 let count = 0
 count++
 count++
-print("Count: " + toStr(count))  // 2
+print("Count: \${count}")
 
 // For-in with index
 for i, num in nums {
-    print(toStr(i) + ": " + toStr(num))
+    print("\${i}: \${num}")
 }`}
 		language="javascript"
 		filename="modern.lgs"

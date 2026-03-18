@@ -142,7 +142,7 @@ for n in nums {
 
 // with index variable
 for i, v in nums {
-    print(toStr(i) + ": " + toStr(v))
+    print("\${i}: \${v}")
 }`}
 		language="javascript"
 	/>

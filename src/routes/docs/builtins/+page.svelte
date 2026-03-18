@@ -59,9 +59,9 @@ print(multiResult.value)`;
 let readRes = fileRead("config.json")
 if readRes.ok {
     let content = readRes.value
-    print("File has " + toStr(len(content)) + " characters")
+    print("File has \${len(content)} characters")
 } else {
-    print("Failed to read: " + readRes.error)
+    print("Failed to read: \${readRes.error}")
 }
 
 // Write to a file
@@ -149,24 +149,23 @@ if res.ok {
     if parseResult.ok {
         let users = parseResult.value
         for user in users {
-            print(user["name"])
+            print(user.name)
         }
     }
-    print("Status: " + toStr(res.value.status))  // e.g., 200
+    print("Status: \${res.value.status}")
 } else {
-    print("Request failed: " + res.error)
+    print("Request failed: \${res.error}")
 }
 
 // POST with JSON body
-let payloadRes = toJson(table {
-    "name": "Alice",
-    "email": "alice@example.com"
+let payload = toJson(table {
+    name: "Alice",
+    email: "alice@example.com"
 })
-let payload = payloadRes.ok ? payloadRes.value : "{}"
 
 let postRes = httpPost("https://api.example.com/users", payload)
 if postRes.ok {
-    print("Created! Status: " + toStr(postRes.value.status))
+    print("Created! Status: \${postRes.value.status}")
 }
 
 // Custom headers
@@ -1058,7 +1057,7 @@ print(toStr(mathMin(5, 3)))      // 3
 print(toStr(mathMax(5, 3)))      // 5
 
 let dice = mathRandomInt(1, 6)
-print("Rolled: " + toStr(dice))
+print("Rolled: \${dice}")
 
 print(toStr(mathPi()))           // 3.141592653589793`}
 		language="javascript"
@@ -1254,23 +1253,22 @@ if res.ok {
     if parseResult.ok {
         let users = parseResult.value
         for user in users {
-            print(user["name"])
+            print(user.name)
         }
     }
-    print("Status: " + toStr(res.value.status))
+    print("Status: \${res.value.status}")
 } else {
-    print("Request failed: " + res.error)
+    print("Request failed: \${res.error}")
 }
 
-let jsonRes = toJson(table {
-    "name": "Alice",
-    "email": "alice@example.com"
+let payload = toJson(table {
+    name: "Alice",
+    email: "alice@example.com"
 })
-let payload = jsonRes.ok ? jsonRes.value : "{}"
 
 let postRes = httpPost("https://api.example.com/users", payload)
 if postRes.ok {
-    print("Created! Status: " + toStr(postRes.value.status))
+    print("Created! Status: \${postRes.value.status}")
 }
 
 let updateRes = toJson(table { "name": "Alice Smith" })
