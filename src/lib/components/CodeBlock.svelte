@@ -66,7 +66,7 @@
 <style>
 	:global(pre.shiki) {
 		margin: 0;
-		padding: 1rem;
+		padding: 0.75rem;
 		background-color: transparent !important;
 	}
 </style>
