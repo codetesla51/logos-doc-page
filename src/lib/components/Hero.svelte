@@ -40,16 +40,16 @@ for user in users {
 			</p>
 
 			<div class="mt-6 flex flex-col items-center justify-center gap-2 sm:mt-8 sm:flex-row sm:gap-3">
-				<a href="/docs" class="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-white px-5 py-2.5 text-sm font-medium text-black transition-opacity hover:opacity-90 sm:w-auto sm:px-6 sm:py-3">
+				<a href="/docs" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-black transition-opacity hover:opacity-90 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
 					Get Started
-					<ArrowRight class="h-4 w-4" />
+					<ArrowRight class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 				</a>
-				<a href="/playground" class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-6 sm:py-3">
-					<Play class="h-4 w-4" />
+				<a href="/playground" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
+					<Play class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 					Try Online
 				</a>
-				<a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center gap-2 rounded-lg border border-white/20 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-6 sm:py-3">
-					<Github class="h-4 w-4" />
+				<a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
+					<Github class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 					GitHub
 				</a>
 			</div>
