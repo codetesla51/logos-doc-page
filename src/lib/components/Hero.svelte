@@ -117,10 +117,10 @@ spawn for dev in devs {
 		</div>
 
 		<div
-			class="mx-auto mt-12 max-w-2xl animate-slide-up"
+			class="mx-auto mt-12 w-full animate-slide-up"
 			style="animation-delay: 400ms;"
 		>
-			<div class="rounded-2xl border border-white/10 bg-zinc-900/60 overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/50">
+			<div class="rounded-xl border border-white/10 bg-zinc-900/60 overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/50">
 				<div class="flex items-center justify-between border-b border-white/5 bg-zinc-900/90 px-4 py-3">
 					<div class="flex items-center gap-3">
 						<div class="flex gap-1.5">
@@ -163,10 +163,11 @@ spawn for dev in devs {
 <style>
 	:global(pre.shiki) {
 		margin: 0;
-		padding: 0.5rem 1.25rem;
+		padding: 0.75rem 1.5rem;
 		background-color: transparent !important;
 		overflow-x: auto;
-		line-height: 1.4;
+		line-height: 1.5;
+		font-size: 0.875rem;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
