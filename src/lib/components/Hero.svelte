@@ -1,9 +1,12 @@
 <script>
-	import { Github, ArrowRight, Play } from 'lucide-svelte';
+	import { Github, ArrowRight, Play, Copy, Check } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { codeToHtml } from 'shiki';
 
 	let highlightedCode = $state('');
+	let copied = $state(false);
+
+	const installCmd = 'curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh';
 
 	const heroCode = `use "std/array"
 
@@ -25,6 +28,12 @@ for i, dev in results {
 spawn for dev in devs {
   print(dev.name)
 }`;
+
+	async function copyInstall() {
+		await navigator.clipboard.writeText(installCmd);
+		copied = true;
+		setTimeout(() => { copied = false; }, 2000);
+	}
 
 	onMount(async () => {
 		highlightedCode = await codeToHtml(heroCode, {
@@ -56,11 +65,34 @@ spawn for dev in devs {
 		</h1>
 
 		<p
-			class="mx-auto mb-8 max-w-lg text-center text-sm text-zinc-400 sm:text-base animate-slide-up"
+			class="mx-auto mb-6 max-w-lg text-center text-sm text-zinc-400 sm:text-base animate-slide-up"
 			style="animation-delay: 100ms;"
 		>
 			String interpolation, pipes, try expressions. Compile to a single binary.
 		</p>
+
+		<div
+			class="mx-auto mb-8 max-w-md animate-slide-up"
+			style="animation-delay: 150ms;"
+		>
+			<div class="flex items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-2">
+				<code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap px-2 py-1 font-mono text-xs text-emerald-400">
+					{installCmd}
+				</code>
+				<button
+					onclick={copyInstall}
+					class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-2.5 py-1.5 text-xs text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
+				>
+					{#if copied}
+						<Check class="h-3 w-3 text-green-400" />
+						<span class="hidden sm:inline">Copied</span>
+					{:else}
+						<Copy class="h-3 w-3" />
+						<span class="hidden sm:inline">Copy</span>
+					{/if}
+				</button>
+			</div>
+		</div>
 
 		<div
 			class="mb-10 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-3 animate-slide-up"
@@ -70,7 +102,7 @@ spawn for dev in devs {
 				href="/docs"
 				class="group flex items-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-zinc-900 transition-all hover:bg-zinc-100"
 			>
-				Get Started
+				Documentation
 				<ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
 			</a>
 			<a
@@ -78,7 +110,7 @@ spawn for dev in devs {
 				class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-5 py-2.5 text-sm text-white transition-all hover:bg-white/10"
 			>
 				<Play class="h-4 w-4" />
-				Try Online
+				Playground
 			</a>
 			<a
 				href="https://github.com/codetesla51/logos"
