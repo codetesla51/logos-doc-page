@@ -7,18 +7,26 @@
 	let highlightedCode = $state('');
 	let isLoaded = $state(false);
 
-	const heroCode = `// const for immutable values (v0.4.2)
-const API_URL = "https://api.example.com"
+	const heroCode = `use "std/array"
 
-// range() for numeric iteration
-for i in range(0, 10, 2) {
-    print(i)  // 0, 2, 4, 6, 8
+let devs = [
+  table{name: "Alice", lang: "Go", years: 2},
+  table{name: "Bob",   lang: "Python", years: 1},
+  table{name: "Carol", lang: "Go", years: 3},
+]
+
+let results = devs
+  |> filter(fn(d) -> d.lang == "Go")
+  |> map(fn(d) -> "\${d.name} — \${d.years} yrs")
+
+for i, dev in results {
+  i++
+  print("  \${i}. \${dev}")
 }
 
-// Regex builtins (v0.4.3)
-let email = "user@domain.com"
-let parts = reGroups(\`(\\w+)@(\\w+)\`, email)
-print(parts)  // ["user", "domain"]`;
+spawn for dev in devs {
+  print(dev.name)
+}`;
 
 	onMount(async () => {
 		highlightedCode = await codeToHtml(heroCode, {
@@ -166,7 +174,7 @@ print(parts)  // ["user", "domain"]`;
 						v0.4.3
 					</span>
 					<span class="text-[10px] text-zinc-500">
-						const · range() · Regex builtins
+						Pipe operator · For-in · Spawn
 					</span>
 				</div>
 			</div>

@@ -9,7 +9,7 @@
 			<div class="lg:col-span-2">
 				<a href="/" class="inline-flex items-center gap-2.5">
 					<img src={logo} alt="Logos" class="h-7 w-auto" />
-					<span class="text-sm font-medium text-white/80">v0.4.1</span>
+					<span class="text-sm font-medium text-white/80">v0.4.3</span>
 				</a>
 				<p class="text-white/40 mt-5 max-w-md text-sm leading-relaxed">
 					Scripting made sensible. Modern syntax, powerful features, zero setup. Perfect for automation and CLI tools.
