@@ -63,7 +63,7 @@ spawn for dev in devs {
 		</p>
 
 		<div
-			class="mb-16 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 animate-slide-up"
+			class="mb-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 animate-slide-up"
 			style="animation-delay: 200ms;"
 		>
 			<a
@@ -117,16 +117,16 @@ spawn for dev in devs {
 		</div>
 
 		<div
-			class="mx-auto mt-12 w-full animate-slide-up"
+			class="mx-auto mt-12 max-w-3xl animate-slide-up"
 			style="animation-delay: 400ms;"
 		>
-			<div class="rounded-xl border border-white/10 bg-zinc-900/60 overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/50">
-				<div class="flex items-center justify-between border-b border-white/5 bg-zinc-900/90 px-4 py-3">
+			<div class="rounded-xl border border-white/10 bg-zinc-900/80 overflow-hidden backdrop-blur-sm shadow-2xl shadow-black/30">
+				<div class="flex items-center justify-between border-b border-white/5 bg-zinc-900/95 px-4 py-3">
 					<div class="flex items-center gap-3">
 						<div class="flex gap-1.5">
-							<div class="h-2.5 w-2.5 rounded-full bg-red-500/80 shadow-lg shadow-red-500/20"></div>
-							<div class="h-2.5 w-2.5 rounded-full bg-yellow-500/80 shadow-lg shadow-yellow-500/20"></div>
-							<div class="h-2.5 w-2.5 rounded-full bg-green-500/80 shadow-lg shadow-green-500/20"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-red-500/80 shadow-sm shadow-red-500/30"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-yellow-500/80 shadow-sm shadow-yellow-500/30"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-green-500/80 shadow-sm shadow-green-500/30"></div>
 						</div>
 						<span class="font-mono text-xs text-zinc-400">example.lgs</span>
 					</div>
@@ -163,11 +163,10 @@ spawn for dev in devs {
 <style>
 	:global(pre.shiki) {
 		margin: 0;
-		padding: 0.75rem 1.5rem;
+		padding: 0.875rem 1.5rem;
 		background-color: transparent !important;
 		overflow-x: auto;
 		line-height: 1.5;
-		font-size: 0.875rem;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
