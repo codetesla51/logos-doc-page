@@ -177,10 +177,10 @@ print(parts)  // ["user", "domain"]`;
 <style>
 	:global(pre.shiki) {
 		margin: 0;
-		padding: 0.75rem 1.25rem;
+		padding: 0.5rem 1.25rem;
 		background-color: transparent !important;
 		overflow-x: auto;
-		line-height: 1.5;
+		line-height: 1.4;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
