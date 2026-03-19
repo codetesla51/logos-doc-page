@@ -99,7 +99,30 @@ use "std/testing"`;
 
 	const spawnCode = `spawn {` + "\n" + `  print("task 1")` + "\n" + `  print("task 2")` + "\n" + `}` + "\n\n" + `spawn for item in jobs {` + "\n" + `  process(item)` + "\n" + `}`;
 
-	const resultPatternCode = `table{` + "\n" + `  ok: true/false,` + "\n" + `  value: <data or null>,` + "\n" + `  error: "<message or empty string>"` + "\n" + `}` + "\n\n" + `let res = httpGet("https://api.example.com/data")` + "\n" + `if res.ok {` + "\n" + `  print(res.value.body)` + "\n" + `} else {` + "\n" + `  print(res.error)` + "\n" + `}`;
+	const resultPatternCode = `table{
+  ok: true/false,
+  value: <data or null>,
+  error: "<message or empty string>"
+}
+
+let res = httpGet("https://api.example.com/data")
+if res.ok {
+  print(res.value.body)
+} else {
+  print(res.error)
+}`;
+
+	const tryExample = `fn fetchData() {
+  let res = try httpGet("https://api.example.com/data")
+  return res.value.body
+}
+
+// Without try, you need:
+fn fetchData() {
+  let res = httpGet("https://api.example.com/data")
+  if !res.ok { return res }
+  return res.value.body
+}`;
 
 	const embeddingCode = `import "github.com/codetesla51/logos/logos"
 
@@ -160,9 +183,9 @@ result := vm.GetVar("count")`;
 
 	<ul>
 		<li><strong>File extension:</strong> <code>.lgs</code></li>
-		<li><strong>CLI:</strong> <code>lgs run file.lgs</code> | <code>lgs build file.lgs</code> | <code>lgs fmt file.lgs</code></li>
+		<li><strong>CLI:</strong> <code>lgs file.lgs</code> | <code>lgs build file.lgs</code> | <code>lgs fmt file.lgs</code></li>
 		<li><strong>GitHub:</strong> <a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener">github.com/codetesla51/logos</a></li>
-		<li><strong>Version:</strong> v0.4.0</li>
+		<li><strong>Version:</strong> v0.4.3</li>
 	</ul>
 
 	<h2 id="variables">Variables</h2>
@@ -170,6 +193,18 @@ result := vm.GetVar("count")`;
 	<CodeBlock code={variablesCode} language="javascript" />
 
 	<p>Variables are mutable. Reassign with <code>=</code>.</p>
+
+	<h3>const Keyword (v0.4.2)</h3>
+	<p>Use <code>const</code> for immutable bindings. Reassignment throws a runtime error.</p>
+	<CodeBlock code={`const PI = 3.14159
+const MAX_RETRIES = 3
+
+// Mutable with let
+let counter = 0
+counter++  // OK
+
+// This throws:
+// PI = 3.14  // Error: cannot reassign const`} language="javascript" />
 
 	<h3>Compound Assignment</h3>
 	<p><code>x += 5</code> · <code>x -= 2</code> · <code>x *= 3</code> · <code>x /= 2</code> · <code>x %= 4</code></p>
@@ -239,17 +274,8 @@ result := vm.GetVar("count")`;
 
 	<h3>Try Expression</h3>
 	<p>Unwraps result tables and propagates errors up the call stack:</p>
-	<pre><code>fn fetchData() &#123;
-  let res = try httpGet("https://api.example.com/data")
-  return res.value.body
-&#125;
 
-// Without try, you need:
-fn fetchData() &#123;
-  let res = httpGet("https://api.example.com/data")
-  if !res.ok &#123; return res &#125;
-  return res.value.body
-&#125;</code></pre>
+	<CodeBlock code={tryExample} language="javascript" />
 
 	<h2 id="builtins">Builtins Reference</h2>
 
@@ -260,13 +286,14 @@ fn fetchData() &#123;
 	<p><code>type(val)</code> · <code>len(str|arr)</code> · <code>keys(table)</code> · <code>values(table)</code> · <code>has(table, key)</code></p>
 
 	<h3>Type Conversion</h3>
-	<p><code>toInt(val)</code> · <code>toFloat(val)</code> · <code>toBool(val)</code> · <code>toStr(val)</code></p>
+	<p><code>str(val)</code> · <code>int(val)</code> · <code>float(val)</code> · <code>toStr(val)</code> · <code>toInt(val)</code> · <code>toFloat(val)</code> · <code>toBool(val)</code></p>
 
 	<h3>String</h3>
 	<p><code>upper(s)</code> · <code>lower(s)</code> · <code>trim(s)</code> · <code>replace(s, old, new)</code> · <code>split(s, sep)</code> · <code>join(arr, sep)</code> · <code>contains(str|arr, val)</code> · <code>startsWith(s, prefix)</code> · <code>endsWith(s, suffix)</code> · <code>indexOf(s, sub)</code> · <code>repeat(s, n)</code> · <code>slice(str|arr, start, end)</code> · <code>format(tmpl, args...)</code></p>
 
 	<h3>Array</h3>
-	<p><code>push(arr, val)</code> · <code>pop(arr)</code> · <code>first(arr)</code> · <code>last(arr)</code> · <code>tail(arr)</code> · <code>prepend(arr, val)</code> · <code>reverse(arr)</code> · <code>sort(arr)</code> · <code>slice(arr, start, end)</code> · <code>contains(arr, val)</code></p>
+	<p><code>push(arr, val)</code> · <code>pop(arr)</code> · <code>first(arr)</code> · <code>last(arr)</code> · <code>tail(arr)</code> · <code>prepend(arr, val)</code> · <code>reverse(arr)</code> · <code>sort(arr)</code> · <code>slice(arr, start, end)</code> · <code>contains(arr, val)</code> · <code>range(start, end, step?)</code></p>
+	<p><code>range(0, 10)</code> generates 0-9. <code>range(0, 10, 2)</code> for step. <code>range(5, 0, -1)</code> for countdown.</p>
 
 	<h3>Math</h3>
 	<p><code>mathAbs(n)</code> · <code>mathSqrt(n)</code> · <code>mathPow(base, exp)</code> · <code>mathFloor(n)</code> · <code>mathCeil(n)</code> · <code>mathRound(n)</code> · <code>mathMin(a, b)</code> · <code>mathMax(a, b)</code> · <code>mathRandom()</code> · <code>mathRandomInt(min, max)</code> · <code>mathPi()</code></p>
@@ -285,10 +312,19 @@ fn fetchData() &#123;
 
 	<h3>System</h3>
 	<p><code>osname()</code> · <code>pwd()</code> · <code>cd(path)</code> · <code>env(key)</code> · <code>setenv(key, val)</code> · <code>args()</code> · <code>exit(code?)</code> · <code>shell(cmd)</code> · <code>run(cmd, args...)</code></p>
-	<p><strong>Note:</strong> <code>args()</code> does not work in compiled binaries. Use <code>lgs script.lgs</code> instead.</p>
+	<p><strong>Note:</strong> <code>args()</code> does not work in compiled binaries. Use <code>lgs script.lgs</code> instead. Has bounds checking — returns empty array if no arguments.</p>
 
 	<h3>Color</h3>
 	<p><code>colorRed(str)</code> · <code>colorGreen(str)</code> · <code>colorYellow(str)</code> · <code>colorBlue(str)</code> · <code>colorMagenta(str)</code> · <code>colorCyan(str)</code> · <code>colorWhite(str)</code> · <code>colorBold(str)</code></p>
+
+	<h3>Regex (v0.4.3)</h3>
+	<p><code>reMatch(pattern, text)</code> · <code>reFind(pattern, text)</code> · <code>reFindAll(pattern, text)</code> · <code>reReplace(pattern, text, repl)</code> · <code>reSplit(pattern, text)</code> · <code>reGroups(pattern, text)</code></p>
+	<CodeBlock code={`reMatch(\`\\d+\`, "hello 123")       // true
+reFind(\`\\d+\`, "3 cats")          // "3"
+reFindAll(\`\\d+\`, "3 and 12")     // ["3", "12"]
+reReplace(\`\\d+\`, "3 cats", "X")   // "X cats"
+reSplit(\`\\s+\`, "a   b c")        // ["a", "b", "c"]
+reGroups(\`(\\w+)@(\\w+)\`, "a@b")  // ["a", "b"]`} language="javascript" />
 
 	<h2 id="stdlib">Standard Library</h2>
 
@@ -339,7 +375,7 @@ fn fetchData() &#123;
 		<li>No classes/structs — use tables</li>
 		<li>No variadic user functions — only builtins support <code>args...</code></li>
 		<li><code>spawn</code> waits for all goroutines</li>
-		<li><code>sort()</code> only works on numeric arrays</li>
+		<li><code>sort()</code> handles both string and numeric arrays</li>
 	</ul>
 
 	<p>

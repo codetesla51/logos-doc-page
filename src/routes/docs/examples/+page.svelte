@@ -108,7 +108,7 @@ fn readConfig(path) {
 
 // Safe HTTP requests
 fn fetchUser(id) {
-    let res = try httpGet("https://api.example.com/users/" + toStr(id))
+    let res = try httpGet("https://api.example.com/users/" + str(id))
     return try parseJson(res.value.body)
 }
 
@@ -160,7 +160,7 @@ let data = [100, 25, 50, 75, 125]
     |> filter(fn(x) -> x > 30)
     |> map(fn(x) -> x * 1.1)     // add 10%
     |> filter(fn(x) -> x > 50)   // filter again
-    |> map(fn(x) -> toInt(x))    // convert to int
+    |> map(fn(x) -> int(x))    // convert to int
 
 // String processing pipeline
 let words = ["hello", "WORLD", "LoGoS"]
@@ -278,7 +278,7 @@ for running {
         if len(parts) < 2 {
             print(colorRed("Usage: done <number>"))
         } else {
-            completeTodo(toInt(parts[1]))
+            completeTodo(int(parts[1]))
         }
     }
 }
@@ -534,17 +534,21 @@ print(loud ? colorBold(upper(greeting)) : greeting)`}
 
 	<h2 id="fizzbuzz">FizzBuzz</h2>
 
-	<p>The classic FizzBuzz problem:</p>
+	<p>
+		The classic FizzBuzz problem. Loop from 1 to n, printing "Fizz" for multiples of 3,
+		"Buzz" for multiples of 5, "FizzBuzz" for both, and the number otherwise.
+	</p>
 
 	<CodeBlock
 		code={`// fizzbuzz.lgs - Classic FizzBuzz
+// Loop from 1 to 30 and apply FizzBuzz rules
 
 let fizzbuzz = fn(n) {
-    for i, _ in range(1, n + 1) {
-        let result = i % 15 == 0 ? "FizzBuzz" 
-            : i % 3 == 0 ? "Fizz" 
-            : i % 5 == 0 ? "Buzz" 
-            : toStr(i)
+    for i = 1; i <= n; i++ {
+        let result = i % 15 == 0 ? "FizzBuzz"
+            : i % 3 == 0 ? "Fizz"
+            : i % 5 == 0 ? "Buzz"
+            : str(i)
         print(result)
     }
 }

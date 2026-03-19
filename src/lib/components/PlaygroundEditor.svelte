@@ -12,20 +12,21 @@
 	const API_URL = 'https://logosplayground-codetesla517280-g3cm9qvp.leapcell.dev/run';
 
 	const defaultCode = `// Welcome to the Logos Playground!
-// This is a sandboxed environment - some functions are restricted.
+// This is a sandboxed environment.
 
 let message = "Hello from Logos!"
 print(message)
 
-// Try some basic operations
-let numbers = [1, 2, 3, 4, 5]
-for num in numbers {
-    print(num * 2)
-}
+// String interpolation (v0.4+)
+let name = "World"
+print("Hello, ${name}!")
 
-// String manipulation
-let greeting = "Hello, " + "World!"
-print(greeting)`;
+// Pipe operator (v0.4+)
+let nums = [1, 2, 3, 4, 5]
+let result = nums
+    |> filter(fn(x) -> x % 2 == 0)
+    |> map(fn(x) -> x * x)
+print(result)`;
 
 	let editorContainer = $state(null);
 	let editorView = $state(null);
@@ -147,22 +148,21 @@ print(greeting)`;
 	}
 </script>
 
-<div class="flex h-full flex-col lg:flex-row gap-4">
-	<!-- Editor Panel -->
+<div class="flex h-full flex-col gap-4 lg:flex-row">
 	<div class="flex flex-1 flex-col min-h-0">
-		<div class="flex items-center justify-between border-b border-border bg-subtle/50 px-4 py-2 rounded-t-lg">
-			<div class="flex items-center gap-2">
-				<div class="flex gap-1.5">
+		<div class="flex items-center justify-between rounded-t-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+			<div class="flex items-center gap-3">
+				<div class="flex gap-2">
 					<div class="h-2.5 w-2.5 rounded-full bg-white/10"></div>
 					<div class="h-2.5 w-2.5 rounded-full bg-white/10"></div>
 					<div class="h-2.5 w-2.5 rounded-full bg-white/10"></div>
 				</div>
-				<span class="ml-2 text-xs text-muted">playground.lgs</span>
+				<span class="text-white/40 text-xs font-medium">playground.lgs</span>
 			</div>
 			<div class="flex items-center gap-2">
 				<button
 					onclick={resetCode}
-					class="flex items-center gap-1.5 rounded px-2 py-1 text-xs text-muted hover:text-text hover:bg-border transition-colors"
+					class="flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs text-white/40 transition-all hover:bg-white/5 hover:text-white/70"
 					title="Reset code"
 				>
 					<RotateCcw class="h-3.5 w-3.5" />
@@ -171,7 +171,7 @@ print(greeting)`;
 				<button
 					onclick={runCode}
 					disabled={isRunning}
-					class="flex items-center gap-1.5 rounded bg-text px-3 py-1.5 text-xs font-medium text-bg hover:bg-text/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+					class="flex items-center gap-1.5 rounded-lg bg-white px-4 py-1.5 text-xs font-medium text-black transition-all hover:bg-white/90 disabled:opacity-50 disabled:cursor-not-allowed"
 				>
 					{#if isRunning}
 						<Loader2 class="h-3.5 w-3.5 animate-spin" />
@@ -185,23 +185,22 @@ print(greeting)`;
 		</div>
 		<div
 			bind:this={editorContainer}
-			class="flex-1 overflow-hidden rounded-b-lg border border-t-0 border-border bg-subtle min-h-[300px] lg:min-h-0"
+			class="flex-1 overflow-hidden rounded-b-xl border border-t-0 border-white/5 bg-[#1a1a1a] min-h-[300px] lg:min-h-0"
 		></div>
 	</div>
 
-	<!-- Output Panel -->
-	<div class="flex flex-1 flex-col min-h-0 lg:max-w-md">
-		<div class="flex items-center justify-between border-b border-border bg-subtle/50 px-4 py-2 rounded-t-lg">
-			<span class="text-xs text-muted">Output</span>
+	<div class="flex flex-1 flex-col min-h-0">
+		<div class="flex items-center justify-between rounded-t-xl border border-white/5 bg-white/[0.02] px-4 py-3">
+			<span class="text-white/40 text-xs font-medium">Output</span>
 			{#if hasError}
-				<span class="flex items-center gap-1 text-xs text-red-400">
+				<span class="flex items-center gap-1.5 text-xs font-medium text-red-400">
 					<AlertTriangle class="h-3 w-3" />
 					Error
 				</span>
 			{/if}
 		</div>
-		<div class="flex-1 overflow-auto rounded-b-lg border border-t-0 border-border bg-subtle p-4 min-h-[200px] lg:min-h-0">
-			<pre class="font-code text-sm whitespace-pre-wrap {hasError ? 'text-red-400' : 'text-text'}">{output || 'Click "Run" to execute your code.'}</pre>
+		<div class="flex-1 overflow-auto rounded-b-xl border border-t-0 border-white/5 bg-[#1a1a1a] p-4 min-h-[200px] lg:min-h-0">
+			<pre class="font-mono text-sm whitespace-pre-wrap {hasError ? 'text-red-400' : 'text-white/70'}">{output || 'Click "Run" to execute your code.'}</pre>
 		</div>
 	</div>
 </div>

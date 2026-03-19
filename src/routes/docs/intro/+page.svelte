@@ -60,8 +60,8 @@ spawn for task in tasks {
       <strong>Readable syntax</strong> — C-like structure that reads like English prose, not line noise
     </li>
     <li>
-      <strong>Sane error handling</strong> — Functions return result objects. Check <code>.ok&gt;&lt;/code&gt;,
-      handle <code>.error&gt;&lt;/code&gt;. No silent failures.
+      <strong>Sane error handling</strong> — Functions return result objects. Check <code>.ok</code>,
+      handle <code>.error</code>. No silent failures.
     </li>
     <li>
       <strong>Batteries included</strong> — File I/O, HTTP, JSON, shell execution all work without imports

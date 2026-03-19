@@ -1,12 +1,11 @@
-# Logos Language — LLM Reference
+# Logos Language Reference (v0.4.1)
 
-Logos is a dynamically-typed, interpreted scripting language written in Go.
-It uses a Pratt parser and a tree-walking interpreter.
+Logos is a dynamically-typed, interpreted scripting language written in Go. It uses a Pratt parser and a tree-walking interpreter.
 File extension: `.lgs`
-CLI: `lgs run file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
+CLI: `lgs file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
 GitHub: https://github.com/codetesla51/logos
 Docs: https://logos-lang.vercel.app/docs
-Version: v0.4.0
+Version: v0.4.1
 
 ---
 
@@ -42,9 +41,8 @@ print(i)
 ### Strings
 ```
 let s = "hello world"
-let raw = `raw string with \n not escaped`
 
-// String interpolation with ${}
+// String interpolation with ${} (v0.4+)
 let name = "world"
 let greeting = "hello ${name}"
 let age = 25
@@ -82,14 +80,11 @@ user.age = 21
 **Bracket access** — works on tables and is type-aware. The key type matters:
 ```
 user["name"]          // works — string key lookup
-table{1: "one"}[1]    // works — integer key lookup
-table{1: "one"}["1"]  // returns null — different type, different key
+table{1: "one"}[1]   // works — integer key lookup
+table{1: "one"}["1"] // returns null — different type, different key
 ```
-Internally, table keys are stored as `"TYPE:keyname"` (e.g. `"STRING:name"`, `"INTEGER:1"`).
-String keys and integer keys with the same value are distinct entries.
-When a table is printed raw via `print()`, you will see the internal format — that is expected.
 
-Nested tables:
+Nested tables render with proper indentation via `print()`:
 ```
 let config = table{
   db: table{
@@ -97,8 +92,14 @@ let config = table{
     port: 5432
   }
 }
-config.db.host    // "localhost"
-config.db["host"] // "localhost"
+print(config)
+// Output:
+// {
+//   db: {
+//     host: "localhost",
+//     port: 5432
+//   }
+// }
 ```
 
 ---
@@ -128,15 +129,9 @@ if x > 10 {
 ### Switch
 ```
 switch x {
-  case 1 {
-    print("one")
-  }
-  case 2 {
-    print("two")
-  }
-  default {
-    print("other")
-  }
+  case 1 { print("one") }
+  case 2 { print("two") }
+  default { print("other") }
 }
 ```
 
@@ -146,12 +141,6 @@ for i < 10 {
   i += 1
 }
 ```
-Infinite loop:
-```
-for {
-  if done { break }
-}
-```
 
 ### For-In Loop
 ```
@@ -159,12 +148,11 @@ for item in arr {
   print(item)
 }
 ```
-Iterates over arrays, tables, and strings.
 
-Use index variable with `for i, v in`:
+Use index variable with `for i, v in` (v0.3.1+):
 ```
 for i, v in arr {
-  print(i + ": " + toStr(v))
+  print("${i}: ${v}")
 }
 ```
 
@@ -204,7 +192,6 @@ fn greet(name) {
 }
 greet("Uthman")
 ```
-Named functions are syntactic sugar for `let name = fn(...) { ... }`.
 
 ### Arrow Function (single expression)
 ```
@@ -233,13 +220,10 @@ counter()   // 2
 Arithmetic: `+`, `-`, `*`, `/`, `%`
 Comparison: `==`, `!=`, `<`, `>`, `<=`, `>=`
 Logical: `&&`, `||`, `!`
-Ternary: `? :` (e.g., `condition ? valueIfTrue : valueIfFalse`)
-Pipe: `|>` (e.g., `arr |> filter(fn) |> map(fn)`)
+Ternary: `? :` (v0.3.2+) e.g., `condition ? valueIfTrue : valueIfFalse`
+Pipe: `|>` (v0.4+) e.g., `arr |> filter(fn) |> map(fn)`
 
-### Precedence (low to high)
-`||` -> `&&` -> ternary `? :` -> `== !=` -> `< > <= >=` -> `+ -` -> `* / %` -> unary `- !` -> pipe `|>` -> function calls `()` -> dot access `.`
-
-### Pipe Operator
+### Pipe Operator (v0.4+)
 Chain function calls left to right:
 ```
 let nums = [1, 2, 3, 4, 5]
@@ -268,7 +252,7 @@ Exports are implicit — everything defined at top level is accessible after `us
 
 ## ERROR HANDLING
 
-### Try Expression
+### Try Expression (v0.4+)
 Unwraps result tables and propagates errors up the call stack:
 ```
 fn fetchData() {
@@ -336,7 +320,7 @@ if res.ok {
 ### I/O
 | Function | Signature | Description |
 |---|---|---|
-| `print` | `print(args...)` | Prints args separated by spaces |
+| `print` | `print(args...)` | Prints all arguments with proper formatting. Handles all types including nested tables with indentation. |
 | `input` | `input(prompt?)` | Reads line from stdin, optional prompt |
 | `prompt` | `prompt(msg)` | Prints msg then reads a line |
 | `confirm` | `confirm(msg)` | Prints "msg (y/n):", returns bool |
@@ -365,13 +349,18 @@ All take 1 string argument and return string wrapped in ANSI codes.
 | `values(t)` | `values(table)` | Array of table values |
 | `has(t, key)` | `has(table, key)` | Returns bool — true if string key exists |
 
-### Type Conversion
+### Type Conversion (v0.4.1+)
 | Function | Description |
 |---|---|
-| `toInt(val)` | Converts string/float/bool to integer. Returns null on failure |
-| `toFloat(val)` | Converts string/int/bool to float. Returns null on failure |
-| `toBool(val)` | Converts value to boolean. Returns null on failure |
-| `toStr(val)` | Converts any value to its string representation |
+| `str(val)` | Convert any value to string (short alias) |
+| `int(val)` | Convert to integer (short alias) |
+| `float(val)` | Convert to float (short alias) |
+| `toStr(val)` | Convert any value to its string representation |
+| `toInt(val)` | Converts string/float/bool to integer |
+| `toFloat(val)` | Converts string/int/bool to float |
+| `toBool(val)` | Converts value to boolean |
+
+Note: `str()`, `int()`, `float()` are short aliases added in v0.4.1. The `to*` forms still work.
 
 ### String
 | Function | Signature | Description |
@@ -388,7 +377,7 @@ All take 1 string argument and return string wrapped in ANSI codes.
 | `indexOf(s, sub)` | `indexOf(str, sub)` | Index of first occurrence, -1 if not found |
 | `repeat(s, n)` | `repeat(str, n)` | Repeat string n times |
 | `slice(val, s, e)` | `slice(str\|arr, start, end)` | Substring or sub-array (end is exclusive) |
-| `format(tmpl, args...)` | `format(template, args...)` | Printf-style formatting with `%s %d %f` |
+| `format(tmpl, args...)` | `format(template, args...)` | Printf-style formatting with `{}` placeholders |
 
 ### Array
 | Function | Signature | Description |
@@ -400,7 +389,7 @@ All take 1 string argument and return string wrapped in ANSI codes.
 | `tail(arr)` | `tail(arr)` | Returns all but first, null if empty |
 | `prepend(arr, val)` | `prepend(arr, val)` | Returns new array with val at front |
 | `reverse(arr)` | `reverse(arr)` | Returns reversed array |
-| `sort(arr)` | `sort(arr)` | Returns sorted array (numbers only) |
+| `sort(arr)` | `sort(arr)` | Returns sorted array. Handles both string and numeric arrays (v0.4.1+) |
 | `slice(arr, s, e)` | `slice(arr, start, end)` | Sub-array from start to end (exclusive) |
 | `contains(arr, val)` | `contains(arr, val)` | Returns bool |
 
@@ -431,9 +420,9 @@ All take 1 string argument and return string wrapped in ANSI codes.
 ### JSON
 | Function | Signature | Description |
 |---|---|---|
-| `parseJson(str)` | `parseJson(str)` | Parses JSON string. Arrays -> Array, objects -> Table. Returns null on failure |
-| `toJson(val)` | `toJson(val)` | Converts Logos value to compact JSON string |
-| `prettyJson(val)` | `prettyJson(val)` | Pretty-printed JSON string with color |
+| `parseJson(str)` | `parseJson(str)` | Parses JSON string. Returns `{ok, value, error}`. Arrays -> Array, objects -> Table. |
+| `toJson(val)` | `toJson(val)` | Returns `{ok, value, error}`. Converts Logos value to compact JSON string. |
+| `prettyJson(val)` | `prettyJson(val)` | Returns `{ok, value, error}`. Pretty-printed JSON string with color. |
 
 ### File I/O (disabled in sandbox)
 All file builtins except `fileExists` and `fileExt` return a result table `{ok, value, error}`.
@@ -443,16 +432,11 @@ All file builtins except `fileExists` and `fileExt` return a result table `{ok, 
 | `fileWrite(path, content)` | `fileWrite(path, content)` | Overwrites file |
 | `fileAppend(path, content)` | `fileAppend(path, content)` | Appends to file |
 | `fileDelete(path)` | `fileDelete(path)` | Deletes file or empty directory |
-| `fileDeleteAll(path)` | `fileDeleteAll(path)` | Deletes directory and all contents recursively |
-| `fileCopy(src, dst)` | `fileCopy(src, dst)` | Copies file |
-| `fileMove(src, dst)` | `fileMove(src, dst)` | Moves/renames file or directory |
-| `fileRename(old, new)` | `fileRename(old, new)` | Renames file |
 | `fileMkdir(path)` | `fileMkdir(path)` | Creates directory and all parents |
-| `fileRmdir(path)` | `fileRmdir(path)` | Removes empty directory |
 | `fileReadDir(path)` | `fileReadDir(path)` | Returns result with array of filenames in `value` |
 | `fileGlob(pattern)` | `fileGlob(pattern)` | Returns result with matching path strings in `value` |
-| `fileChmod(path, mode)` | `fileChmod(path, mode)` | Changes permissions. mode is octal string e.g. `"0755"` |
-| `fileExt(path)` | `fileExt(path)` | Returns file extension string e.g. `".lgs"` (not a result table) |
+| `fileCopy(src, dst)` | `fileCopy(src, dst)` | Copies file |
+| `fileMove(src, dst)` | `fileMove(src, dst)` | Moves/renames file or directory |
 | `fileExists(path)` | `fileExists(path)` | Returns bool directly (not a result table) |
 
 ### HTTP (disabled in sandbox)
@@ -489,10 +473,10 @@ All HTTP builtins return a result table: `{ok, value: {body, status}, error}`
 | `cd(path)` | `cd(path)` | Changes current working directory |
 | `env(key)` | `env(key)` | Returns env variable value string or null |
 | `setenv(key, val)` | `setenv(key, val)` | Sets environment variable |
-| `args()` | `args()` | Returns CLI arguments (index 2+). **Note:** Does not work in compiled binaries (`lgs build`). Use `lgs script.lgs` instead. |
+| `args()` | `args()` | Returns CLI arguments as array (index 0 onward). Has bounds checking — returns empty array if no arguments. |
 | `exit(code?)` | `exit(code?)` | Exits process, optional integer code (default 0) |
 | `shell(cmd)` | `shell(cmd)` | Runs shell command string, returns result table with output string in `value` |
-| `run(cmd, args...)` | `run(cmd, args...)` | Runs command with separate args, returns output string or null |
+| `run(cmd, args...)` | `run(cmd, args...)` | Runs command with separate args, returns result table |
 
 ---
 
@@ -506,20 +490,16 @@ use "std/array"
 ```
 | Function | Signature | Description |
 |---|---|---|
-| `arrayMap(arr, fn)` | `arrayMap(arr, func)` | Returns new array with func applied to each element |
-| `arrayFilter(arr, fn)` | `arrayFilter(arr, func)` | Returns new array with only elements where func returns true |
-| `arrayReduce(arr, fn, init)` | `arrayReduce(arr, func, initial)` | Reduces array to single value |
-| `arrayUnique(arr)` | `arrayUnique(arr)` | Returns array with duplicate values removed |
-| `arrayFlat(arr)` | `arrayFlat(arr)` | Flattens nested arrays one level deep |
-| `arrayCopy(arr)` | `arrayCopy(arr)` | Returns a shallow copy of array |
-| `arraySum(arr)` | `arraySum(arr)` | Returns sum of all elements |
-| `arrayMin(arr)` | `arrayMin(arr)` | Returns minimum value |
-| `arrayMax(arr)` | `arrayMax(arr)` | Returns maximum value |
-| `arrayContainsAll(arr, items)` | `arrayContainsAll(arr, items)` | Returns true if arr contains all items |
-| `arrayChunk(arr, size)` | `arrayChunk(arr, size)` | Splits array into chunks of given size |
-| `arrayIndexOf(arr, val)` | `arrayIndexOf(arr, val)` | Returns index of val, -1 if not found |
-
-Also available as short aliases: `map`, `filter`, `reduce`, `unique`, `flat`, `copy`, `sum`, `min`, `max`, `containsAll`, `chunk`, `indexOf` (after import).
+| `map(arr, fn)` | `map(arr, func)` | Transform each element |
+| `filter(arr, fn)` | `filter(arr, func)` | Keep passing elements |
+| `reduce(arr, fn, init)` | `reduce(arr, func, initial)` | Combine to single value |
+| `unique(arr)` | `unique(arr)` | Remove duplicates |
+| `flat(arr)` | `flat(arr)` | Flatten nested arrays |
+| `sum(arr)` | `sum(arr)` | Sum all numbers |
+| `min(arr)` | `min(arr)` | Smallest number |
+| `max(arr)` | `max(arr)` | Largest number |
+| `indexOf(arr, val)` | `indexOf(arr, val)` | Find position |
+| `containsAll(arr, items)` | `containsAll(arr, items)` | Check all present |
 
 ### std/string
 ```
@@ -527,30 +507,29 @@ use "std/string"
 ```
 | Function | Signature | Description |
 |---|---|---|
-| `strPadStart(str, len, char)` | `strPadStart(str, length, char)` | Pads start of string until it reaches length |
-| `strPadEnd(str, len, char)` | `strPadEnd(str, length, char)` | Pads end of string until it reaches length |
-| `strCapitalize(str)` | `strCapitalize(str)` | Capitalizes first character |
-| `strIsEmpty(str)` | `strIsEmpty(str)` | Returns true if string is empty or only whitespace |
-| `strCount(str, sub)` | `strCount(str, sub)` | Returns count of non-overlapping occurrences of sub |
-| `strReverse(str)` | `strReverse(str)` | Returns reversed string |
-| `strIsPalindrome(str)` | `strIsPalindrome(str)` | Returns true if string reads same forwards and backwards |
-| `strRepeat(str, n)` | `strRepeat(str, n)` | Repeats string n times |
+| `strCapitalize(s)` | `strCapitalize(str)` | Capitalize first letter |
+| `strReverse(s)` | `strReverse(str)` | Reverse characters |
+| `strIsPalindrome(s)` | `strIsPalindrome(str)` | Returns true if palindrome |
+| `strIsEmpty(s)` | `strIsEmpty(str)` | Returns true if empty or whitespace |
+| `strCount(s, sub)` | `strCount(str, sub)` | Count occurrences |
+| `strRepeat(s, n)` | `strRepeat(str, n)` | Repeat string n times |
+| `strPadStart(s, len, c)` | `strPadStart(str, length, char)` | Pad start |
+| `strPadEnd(s, len, c)` | `strPadEnd(str, length, char)` | Pad end |
 
 ### std/math
 ```
 use "std/math"
 ```
-Note: `std/math` automatically imports `std/array` internally.
 | Function | Signature | Description |
 |---|---|---|
-| `mathFib(n)` | `mathFib(n)` | Returns nth Fibonacci number (recursive) |
-| `mathFactorial(n)` | `mathFactorial(n)` | Returns n! |
-| `mathMean(arr)` | `mathMean(arr)` | Returns arithmetic mean of array |
-| `mathMedian(arr)` | `mathMedian(arr)` | Returns median of array |
-| `mathMode(arr)` | `mathMode(arr)` | Returns most frequent value as string |
-| `mathClamp(n, min, max)` | `mathClamp(n, min, max)` | Clamps n between min and max |
+| `mathFib(n)` | `mathFib(n)` | nth Fibonacci number |
+| `mathFactorial(n)` | `mathFactorial(n)` | n! |
+| `mathMean(arr)` | `mathMean(arr)` | Average |
+| `mathMedian(arr)` | `mathMedian(arr)` | Middle value |
+| `mathMode(arr)` | `mathMode(arr)` | Most common value |
+| `mathClamp(n, min, max)` | `mathClamp(n, min, max)` | Constrain to range |
 | `mathLerp(a, b, t)` | `mathLerp(a, b, t)` | Linear interpolation |
-| `mathIsPrime(n)` | `mathIsPrime(n)` | Returns true if n is prime |
+| `mathIsPrime(n)` | `mathIsPrime(n)` | Returns true if prime |
 | `mathGcd(a, b)` | `mathGcd(a, b)` | Greatest common divisor |
 | `mathLcm(a, b)` | `mathLcm(a, b)` | Least common multiple |
 
@@ -561,13 +540,13 @@ use "std/path"
 | Function | Signature | Description |
 |---|---|---|
 | `pathJoin(parts)` | `pathJoin(arr)` | Joins array of path parts with `/` |
-| `pathBase(path)` | `pathBase(path)` | Returns filename portion of path |
-| `pathDir(path)` | `pathDir(path)` | Returns directory portion of path |
-| `pathExt(path)` | `pathExt(path)` | Returns file extension e.g. `".lgs"` |
-| `pathIsAbs(path)` | `pathIsAbs(path)` | Returns true if path starts with `/` |
-| `pathClean(path)` | `pathClean(path)` | Cleans `.`, `..`, double slashes from path |
-| `pathExists(path)` | `pathExists(path)` | Returns true if path exists (wraps `fileExists`) |
-| `pathWithoutExt(path)` | `pathWithoutExt(path)` | Returns path with extension removed |
+| `pathBase(path)` | `pathBase(path)` | Filename portion of path |
+| `pathDir(path)` | `pathDir(path)` | Directory portion of path |
+| `pathExt(path)` | `pathExt(path)` | File extension e.g. `".lgs"` |
+| `pathIsAbs(path)` | `pathIsAbs(path)` | Returns true if absolute |
+| `pathClean(path)` | `pathClean(path)` | Simplify path |
+| `pathExists(path)` | `pathExists(path)` | Returns true if exists |
+| `pathWithoutExt(path)` | `pathWithoutExt(path)` | Path without extension |
 
 ### std/time
 ```
@@ -576,16 +555,16 @@ use "std/time"
 All datetime functions work with datetime objects: `table{timestamp, str, date, time}`.
 | Function | Signature | Description |
 |---|---|---|
-| `datetimeNow()` | `datetimeNow()` | Returns datetime object for current time |
-| `datetimeFromTimestamp(ts)` | `datetimeFromTimestamp(ts)` | Returns datetime object from unix timestamp |
-| `datetimeFormat(dt, fmt)` | `datetimeFormat(dt, fmt)` | Formats datetime using Go time layout string |
+| `datetimeNow()` | `datetimeNow()` | Current datetime |
+| `datetimeFromTimestamp(ts)` | `datetimeFromTimestamp(ts)` | From Unix timestamp |
+| `datetimeFormat(dt, fmt)` | `datetimeFormat(dt, fmt)` | Custom format |
 | `datetimeIsAfter(dt1, dt2)` | `datetimeIsAfter(dt1, dt2)` | Returns bool |
 | `datetimeIsBefore(dt1, dt2)` | `datetimeIsBefore(dt1, dt2)` | Returns bool |
 | `datetimeIsEqual(dt1, dt2)` | `datetimeIsEqual(dt1, dt2)` | Returns bool |
-| `datetimeDiff(dt1, dt2, unit)` | `datetimeDiff(dt1, dt2, unit)` | Returns difference as integer. unit: `"seconds"`, `"minutes"`, `"hours"`, `"days"`, `"weeks"` |
-| `datetimeAdd(dt, amount, unit)` | `datetimeAdd(dt, amount, unit)` | Returns new datetime with time added |
-| `datetimeSubtract(dt, amount, unit)` | `datetimeSubtract(dt, amount, unit)` | Returns new datetime with time subtracted |
-| `datetimeToStr(dt)` | `datetimeToStr(dt)` | Returns datetime string |
+| `datetimeDiff(dt1, dt2, unit)` | `datetimeDiff(dt1, dt2, unit)` | Difference |
+| `datetimeAdd(dt, amount, unit)` | `datetimeAdd(dt, amount, unit)` | Add time |
+| `datetimeSubtract(dt, n, u)` | `datetimeSubtract(dt, n, u)` | Subtract time |
+| `datetimeToStr(dt)` | `datetimeToStr(dt)` | To string |
 
 ### std/type
 ```
@@ -593,33 +572,26 @@ use "std/type"
 ```
 | Function | Signature | Description |
 |---|---|---|
-| `isNull(val)` | `isNull(val)` | Returns true if type is NULL |
-| `isString(val)` | `isString(val)` | Returns true if type is STRING |
-| `isInt(val)` | `isInt(val)` | Returns true if type is INTEGER |
-| `isFloat(val)` | `isFloat(val)` | Returns true if type is FLOAT |
-| `isBool(val)` | `isBool(val)` | Returns true if type is BOOLEAN |
-| `isArray(val)` | `isArray(val)` | Returns true if type is ARRAY |
-| `isTable(val)` | `isTable(val)` | Returns true if type is TABLE |
-| `isNumber(val)` | `isNumber(val)` | Returns true if type is INTEGER or FLOAT |
-| `isCallable(val)` | `isCallable(val)` | Returns true if type is FUNCTION |
+| `isNull(val)` | `isNull(val)` | Check null |
+| `isString(val)` | `isString(val)` | Check string |
+| `isInt(val)` | `isInt(val)` | Check integer |
+| `isFloat(val)` | `isFloat(val)` | Check float |
+| `isBool(val)` | `isBool(val)` | Check boolean |
+| `isArray(val)` | `isArray(val)` | Check array |
+| `isTable(val)` | `isTable(val)` | Check table |
+| `isNumber(val)` | `isNumber(val)` | Check int or float |
+| `isCallable(val)` | `isCallable(val)` | Check function |
 
 ### std/log
 ```
 use "std/log"
 ```
-| Function / Variable | Description |
+| Function | Description |
 |---|---|
-| `LOG_DEBUG` | Level constant `"DEBUG"` |
-| `LOG_INFO` | Level constant `"INFO"` |
-| `LOG_WARN` | Level constant `"WARN"` |
-| `LOG_ERROR` | Level constant `"ERROR"` |
-| `_logLevel` | Current log level (default `"DEBUG"`) — set to control output |
-| `_logToFile` | Bool — if true, logs are also written to `_logFile` (default false) |
-| `_logFile` | Log file path (default `"app.log"`) |
-| `logDebug(msg)` | Prints white debug message |
-| `logInfo(msg)` | Prints green info message |
-| `logWarn(msg)` | Prints yellow warning message |
-| `logError(msg)` | Prints red error message |
+| `logDebug(msg)` | Debug level (white) |
+| `logInfo(msg)` | Info level (green) |
+| `logWarn(msg)` | Warn level (yellow) |
+| `logError(msg)` | Error level (red) |
 
 ### std/testing
 ```
@@ -627,9 +599,9 @@ use "std/testing"
 ```
 | Function | Signature | Description |
 |---|---|---|
-| `assert(name, got, expected)` | `assert(name, got, expected)` | Compares got to expected via string comparison. Prints failure if mismatch |
-| `suite(name, fn)` | `suite(name, func)` | Groups assertions under a named suite |
-| `summary()` | `summary()` | Prints pass/fail summary. Calls `exit(1)` if any tests failed |
+| `assert(name, got, expected)` | `assert(name, got, expected)` | Check equality |
+| `suite(name, fn)` | `suite(name, func)` | Group tests |
+| `summary()` | `summary()` | Print results |
 
 ---
 
@@ -693,93 +665,36 @@ When running in the Logos playground (web), sandbox mode is active:
 
 ## COMMON PATTERNS
 
-### HTTP + JSON
+### HTTP + JSON + Pipe
 ```
-let res = httpGet("https://api.example.com/users")
-if res.ok {
-  let users = parseJson(res.value.body)["data"]
-  for user in users {
-    print(user.name)
-  }
-} else {
-  print(colorRed("Error: " + res.error))
-}
+let users = try httpGet("https://api.example.com/users")
+    |> try parseJson
+    |> filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)
+print(users)
 ```
 
-### Authenticated Request
+### String Interpolation
 ```
-let res = httpGet("https://api.example.com/profile", table{
-  Authorization: "Bearer mytoken123"
-})
-```
-
-### POST Request
-```
-let payload = toJson(table{name: "Uthman", age: 20})
-let res = httpPost("https://api.example.com/users", payload, table{
-  Authorization: "Bearer token"
-})
-if res.ok {
-  print("Status: " + toStr(res.value.status))
-}
+let name = "Alice"
+let age = 28
+print("${name} is ${age} years old")
 ```
 
-### Table Iteration
-```
-let person = table{name: "Uthman", age: 20}
-for pair in person {
-  print(pair[0] + ": " + toStr(pair[1]))
-}
-```
-
-### Error Handling Pattern
+### Error Handling with try
 ```
 fn safeFetch(url) {
-  let res = httpGet(url)
-  if !res.ok {
-    print(colorRed("Failed: " + res.error))
-    return null
-  }
-  return parseJson(res.value.body)
+    let res = try httpGet(url)
+    let data = try parseJson(res.value.body)
+    return data
 }
 ```
 
 ### File Operations
 ```
-let res = fileRead("config.json")
-if res.ok {
-  let config = parseJson(res.value)
-  print(config.port)
-}
-
-let writeRes = fileWrite("output.txt", "hello world")
-if !writeRes.ok {
-  print(colorRed("Write failed: " + writeRes.error))
-}
-```
-
-### Using Stdlib
-```
-use "std/array"
-use "std/math"
-use "std/string"
-
-let nums = [3, 1, 4, 1, 5, 9, 2]
-let doubled = arrayMap(nums, fn(x) -> x * 2)
-let evens = arrayFilter(nums, fn(x) -> x % 2 == 0)
-let total = arraySum(nums)
-let isPrime = mathIsPrime(7)
-let padded = strPadStart("5", 3, "0")   // "005"
-```
-
-### Logging
-```
-use "std/log"
-
-_logLevel = "INFO"   // suppress DEBUG messages
-logInfo("Server started")
-logWarn("Low memory")
-logError("Connection failed")
+let content = try fileRead("config.json")
+let config = try parseJson(content)
+print(config.port)
 ```
 
 ---
@@ -788,38 +703,8 @@ logError("Connection failed")
 
 - Dot access only works with string-keyed table fields. Integer or boolean keys must use bracket access.
 - Bracket access on tables is type-aware: `t["1"]` and `t[1]` are different keys.
-- No try/catch — use the result pattern for error handling.
+- No try/catch — use the result pattern or try expression.
 - No classes or structs — use tables as data containers.
 - No variadic user-defined functions — only builtins support `args...`.
 - `spawn` waits for all goroutines (no fire-and-forget).
 - `spawn for item in` only supports arrays, not tables or strings.
-- `sort()` only works on numeric arrays — non-numbers are silently skipped.
-
----
-
-## QUICK EXAMPLE SCRIPT
-
-```
-use "std/array"
-
-fn fetchLocations(baseUrl) {
-  let res = httpGet(baseUrl + "/details/locations")
-  if !res.ok {
-    print(colorRed("fetch failed: " + res.error))
-    return []
-  }
-  return parseJson(res.value.body)["data"]
-}
-
-let BASE_URL = "https://api.example.com"
-let locations = fetchLocations(BASE_URL)
-
-print(colorBold("Locations: " + toStr(len(locations))))
-print("")
-
-for loc in locations {
-  print(colorGreen(loc.name) + " (" + loc.abbv + ")")
-  print("  lat: " + toStr(loc.location.lat))
-  print("  lng: " + toStr(loc.location.lng))
-}
-```

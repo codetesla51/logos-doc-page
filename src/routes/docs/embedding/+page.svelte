@@ -80,9 +80,9 @@ func main() {
 
 	<CodeBlock
 		code={`err := vm.Run(\`
-    let x = 10
-    let y = 20
-    print(toStr(x + y))
+        let x = 10
+        let y = 20
+        print(str(x + y))
 \`)
 
 if err != nil {

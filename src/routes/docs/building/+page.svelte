@@ -14,179 +14,198 @@
 	<h1>Building Binaries</h1>
 
 	<p>
-		Logos can compile your scripts into standalone executables. This allows you to distribute your
-		applications without requiring users to have Logos installed.
+		Turn your Logos scripts into standalone executables. No Logos installation required on
+		target machines — just run the binary.
 	</p>
 
-	<h2>The Build Command</h2>
+	<h2>Build Command</h2>
 
 	<p>
-		Use <code>lgs build</code> to compile a Logos script into a binary:
+		Run <code>lgs build</code> with your script:
 	</p>
 
 	<CodeBlock code={`lgs build script.lgs`} language="bash" />
 
 	<p>
-		This creates an executable named <code>script</code> (matching your script name without the
-		<code>.lgs</code> extension) in the current directory.
+		This creates a binary named <code>script</code> (your filename without <code>.lgs</code>)
+		in the current directory.
 	</p>
 
 	<h2>How It Works</h2>
 
-	<p>When you run <code>lgs build</code>, Logos:</p>
+	<p>
+		Under the hood, <code>lgs build</code> does the following:
+	</p>
 
 	<ol>
 		<li>Parses and validates your Logos code</li>
-		<li>Creates a temporary build directory</li>
-		<li>Generates a Go main.go that embeds your script</li>
-		<li>Copies the standard library into the build</li>
-		<li>Resolves and includes any user modules your script imports</li>
-		<li>Compiles everything using <code>go build</code></li>
-		<li>Produces a standalone executable</li>
+		<li>Creates a temporary Go project</li>
+		<li>Generates a <code>main.go</code> that embeds your script as a string</li>
+		<li>Links in the Logos interpreter and standard library</li>
+		<li>Runs <code>go build</code> to produce a native executable</li>
 	</ol>
 
 	<p>
-		The resulting binary contains everything needed to run your script, including the Logos
-		interpreter, your script source, the standard library, and any user modules.
-	</p>
-
-	<h2>User Modules</h2>
-
-	<p>
-		If your script imports custom modules using <code>use "modulename"</code>, the build process
-		automatically finds and bundles them. Modules should be in the same directory as your main script:
-	</p>
-
-	<CodeBlock
-		code={`// myapp.lgs
-use "utils"
-use "helpers"
-
-// Your code here
-print(helperFunction())`}
-		language="javascript"
-	/>
-
-	<CodeBlock
-		code={`// utils.lgs (in same directory)
-let utilFunction = fn() {
-    return "utility"
-}`}
-		language="javascript"
-	/>
-
-	<p>
-		Standard library modules (<code>array</code>, <code>log</code>, <code>math</code>, <code>path</code>,
-		<code>string</code>, <code>testing</code>, <code>time</code>, <code>type</code>) are always
-		included automatically.
+		The resulting binary is fully self-contained. It includes the Logos interpreter, your script,
+		and the stdlib — everything bundled together.
 	</p>
 
 	<h2>Requirements</h2>
 
-	<p>Building requires Go to be installed on your system, since the build process uses <code>go build</code> under the hood.</p>
+	<p>
+		Building requires Go to be installed. The build process uses <code>go build</code> internally:
+	</p>
 
 	<CodeBlock
-		code={`# Check if Go is installed
+		code={`# Check Go is installed
 go version
-
-# If not, install Go first
-# See: https://go.dev/doc/install`}
+# go version go1.21+`}
 		language="bash"
 	/>
 
 	<h2>Example Workflow</h2>
 
-	<p>Here's a typical workflow for building and distributing a Logos application:</p>
+	<p>From script to binary in a few commands:</p>
 
 	<CodeBlock
-		code={`# Write your script
-print("Hello from Logos!")
+		code={`# 1. Write your script
+cat > deploy.lgs << 'EOF'
+let version = "1.2.0"
+let target = args()[1]
 
-# Save as myapp.lgs, then test it
-lgs myapp.lgs
+print("Deploying \${version} to \${target}...")
 
-# Build to binary
-lgs build myapp.lgs
+let res = httpGet("https://api.example.com/health")
+if res.ok {
+    print("Server healthy, deploying...")
+} else {
+    print("Error: Server not ready")
+    exit(1)
+}
 
-# Run the binary
-./myapp`}
+print("Deployment complete!")
+EOF
+
+# 2. Test with Logos interpreter
+lgs deploy.lgs staging
+
+# 3. Build to binary
+lgs build deploy.lgs
+
+# 4. Distribute and run the binary
+./deploy staging`}
 		language="bash"
 	/>
 
 	<h2>Shebang Support</h2>
 
 	<p>
-		Logos scripts can include a shebang line for direct execution. The shebang is automatically
-		stripped during both interpretation and building:
+		Add a shebang to make scripts directly executable. The shebang is ignored during build:
 	</p>
 
 	<CodeBlock
 		code={`#!/usr/bin/env lgs
 
-print("This script can be run directly!")
-print("Or built into a binary.")`}
+print("I can be run directly!")
+print("And built into a binary too.")`}
 		language="javascript"
+		filename="hello.lgs"
 	/>
 
 	<CodeBlock
-		code={`# Make executable and run directly
-chmod +x myscript.lgs
-./myscript.lgs
+		code={`# Make executable
+chmod +x hello.lgs
+
+# Run directly
+./hello.lgs
 
 # Or build it
-lgs build myscript.lgs
-./myscript`}
+lgs build hello.lgs
+./hello`}
 		language="bash"
 	/>
 
-	<h2>Build Output</h2>
+	<h2>Custom Module Imports</h2>
 
-	<p>On a successful build, you'll see:</p>
+	<p>
+		If your script imports local modules, they're bundled automatically:
+	</p>
+
+	<CodeBlock
+		code={`// In myapp.lgs
+use "utils"
+use "helpers"
+
+print(formatMessage("Hello", "World"))`}
+		language="javascript"
+		filename="myapp.lgs"
+	/>
+
+	<CodeBlock
+		code={`// utils.lgs — in the same directory
+let formatMessage = fn(prefix, name) {
+    return "\${prefix}, \${name}!"
+}`}
+		language="javascript"
+		filename="utils.lgs"
+	/>
+
+	<p>
+		Local modules (<code>use "mymodule"</code>) must be in the same directory as the main script.
+		Standard library imports (<code>use "std/array"</code>) are always included.
+	</p>
+
+	<h2>Output</h2>
+
+	<p>
+		On success, you see the output filename:
+	</p>
 
 	<CodeBlock code={`Built: myapp`} language="text" />
 
-	<p>The binary is created in your current working directory.</p>
+	<p>
+		The binary is created in your current working directory. Move it anywhere and run it —
+		no Logos installation needed.
+	</p>
 
 	<h2>Troubleshooting</h2>
 
-	<h3>Build fails with parse errors</h3>
+	<h3>Parse errors</h3>
 
 	<p>
-		The build validates your script before compiling. Fix any syntax errors shown in the output:
+		Your script is validated before building. Fix syntax errors:
 	</p>
 
 	<CodeBlock
-		code={`lgs build broken.lgs
-# Output shows: parse error: unexpected token...`}
+		code={`lgs build script.lgs
+# Error: parse error at line 5: unexpected token '}'`}
 		language="bash"
 	/>
 
-	<h3>Build fails with "module not found"</h3>
+	<h3>Module not found</h3>
 
 	<p>
-		Ensure all imported modules exist in the same directory as your main script. The build process
-		looks for <code>modulename.lgs</code> relative to the script location.
-	</p>
-
-	<h3>Build fails with Go errors</h3>
-
-	<p>
-		Make sure Go is properly installed and <code>go build</code> works:
+		Ensure all <code>use "modulename"</code> imports exist in the same directory:
 	</p>
 
 	<CodeBlock
-		code={`# Verify Go installation
-go version
-
-# Check Go environment
-go env GOROOT GOPATH`}
+		code={`ls -la
+# -rw-r--r--  myapp.lgs
+# -rw-r--r--  utils.lgs
+# -rw-r--r--  helpers.lgs`}
 		language="bash"
 	/>
 
-	<h3>Cannot find std directory</h3>
+	<h3>Go not found</h3>
 
 	<p>
-		The build process needs access to the Logos standard library. This is typically found relative to
-		the <code>lgs</code> binary or in the current working directory.
+		Install Go first: <a href="https://go.dev/doc/install" class="text-text hover:underline">https://go.dev/doc/install</a>
+	</p>
+
+	<h3>Binary too large</h3>
+
+	<p>
+		Binary size is typically 10-20MB depending on platform. This includes the full interpreter.
+		For comparison, a "hello world" in C is ~15KB; a Logos binary includes the runtime.
 	</p>
 </DocLayout>

@@ -1,0 +1,421 @@
+# Logos Language Reference (v0.4.3)
+
+## Overview
+
+Logos is a dynamically-typed, interpreted scripting language written in Go. It uses a Pratt parser and a tree-walking evaluator.
+
+- **File extension:** .lgs
+- **CLI:** `lgs file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
+- **GitHub:** github.com/codetesla51/logos
+- **Version:** v0.4.3
+
+## Variables
+
+```
+let x = 10
+let name = "Uthman"
+let pi = 3.14
+let flag = true
+let nothing = null
+
+x += 5
+x -= 2
+```
+
+Variables are mutable. Reassign with `=`.
+
+### const Keyword (v0.4.2)
+```
+const PI = 3.14159
+const MAX_RETRIES = 3
+
+// Reassignment throws runtime error:
+// PI = 3.14  // Error!
+```
+
+### Compound Assignment
+`x += 5` · `x -= 2` · `x *= 3` · `x /= 2` · `x %= 4`
+
+### Postfix Increment/Decrement
+`i++` · `i--`
+
+## Operators
+
+- **Arithmetic:** `+`, `-`, `*`, `/`, `%`
+- **Comparison:** `==`, `!=`, `<`, `>`, `<=`, `>=`
+- **Logical:** `&&`, `||`, `!`
+- **Ternary:** `condition ? valueIfTrue : valueIfFalse`
+- **Pipe:** `arr |> filter(fn) |> map(fn)`
+
+## Strings
+
+```
+let s = "hello world"
+
+// String interpolation (v0.4+)
+let name = "world"
+let greeting = "hello ${name}"
+```
+
+## Arrays
+
+```
+let arr = [1, 2, 3, "four", true]
+let first = arr[0]
+let last = arr[len(arr) - 1]
+```
+
+## Tables (Maps/Objects)
+
+```
+let user = table{
+  name: "Uthman",
+  age: 20,
+  active: true
+}
+
+user.name = "New Name"  // dot assignment mutates field
+user.age = 21
+
+user.name       // "New Name" (dot access for string keys)
+user["name"]    // "New Name" (bracket access)
+```
+
+Bracket access is type-aware. `t["1"]` and `t[1]` are different keys.
+
+## Control Flow
+
+### If / Else
+```
+if x > 10 {
+  print("big")
+} else if x > 5 {
+  print("medium")
+} else {
+  print("small")
+}
+```
+
+### Switch
+```
+switch x {
+  case 1 { print("one") }
+  case 2 { print("two") }
+  default { print("other") }
+}
+```
+
+### For Loop
+```
+for i < 10 {
+  i += 1
+}
+```
+
+### For-In Loop
+```
+for item in arr {
+  print(item)
+}
+
+for i, v in arr {
+  print("${i}: ${v}")
+}
+```
+
+## Functions
+
+```
+let add = fn(x, y) {
+  return x + y
+}
+add(2, 3)   // 5
+
+let double = fn(x) -> x * 2
+```
+
+### Closures
+```
+fn makeCounter() {
+  let count = 0
+  return fn() {
+    count += 1
+    return count
+  }
+}
+let counter = makeCounter()
+counter()   // 1
+counter()   // 2
+```
+
+## Modules
+
+```
+use "filename"
+use "std/math"
+use "std/array"
+use "std/string"
+use "std/path"
+use "std/time"
+use "std/type"
+use "std/log"
+use "std/testing"
+```
+
+## Concurrency
+
+```
+spawn {
+  print("task 1")
+  print("task 2")
+}
+
+spawn for item in jobs {
+  process(item)
+}
+```
+
+## Result Pattern
+
+Functions like `httpGet`, `fileRead`, `parseJson` return result tables:
+
+```
+table{
+  ok: true/false,
+  value: <data or null>,
+  error: "<message or empty string>"
+}
+
+let res = httpGet("https://api.example.com/data")
+if res.ok {
+  print(res.value.body)
+} else {
+  print(res.error)
+}
+```
+
+### Try Expression (v0.4+)
+
+Unwraps result tables and propagates errors up the call stack:
+
+```
+fn fetchData() {
+  let res = try httpGet("https://api.example.com/data")
+  return res.value.body
+}
+
+// Without try, you need:
+fn fetchData() {
+  let res = httpGet("https://api.example.com/data")
+  if !res.ok { return res }
+  return res.value.body
+}
+```
+
+## Builtins Reference
+
+### I/O
+`print(args...)` · `input(prompt?)` · `prompt(msg)` · `confirm(msg)` · `select(msg, options[])` · `clear()`
+
+### Type
+`type(val)` · `len(str|arr)` · `keys(table)` · `values(table)` · `has(table, key)`
+
+### Type Conversion
+`str(val)` · `int(val)` · `float(val)` · `toStr(val)` · `toInt(val)` · `toFloat(val)` · `toBool(val)`
+
+Note: `str()`, `int()`, `float()` are short aliases added in v0.4.1. The `to*` forms still work.
+
+### String
+`upper(s)` · `lower(s)` · `trim(s)` · `replace(s, old, new)` · `split(s, sep)` · `join(arr, sep)` · `contains(str|arr, val)` · `startsWith(s, prefix)` · `endsWith(s, suffix)` · `indexOf(s, sub)` · `repeat(s, n)` · `slice(str|arr, start, end)` · `format(tmpl, args...)`
+
+### Array
+`push(arr, val)` · `pop(arr)` · `first(arr)` · `last(arr)` · `tail(arr)` · `prepend(arr, val)` · `reverse(arr)` · `sort(arr)` · `slice(arr, start, end)` · `contains(arr, val)` · `range(start, end, step?)`
+
+Note: `range(start, end)` generates numbers from start (inclusive) to end (exclusive). Use `range(0, 10)` for 0-9, `range(0, 10, 2)` for 0,2,4,...,8, `range(5, 0, -1)` for countdown.
+
+### Math
+`mathAbs(n)` · `mathSqrt(n)` · `mathPow(base, exp)` · `mathFloor(n)` · `mathCeil(n)` · `mathRound(n)` · `mathMin(a, b)` · `mathMax(a, b)` · `mathRandom()` · `mathRandomInt(min, max)` · `mathPi()`
+
+### JSON
+`parseJson(str)` · `toJson(val)` · `prettyJson(val)`
+
+### File I/O
+`fileRead(path)` · `fileWrite(path, content)` · `fileAppend(path, content)` · `fileDelete(path)` · `fileCopy(src, dst)` · `fileMove(src, dst)` · `fileMkdir(path)` · `fileReadDir(path)` · `fileGlob(pattern)` · `fileExists(path)`
+
+### HTTP
+`httpGet(url, headers?)` · `httpPost(url, body, headers?)` · `httpPut(url, body, headers?)` · `httpPatch(url, body, headers?)` · `httpDelete(url, headers?)`
+
+### Time
+`timeNow()` · `timeMs()` · `timeStr()` · `dateStr()` · `dateTimeStr()` · `timeFormat(ts, fmt)` · `sleep(ms)`
+
+### System
+`osname()` · `pwd()` · `cd(path)` · `env(key)` · `setenv(key, val)` · `args()` · `exit(code?)` · `shell(cmd)` · `run(cmd, args...)`
+
+Note: `args()` does not work in compiled binaries. Use `lgs script.lgs` instead.
+
+### Color
+`colorRed(str)` · `colorGreen(str)` · `colorYellow(str)` · `colorBlue(str)` · `colorMagenta(str)` · `colorCyan(str)` · `colorWhite(str)` · `colorBold(str)`
+
+### Regex (v0.4.3)
+`reMatch(pattern, text)` · `reFind(pattern, text)` · `reFindAll(pattern, text)` · `reReplace(pattern, text, repl)` · `reSplit(pattern, text)` · `reGroups(pattern, text)`
+
+Uses Go regexp syntax. Patterns use backticks for raw strings.
+
+```
+reMatch(`\d+`, "hello 123")      // true
+reFind(`\d+`, "3 cats")           // "3"
+reFindAll(`\d+`, "3 and 12")      // ["3", "12"]
+reReplace(`\d+`, "3 cats", "X")   // "X cats"
+reSplit(`\s+`, "a   b c")         // ["a", "b", "c"]
+reGroups(`(\w+)@(\w+)`, "a@b")    // ["a", "b"]
+```
+
+## Standard Library
+
+### std/array
+`map(arr, fn)` · `filter(arr, fn)` · `reduce(arr, fn, init)` · `unique(arr)` · `flat(arr)` · `sum(arr)` · `min(arr)` · `max(arr)` · `indexOf(arr, val)` · `containsAll(arr, items)`
+
+### std/string
+`strCapitalize(s)` · `strReverse(s)` · `strIsPalindrome(s)` · `strIsEmpty(s)` · `strCount(s, sub)` · `strRepeat(s, n)` · `strPadStart(s, len, c)` · `strPadEnd(s, len, c)`
+
+### std/math
+`mathFib(n)` · `mathFactorial(n)` · `mathMean(arr)` · `mathMedian(arr)` · `mathClamp(n, min, max)` · `mathIsPrime(n)` · `mathGcd(a, b)` · `mathLcm(a, b)`
+
+### std/path
+`pathJoin(parts)` · `pathBase(path)` · `pathDir(path)` · `pathExt(path)` · `pathIsAbs(path)` · `pathClean(path)` · `pathExists(path)` · `pathWithoutExt(path)`
+
+### std/time
+`datetimeNow()` · `datetimeFromTimestamp(ts)` · `datetimeFormat(dt, fmt)` · `datetimeIsAfter(dt1, dt2)` · `datetimeDiff(dt1, dt2, unit)` · `datetimeAdd(dt, amount, unit)` · `datetimeSubtract(dt, n, u)` · `datetimeIsBefore(d1, d2)` · `datetimeIsEqual(d1, d2)` · `datetimeToStr(dt)`
+
+### std/type
+`isNull(val)` · `isString(val)` · `isInt(val)` · `isFloat(val)` · `isBool(val)` · `isArray(val)` · `isTable(val)` · `isNumber(val)` · `isCallable(val)`
+
+### std/log
+`logDebug(msg)` · `logInfo(msg)` · `logWarn(msg)` · `logError(msg)`
+
+### std/testing
+`assert(name, got, expected)` · `suite(name, fn)` · `summary()`
+
+## Embedding in Go
+
+```go
+import "github.com/codetesla51/logos/logos"
+
+vm := logos.New()
+
+vm.Register("greet", func(args ...logos.Object) logos.Object {
+    name := args[0].(*logos.String).Value
+    return &logos.String{Value: "Hello, " + name}
+})
+
+vm.SetVar("count", 42)
+err := vm.Run(`print(greet("World"))`)
+result := vm.GetVar("count")
+```
+
+### Sandbox Mode
+
+```go
+vm := logos.NewWithConfig(logos.SandboxConfig{
+    AllowFileIO:  false,
+    AllowNetwork: false,
+    AllowShell:   false,
+    AllowExit:    false,
+})
+```
+
+In the web playground:
+- File I/O disabled
+- HTTP disabled
+- Shell/exec disabled
+- `exit()` disabled
+
+## Known Limitations
+
+- Dot access only works with string-keyed table fields
+- Bracket access is type-aware (`t["1"]` ≠ `t[1]`)
+- No try/catch — use result pattern or try expression
+- No classes/structs — use tables
+- No variadic user functions — only builtins support `args...`
+- `spawn` waits for all goroutines
+- `sort()` handles both string and numeric arrays
+
+## String Interpolation (v0.4+)
+
+Embed expressions directly in strings:
+
+```
+let name = "world"
+let greeting = "Hello ${name}!"  // "Hello world!"
+
+let age = 25
+let bio = "${name} is ${age}"  // "world is 25"
+
+// Works with any expression
+let nums = [1, 2, 3]
+print("Sum: ${nums[0] + nums[1] + nums[2]}")  // "Sum: 6"
+```
+
+Important: no quoted strings inside `${}` blocks. Use variables.
+
+## Pipe Operator (v0.4+)
+
+Chain function calls left to right:
+
+```
+let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+
+let result = nums
+    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
+    |> map(fn(x) -> x * x)            // [4, 16, 36, 64, 100]
+    |> filter(fn(x) -> x > 30)        // [36, 64, 100]
+```
+
+Works with try expressions for automatic error propagation:
+```
+let data = httpGet("https://api.example.com/users")
+    |> try parseJson
+    |> try filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)
+```
+
+## Ternary Operator (v0.3.2+)
+
+```
+let age = 20
+let status = age >= 18 ? "adult" : "minor"
+print("You are " + (age >= 18 ? "an adult" : "a minor"))
+```
+
+Supports nesting and chaining.
+
+## For-In with Index (v0.3.1+)
+
+```
+for i, v in nums {
+    print("${i}: ${v}")
+}
+```
+
+## Dot Access on Tables (v0.3.1+)
+
+```
+let user = table{ name: "Uthman", age: 20 }
+print(user.name)  // "Uthman"
+user.name = "updated"
+print(user.name)  // "updated"
+```
+
+## Result Objects from JSON (v0.3.0+)
+
+`toJson` and `prettyJson` return `{ok, value, error}` result objects:
+
+```
+let obj = table{ name: "Alice", age: 30 }
+let json = toJson(obj)
+if json.ok {
+    print(json.value)
+} else {
+    print("Error: " + json.error)
+}
+```

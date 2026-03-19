@@ -6,184 +6,235 @@
 
 let nums = [1, 2, 3, 4, 5]
 
-// Transform: apply function to each element
+// Transform each element
 let doubled = map(nums, fn(x) -> x * 2)
-print(toStr(doubled))  // [2, 4, 6, 8, 10]
+// [2, 4, 6, 8, 10]
 
-// Filter: keep only elements that pass test
+// Keep only elements matching a condition
 let evens = filter(nums, fn(x) -> x % 2 == 0)
-print(toStr(evens))  // [2, 4]
+// [2, 4]
 
-// Reduce: combine all elements into one value
+// Combine all elements into one value
 let total = reduce(nums, fn(acc, x) -> acc + x, 0)
-print(toStr(total))  // 15
+// 15
 
-// Other handy utilities
-print(toStr(sum([1, 2, 3, 4, 5])))
-print(toStr(min([3, 1, 4, 1, 5])))
-print(toStr(max([3, 1, 4, 1, 5])))
-print(toStr(unique([1, 2, 2, 3, 3, 3])))`;
+// Remove duplicates
+let withDupes = [1, 2, 2, 3, 3, 3]
+let unique = unique(withDupes)
+// [1, 2, 3]
+
+// Math on arrays
+sum(nums)       // 15
+min(nums)       // 1
+max(nums)       // 5
+
+// Find position
+indexOf(nums, 3)    // 2 (0-based)
+indexOf(nums, 99)   // -1 (not found)`;
 
 	const mathExample = `use "std/math"
 
-print(toStr(mathFactorial(5)))    // 120
-print(toStr(mathFib(10)))         // 55
-print(toStr(mathIsPrime(17)))    // true
+// Factorial and Fibonacci
+mathFactorial(5)    // 120
+mathFib(10)         // 55
 
-print(toStr(mathGcd(48, 18)))   // 6
-print(toStr(mathLcm(4, 6)))      // 12
+// Prime checking
+mathIsPrime(17)    // true
+mathIsPrime(15)    // false
 
+// Number theory
+mathGcd(48, 18)    // 6 (greatest common divisor)
+mathLcm(4, 6)      // 12 (least common multiple)
+
+// Statistics
 let scores = [85, 90, 78, 92, 88]
-print(toStr(mathMean(scores)))
-print(toStr(mathMedian(scores)))`;
+mathMean(scores)    // 86.6
+mathMedian(scores)  // 88
+
+// Number theory utilities
+mathClamp(15, 0, 10)    // 10 (constrain to range)
+mathLerp(0, 100, 0.25)   // 25.0 (linear interpolation)`;
 
 	const stringExample = `use "std/string"
 
-print(strCapitalize("hello world"))
-print(strReverse("hello"))
-print(toStr(strIsPalindrome("racecar")))
+// Case manipulation
+strCapitalize("hello world")    // "Hello World"
+strReverse("hello")              // "olleh"
 
-print(strRepeat("ab", 3))
-print(strCount("banana", "a"))
-print(strPadStart("42", 5, "0"))`;
+// String analysis
+strIsPalindrome("racecar")       // true
+strIsEmpty("")                  // true
+strCount("banana", "a")         // 3
+
+// Padding (useful for alignment)
+strPadStart("42", 6, "0")       // "000042"
+strPadEnd("hi", 6, ".")         // "hi...."`;
 
 	const pathExample = `use "std/path"
 
-let p = "/home/user/docs/file.txt"
+let p = "/home/user/docs/report.pdf"
 
-print(pathBase(p))         // "file.txt"
-print(pathDir(p))          // "/home/user/docs"
-print(pathExt(p))          // ".txt"
+// Break path into parts
+pathBase(p)      // "report.pdf"
+pathDir(p)       // "/home/user/docs"
+pathExt(p)       // ".pdf"
+pathWithoutExt(p)  // "/home/user/docs/report"
 
-let joined = pathJoin(["/home", "user", "docs"])
-print(joined)
+// Build paths
+let dir = pathJoin(["home", "user", "docs", "files"])
+// "home/user/docs/files"
 
-print(toStr(pathExists("/etc/passwd")))`;
+// Path analysis
+pathIsAbs("/home/user")   // true
+pathIsAbs("relative")     // false
+pathExists("/etc/passwd") // true`;
 
 	const timeExample = `use "std/time"
 
+// Get current time
 let now = datetimeNow()
-print(now["str"])
-print(now["date"])
+print(now["date"])    // "2026-03-19"
+print(now["str"])     // "2026-03-19 15:04:05"
 
+// Time arithmetic
 let tomorrow = datetimeAdd(now, 1, "days")
-let diff = datetimeDiff(tomorrow, now, "days")
-print(toStr(diff))
+let nextWeek = datetimeAdd(now, 7, "days")
+let yesterday = datetimeSubtract(now, 1, "days")
 
-print(datetimeFormat(now, "January 2, 2006"))`;
+// Time differences
+let diff = datetimeDiff(tomorrow, now, "days")  // 1
+
+// Comparison
+datetimeIsAfter(tomorrow, now)    // true
+datetimeIsBefore(yesterday, now)  // true
+datetimeIsEqual(now, now)          // true
+
+// Formatting (Go time format)
+datetimeFormat(now, "January 2, 2006")    // "March 19, 2026"
+datetimeFormat(now, "02/01/2006")        // "03/19/2026"
+datetimeFormat(now, "3:04 PM")           // "3:04 PM"`;
 
 	const logExample = `use "std/log"
 
-logDebug("Debug info")
-logInfo("Server started")
-logWarn("Low memory")
-logError("Connection failed")
+// Log levels with timestamps
+logDebug("Debug info")    // white output
+logInfo("Server started") // green output
+logWarn("Low memory")     // yellow output
+logError("Connection failed")  // red output
 
 // Output:
-// [2026-03-17 14:30:00] [DEBUG] Debug info
-// [2026-03-17 14:30:00] [INFO] Server started`;
+// [2026-03-19 15:04:05] [DEBUG] Debug info
+// [2026-03-19 15:04:05] [INFO] Server started`;
 
 	const typeExample = `use "std/type"
 
 let val = 42
-print(toStr(isInt(val)))
-print(toStr(isNumber(val)))
-print(toStr(isString(val)))
 
-print(toStr(isNull(null)))
-print(toStr(isArray([1, 2, 3])))
-print(toStr(isCallable(fn() {})))`;
+// Check types at runtime
+isInt(val)       // true
+isFloat(val)     // false
+isNumber(val)    // true (covers int and float)
+isString(val)    // false
+isBool(val)      // false
+isNull(null)      // true
+isArray([1,2,3]) // true
+isTable(table{})  // true
+isCallable(fn() {}) // true
+
+// Use for type-safe code
+fn process(val) {
+    if isArray(val) {
+        // handle array
+    } else if isString(val) {
+        // handle string
+    }
+}`;
 
 	const testingExample = `use "std/testing"
 
-let add = fn(a, b) -> a + b
-
-suite("math", fn() {
-    assert("add", add(1, 2), 3)
-    assert("add zero", add(5, 0), 5)
+// Group related tests
+suite("string utils", fn() {
+    assert("reverse", strReverse("hello"), "olleh")
+    assert("capitalize", strCapitalize("hello"), "Hello")
+    assert("palindrome", strIsPalindrome("racecar"), true)
 })
 
+suite("math utils", fn() {
+    assert("factorial", mathFactorial(5), 120)
+    assert("fibonacci", mathFib(10), 55)
+    assert("prime", mathIsPrime(17), true)
+})
+
+// Run all tests and show summary
 summary()`;
 
 	const functions = {
 		array: [
-			{ name: 'map(arr, fn)', desc: 'Transform each element' },
-			{ name: 'filter(arr, fn)', desc: 'Keep passing elements' },
-			{ name: 'reduce(arr, fn, init)', desc: 'Combine to single value' },
-			{ name: 'unique(arr)', desc: 'Remove duplicates' },
-			{ name: 'flat(arr)', desc: 'Flatten nested arrays' },
-			{ name: 'chunk(arr, n)', desc: 'Split into chunks' },
-			{ name: 'sum(arr)', desc: 'Sum all numbers' },
-			{ name: 'min(arr)', desc: 'Smallest number' },
-			{ name: 'max(arr)', desc: 'Largest number' },
-			{ name: 'indexOf(arr, val)', desc: 'Find position' },
-			{ name: 'containsAll(arr, items)', desc: 'Check all present' },
+			{ name: 'map(arr, fn)', desc: 'Transform each element, return new array' },
+			{ name: 'filter(arr, fn)', desc: 'Keep elements where fn returns true' },
+			{ name: 'reduce(arr, fn, init)', desc: 'Combine to single value using fn(acc, val)' },
+			{ name: 'unique(arr)', desc: 'Remove duplicate values' },
+			{ name: 'sum(arr)', desc: 'Sum all numeric elements' },
+			{ name: 'min(arr)', desc: 'Smallest element' },
+			{ name: 'max(arr)', desc: 'Largest element' },
+			{ name: 'indexOf(arr, val)', desc: 'Position of val, or -1 if not found' },
 		],
 		math: [
-			{ name: 'mathFactorial(n)', desc: 'n! (factorial)' },
-			{ name: 'mathFib(n)', desc: 'nth Fibonacci number' },
-			{ name: 'mathIsPrime(n)', desc: 'Check if prime' },
+			{ name: 'mathFactorial(n)', desc: 'n! (1 * 2 * ... * n)' },
+			{ name: 'mathFib(n)', desc: 'nth Fibonacci number (0-indexed)' },
+			{ name: 'mathIsPrime(n)', desc: 'true if n is prime' },
 			{ name: 'mathGcd(a, b)', desc: 'Greatest common divisor' },
 			{ name: 'mathLcm(a, b)', desc: 'Least common multiple' },
-			{ name: 'mathMean(arr)', desc: 'Average' },
-			{ name: 'mathMedian(arr)', desc: 'Middle value' },
-			{ name: 'mathMode(arr)', desc: 'Most common value' },
-			{ name: 'mathClamp(n, min, max)', desc: 'Constrain to range' },
-			{ name: 'mathLerp(a, b, t)', desc: 'Linear interpolation' },
+			{ name: 'mathMean(arr)', desc: 'Average of numbers in array' },
+			{ name: 'mathMedian(arr)', desc: 'Middle value (sorted)' },
+			{ name: 'mathClamp(n, min, max)', desc: 'n if in range, else min/max' },
 		],
 		string: [
-			{ name: 'strCapitalize(s)', desc: 'Capitalize first letter' },
-			{ name: 'strReverse(s)', desc: 'Reverse characters' },
-			{ name: 'strIsPalindrome(s)', desc: 'Check palindrome' },
-			{ name: 'strIsEmpty(s)', desc: 'Check if empty' },
-			{ name: 'strCount(s, sub)', desc: 'Count occurrences' },
-			{ name: 'strRepeat(s, n)', desc: 'Repeat string' },
-			{ name: 'strPadStart(s, len, c)', desc: 'Pad start' },
-			{ name: 'strPadEnd(s, len, c)', desc: 'Pad end' },
+			{ name: 'strCapitalize(s)', desc: 'Capitalize first letter of each word' },
+			{ name: 'strReverse(s)', desc: 'Reverse all characters' },
+			{ name: 'strIsPalindrome(s)', desc: 'true if reads same forwards/backwards' },
+			{ name: 'strIsEmpty(s)', desc: 'true if string is empty' },
+			{ name: 'strCount(s, sub)', desc: 'Count occurrences of sub in s' },
+			{ name: 'strPadStart(s, len, c)', desc: 'Pad s to len with c at start' },
+			{ name: 'strPadEnd(s, len, c)', desc: 'Pad s to len with c at end' },
 		],
 		path: [
-			{ name: 'pathJoin(parts)', desc: 'Join path parts' },
-			{ name: 'pathBase(p)', desc: 'Filename only' },
-			{ name: 'pathDir(p)', desc: 'Directory only' },
-			{ name: 'pathExt(p)', desc: 'Extension with dot' },
-			{ name: 'pathWithoutExt(p)', desc: 'No extension' },
-			{ name: 'pathIsAbs(p)', desc: 'Check if absolute' },
-			{ name: 'pathClean(p)', desc: 'Simplify path' },
-			{ name: 'pathExists(p)', desc: 'Check if exists' },
+			{ name: 'pathJoin(parts)', desc: 'Join array of path components' },
+			{ name: 'pathBase(p)', desc: 'Filename without directory' },
+			{ name: 'pathDir(p)', desc: 'Directory portion of path' },
+			{ name: 'pathExt(p)', desc: 'Extension including dot' },
+			{ name: 'pathWithoutExt(p)', desc: 'Path without extension' },
+			{ name: 'pathIsAbs(p)', desc: 'true if absolute path' },
+			{ name: 'pathExists(p)', desc: 'true if file/dir exists' },
 		],
 		time: [
-			{ name: 'datetimeNow()', desc: 'Current datetime' },
-			{ name: 'datetimeFromTimestamp(ts)', desc: 'From Unix ts' },
-			{ name: 'datetimeFormat(dt, fmt)', desc: 'Custom format' },
-			{ name: 'datetimeAdd(dt, n, unit)', desc: 'Add time' },
-			{ name: 'datetimeSubtract(dt, n, u)', desc: 'Subtract time' },
-			{ name: 'datetimeDiff(d1, d2, u)', desc: 'Difference' },
-			{ name: 'datetimeIsAfter(d1, d2)', desc: 'Check after' },
-			{ name: 'datetimeIsBefore(d1, d2)', desc: 'Check before' },
-			{ name: 'datetimeIsEqual(d1, d2)', desc: 'Check equal' },
-			{ name: 'datetimeToStr(dt)', desc: 'To string' },
+			{ name: 'datetimeNow()', desc: 'Current datetime as table' },
+			{ name: 'datetimeAdd(dt, n, unit)', desc: 'Add n units (days/hours/etc)' },
+			{ name: 'datetimeSubtract(dt, n, unit)', desc: 'Subtract n units' },
+			{ name: 'datetimeDiff(d1, d2, unit)', desc: 'Difference in specified unit' },
+			{ name: 'datetimeFormat(dt, fmt)', desc: 'Format with Go time layout' },
+			{ name: 'datetimeIsAfter(d1, d2)', desc: 'true if d1 is later' },
 		],
 		log: [
-			{ name: 'logDebug(msg)', desc: 'Debug level (white)' },
-			{ name: 'logInfo(msg)', desc: 'Info level (green)' },
-			{ name: 'logWarn(msg)', desc: 'Warn level (yellow)' },
-			{ name: 'logError(msg)', desc: 'Error level (red)' },
+			{ name: 'logDebug(msg)', desc: 'Debug level — white' },
+			{ name: 'logInfo(msg)', desc: 'Info level — green' },
+			{ name: 'logWarn(msg)', desc: 'Warning level — yellow' },
+			{ name: 'logError(msg)', desc: 'Error level — red' },
 		],
 		type: [
-			{ name: 'isNull(val)', desc: 'Check null' },
-			{ name: 'isString(val)', desc: 'Check string' },
-			{ name: 'isInt(val)', desc: 'Check integer' },
-			{ name: 'isFloat(val)', desc: 'Check float' },
-			{ name: 'isNumber(val)', desc: 'Check int or float' },
-			{ name: 'isBool(val)', desc: 'Check boolean' },
-			{ name: 'isArray(val)', desc: 'Check array' },
-			{ name: 'isTable(val)', desc: 'Check table' },
-			{ name: 'isCallable(val)', desc: 'Check function' },
+			{ name: 'isString(val)', desc: 'Check if string' },
+			{ name: 'isInt(val)', desc: 'Check if integer' },
+			{ name: 'isFloat(val)', desc: 'Check if float' },
+			{ name: 'isNumber(val)', desc: 'Check if int or float' },
+			{ name: 'isBool(val)', desc: 'Check if boolean' },
+			{ name: 'isArray(val)', desc: 'Check if array' },
+			{ name: 'isTable(val)', desc: 'Check if table' },
+			{ name: 'isCallable(val)', desc: 'Check if function' },
 		],
 		testing: [
-			{ name: 'assert(name, got, expected)', desc: 'Check equality' },
-			{ name: 'suite(name, fn)', desc: 'Group tests' },
-			{ name: 'summary()', desc: 'Print results' },
+			{ name: 'assert(name, got, expected)', desc: 'Check equality, report on mismatch' },
+			{ name: 'suite(name, fn)', desc: 'Group related assertions' },
+			{ name: 'summary()', desc: 'Print test results' },
 		],
 	};
 </script>
@@ -199,24 +250,16 @@ summary()`;
 	<h1>Standard Library</h1>
 
 	<p>
-		Modules written in Logos itself. Import with <code>use</code>.
+		Modules written in Logos itself. Import with <code>use</code> at the top of your script.
+		These modules provide functional programming utilities, math algorithms, and more.
 	</p>
-
-	<CodeBlock
-		code={`use "std/array"
-use "std/math"
-use "std/string"
-use "std/path"
-use "std/time"
-use "std/log"
-use "std/type"
-use "std/testing"`}
-		language="javascript"
-	/>
 
 	<h2 id="std-array">std/array</h2>
 
-	<p>Functional array operations. Transform, filter, and reduce data.</p>
+	<p>
+		Functional array operations. These work on arrays of any type, making data transformations
+		declarative and readable.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.array as fn}
@@ -231,7 +274,10 @@ use "std/testing"`}
 
 	<h2 id="std-math">std/math</h2>
 
-	<p>Math functions, statistics, and algorithms.</p>
+	<p>
+		Math utilities, number theory, and statistics. Great for algorithmic tasks without importing
+		external libraries.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.math as fn}
@@ -246,7 +292,10 @@ use "std/testing"`}
 
 	<h2 id="std-string">std/string</h2>
 
-	<p>String manipulation and formatting.</p>
+	<p>
+		String manipulation for formatting, analysis, and transformation. Complement to the built-in
+		string functions.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.string as fn}
@@ -261,7 +310,9 @@ use "std/testing"`}
 
 	<h2 id="std-path">std/path</h2>
 
-	<p>File path manipulation and checks.</p>
+	<p>
+		Cross-platform path manipulation. Handles separators and normalization automatically.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.path as fn}
@@ -276,7 +327,10 @@ use "std/testing"`}
 
 	<h2 id="std-time">std/time</h2>
 
-	<p>Date/time handling, formatting, and calculations.</p>
+	<p>
+		Date and time handling. <code>datetimeNow()</code> returns a table with <code>date</code>,
+		<code>str</code>, and <code>ts</code> (Unix timestamp) keys.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.time as fn}
@@ -291,7 +345,10 @@ use "std/testing"`}
 
 	<h2 id="std-log">std/log</h2>
 
-	<p>Color-coded logging with timestamps.</p>
+	<p>
+		Colored, timestamped log messages. Useful for CLI tools and background scripts where you
+		want structured output.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.log as fn}
@@ -306,7 +363,9 @@ use "std/testing"`}
 
 	<h2 id="std-type">std/type</h2>
 
-	<p>Runtime type checking.</p>
+	<p>
+		Runtime type checking. Useful for type-safe utilities and handling mixed-type data.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.type as fn}
@@ -321,7 +380,10 @@ use "std/testing"`}
 
 	<h2 id="std-testing">std/testing</h2>
 
-	<p>Simple testing framework.</p>
+	<p>
+		Simple test framework. Group assertions with <code>suite</code>, run with <code>summary</code>.
+		Prints a report showing which tests passed or failed.
+	</p>
 
 	<div class="grid gap-2">
 		{#each functions.testing as fn}

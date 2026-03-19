@@ -92,7 +92,7 @@ sudo mv lgs /usr/local/bin/`}
 
 	<CodeBlock
 		code={`let name = "World"
-print("Hello, " + name + "!")`}
+print("Hello, \${name}!")`}
 		language="javascript"
 		filename="hello.lgs"
 	/>
@@ -116,7 +116,7 @@ print("Hello, " + name + "!")`}
 	<p>This starts the interactive shell:</p>
 
 	<CodeBlock
-		code={`>_ Logos v0.4.0 (Mar 18 2026, 12:52:39) on linux
+		code={`>_ Logos v0.4.1 (Mar 19 2026, 12:52:39) on linux
 Type "help" for more information
 >>>`}
 		language="text"

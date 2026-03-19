@@ -2,15 +2,17 @@
 @plugin '@tailwindcss/typography';
 
 @theme {
-	--color-bg: #000000;
-	--color-subtle: #111111;
-	--color-border: #222222;
-	--color-text: #ffffff;
-	--color-muted: #888888;
-	--color-accent: #ffffff;
+	--color-bg: #09090b;
+	--color-surface: #18181b;
+	--color-border: #27272a;
+	--color-text: #fafafa;
+	--color-muted: #71717a;
+	--color-accent: #fafafa;
+	--color-glow: rgba(255, 255, 255, 0.03);
+	--color-indigo-glow: rgba(99, 102, 241, 0.15);
 
 	--font-mono: 'Roboto Mono', monospace;
-	--font-code: 'Google Sans Code', monospace;
+	--font-code: 'Roboto Mono', monospace;
 }
 
 html {
@@ -33,6 +35,16 @@ body {
 	}
 }
 
+/* Subtle noise texture overlay */
+body::before {
+	content: '';
+	position: fixed;
+	inset: 0;
+	background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.03'/%3E%3C/svg%3E");
+	pointer-events: none;
+	z-index: 0;
+}
+
 /* Custom scrollbar */
 ::-webkit-scrollbar {
 	width: 6px;
@@ -40,22 +52,22 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-	background: #0a0a0a;
+	background: transparent;
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #333;
+	background: #3f3f46;
 	border-radius: 3px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-	background: #444;
+	background: #52525b;
 }
 
 /* Firefox scrollbar */
 * {
 	scrollbar-width: thin;
-	scrollbar-color: #333 #0a0a0a;
+	scrollbar-color: #3f3f46 transparent;
 }
 
 /* Code block styling */
@@ -69,9 +81,85 @@ code {
 
 /* Shiki code block overrides */
 pre.shiki {
-	background-color: #0d1117 !important;
-	padding: 0.75rem;
-	border-radius: 0.5rem;
+	background-color: transparent !important;
+	padding: 0;
 	overflow-x: auto;
 	max-width: 100%;
+	border-radius: 0;
+}
+
+pre.shiki code {
+	display: block;
+	padding: 0;
+}
+
+pre.shiki .line {
+	display: block;
+	white-space: pre;
+}
+
+/* Gradient text utility */
+.gradient-text {
+	background: linear-gradient(135deg, #fafafa 0%, #a1a1aa 100%);
+	-webkit-background-clip: text;
+	-webkit-text-fill-color: transparent;
+	background-clip: text;
+}
+
+/* Glow utilities */
+.glow-white {
+	box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
+}
+
+.glow-indigo {
+	box-shadow: 0 0 40px rgba(99, 102, 241, 0.1), 0 0 80px rgba(99, 102, 241, 0.05);
+}
+
+/* Glass effect */
+.glass {
+	background: rgba(24, 24, 27, 0.8);
+	backdrop-filter: blur(12px);
+	-webkit-backdrop-filter: blur(12px);
+	border: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Animations */
+@keyframes float {
+	0%, 100% { transform: translateY(0); }
+	50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-glow {
+	0%, 100% { opacity: 0.5; }
+	50% { opacity: 1; }
+}
+
+@keyframes slide-up {
+	from {
+		opacity: 0;
+		transform: translateY(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.animate-float {
+	animation: float 6s ease-in-out infinite;
+}
+
+.animate-slide-up {
+	animation: slide-up 0.6s ease-out forwards;
+}
+
+/* Focus states */
+:focus-visible {
+	outline: 2px solid rgba(255, 255, 255, 0.2);
+	outline-offset: 2px;
+}
+
+/* Selection */
+::selection {
+	background: rgba(255, 255, 255, 0.15);
 }

@@ -66,7 +66,7 @@ for script in globRes {
 
 let data = try parseJson("{\\"name\\": \\"Bob\\", \\"scores\\": [95, 87, 92]}")
 print(data["name"])
-print(toStr(data["scores"][0]))
+print(str(data["scores"][0]))
 
 let obj = table{ "status": "ok", "count": 42 }
 let jsonStr = try toJson(obj)
@@ -135,14 +135,51 @@ print(first(nums))
 print(last(nums))
 
 let popped = pop(nums)
-print(toStr(popped))
+print(str(popped))
 
 let rest = tail(nums)
 
 let reversed = reverse([1, 2, 3])
 let sorted = sort([3, 1, 4, 1, 5])
 
-print(toStr(contains([1, 2, 3], 2)))`;
+print(str(contains([1, 2, 3], 2)))
+
+// range() for numeric iteration (v0.4.2)
+for i in range(0, 10) {
+    print(i)
+}
+
+// With step
+for i in range(0, 20, 2) {
+    print(i)  // 0, 2, 4, 6, ...
+}
+
+// Countdown
+for i in range(5, 0, -1) {
+    print(i)  // 5, 4, 3, 2
+}`;
+
+	const regexExample = `// reMatch - returns true/false if pattern matches
+print(reMatch(\`\\d+\`, "hello 123"))     // true
+print(reMatch(\`\\d+\`, "hello world"))  // false
+
+// reFind - find first match, returns string or null
+print(reFind(\`\\d+\`, "there are 3 cats"))    // "3"
+print(reFind(\`\\d+\`, "no numbers here"))    // null
+
+// reFindAll - find all matches, returns array
+print(reFindAll(\`\\d+\`, "3 cats and 12 dogs"))  // ["3", "12"]
+
+// reReplace - replace all matches
+print(reReplace(\`\\d+\`, "I have 3 cats", "X"))  // "I have X cats"
+
+// reSplit - split by pattern
+print(reSplit(\`\\s+\`, "split   this   string"))  // ["split", "this", "string"]
+
+// reGroups - extract capture groups
+let email = "uthman@gmail.com"
+let parts = reGroups(\`(\\w+)@(\\w+)\\.(\\w+)\`, email)
+print(parts)  // ["uthman", "gmail", "com"]`;
 
 	const tableExample = `let user = table{
     name: "Alice",
@@ -152,7 +189,7 @@ print(toStr(contains([1, 2, 3], 2)))`;
 
 print(user.name)
 
-print(toStr(has(user, "email")))
+print(str(has(user, "email")))
 
 let k = keys(user)
 let v = values(user)
@@ -169,9 +206,9 @@ print(lower(s))
 print(trim(s))
 
 print(replace("banana", "a", "o"))
-print(toStr(contains("hello", "ell")))
-print(toStr(startsWith("hello", "he")))
-print(toStr(endsWith("hello", "lo")))
+print(str(contains("hello", "ell")))
+print(str(startsWith("hello", "he")))
+print(str(endsWith("hello", "lo")))
 
 let words = split("a,b,c,d", ",")
 print(join(words, "-"))
@@ -180,8 +217,8 @@ print(repeat("ha", 3))
 print(slice("hello", 1, 4))
 print(format("Name: {}, Age: {}", "Bob", 25))`;
 
-	const timeExample = `print(toStr(timeNow()))
-print(toStr(timeMs()))
+	const timeExample = `print(str(timeNow()))
+print(str(timeMs()))
 
 print(timeStr())
 print(dateStr())
@@ -191,14 +228,14 @@ let ts = timeNow()
 print(timeFormat(ts, "January 2, 2006"))
 print(timeFormat(ts, "02/01/2006"))`;
 
-	const typeConvExample = `let n = toInt("42")
-let f = toFloat("3.14")
+	const typeConvExample = `let n = int("42")
+let f = float("3.14")
 
-let s1 = toStr(42)
-let s2 = toStr(3.14)
+let s1 = str(42)
+let s2 = str(3.14)
 
-let b1 = toInt(true)
-let b2 = toInt(false)
+let b1 = toBool(true)
+let b2 = toBool(false)
 
 print(type(42))
 print(type("hello"))
@@ -239,7 +276,7 @@ if choice == "red" {
 
 // Fetch and transform user data
 fn getUserStats(id) {
-    return try httpGet("https://api.example.com/users/" + toStr(id))
+    return try httpGet("https://api.example.com/users/" + str(id))
         |> try parseJson
         |> map(fn(u) -> table{
             name: u.name,
@@ -308,10 +345,13 @@ let config = try fileRead("config.json")
 			{ name: 'format(tmpl, ...)', desc: 'Format with {}' },
 		],
 		conv: [
+			{ name: 'str(value)', desc: 'Convert to string (short alias)' },
+			{ name: 'int(value)', desc: 'Convert to int (short alias)' },
+			{ name: 'float(value)', desc: 'Convert to float (short alias)' },
+			{ name: 'toStr(value)', desc: 'Convert to string' },
 			{ name: 'toInt(value)', desc: 'Convert to int' },
 			{ name: 'toFloat(value)', desc: 'Convert to float' },
 			{ name: 'toBool(value)', desc: 'Convert to bool' },
-			{ name: 'toStr(value)', desc: 'Convert to string' },
 		],
 		array: [
 			{ name: 'push(arr, val)', desc: 'Add to end' },
@@ -321,8 +361,9 @@ let config = try fileRead("config.json")
 			{ name: 'last(arr)', desc: 'Last element' },
 			{ name: 'tail(arr)', desc: 'All except first' },
 			{ name: 'reverse(arr)', desc: 'Reverse order' },
-			{ name: 'sort(arr)', desc: 'Sort numerically' },
+			{ name: 'sort(arr)', desc: 'Sort array (string or numeric)' },
 			{ name: 'contains(arr, val)', desc: 'Check membership' },
+			{ name: 'range(start, end, step?)', desc: 'Numeric iterator (v0.4.2)' },
 		],
 		table: [
 			{ name: 'keys(t)', desc: 'Array of keys' },
@@ -376,6 +417,14 @@ let config = try fileRead("config.json")
 			{ name: 'httpPut(url, body)', desc: 'PUT request' },
 			{ name: 'httpPatch(url, body)', desc: 'PATCH request' },
 			{ name: 'httpDelete(url)', desc: 'DELETE request' },
+		],
+		regex: [
+			{ name: 'reMatch(pattern, text)', desc: 'True if pattern matches' },
+			{ name: 'reFind(pattern, text)', desc: 'First match or null' },
+			{ name: 'reFindAll(pattern, text)', desc: 'Array of all matches' },
+			{ name: 'reReplace(pattern, text, repl)', desc: 'Replace all matches' },
+			{ name: 'reSplit(pattern, text)', desc: 'Split by pattern' },
+			{ name: 'reGroups(pattern, text)', desc: 'Capture groups array' },
 		],
 	};
 </script>
@@ -556,9 +605,9 @@ print(colorBold(colorYellow("Warning")))`}
 	</div>
 
 	<CodeBlock
-		code={`print(toStr(mathAbs(-42)))
-print(toStr(mathPow(2, 10)))
-print(toStr(mathRandomInt(1, 6)))`}
+		code={`	print(str(mathAbs(-42)))
+print(str(mathPow(2, 10)))
+print(str(mathRandomInt(1, 6)))`}
 		language="javascript"
 	/>
 
@@ -606,4 +655,17 @@ print(toStr(mathRandomInt(1, 6)))`}
 	</div>
 
 	<CodeBlock code={httpExample} language="javascript" />
+
+	<h2 id="regex">Regex <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4.3</span></h2>
+
+	<div class="grid gap-2">
+		{#each functions.regex as fn}
+			<div class="flex gap-4 bg-subtle/50 rounded px-3 py-2">
+				<code class="text-green-400 text-xs sm:text-sm shrink-0">{fn.name}</code>
+				<span class="text-muted text-xs sm:text-sm">{fn.desc}</span>
+			</div>
+		{/each}
+	</div>
+
+	<CodeBlock code={regexExample} language="javascript" />
 </DocLayout>

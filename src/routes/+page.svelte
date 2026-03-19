@@ -4,35 +4,36 @@
 	import FeatureCard from '$lib/components/FeatureCard.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
 	import { onMount } from 'svelte';
+	import { Code2, Zap, Shield, Terminal, Box, FileCode } from 'lucide-svelte';
 
 	const features = [
 		{
-			icon: 'Code2',
+			icon: Code2,
 			title: 'String interpolation',
 			description: 'Use ${variable} directly in strings. No more concatenation hell.'
 		},
 		{
-			icon: 'Zap',
+			icon: Zap,
 			title: 'Pipe operator',
 			description: 'Chain functions with |>. arr |> filter(fn) |> map(fn)'
 		},
 		{
-			icon: 'Shield',
+			icon: Shield,
 			title: 'Try expressions',
 			description: 'Error handling without boilerplate. try httpGet() propagates errors.'
 		},
 		{
-			icon: 'Terminal',
+			icon: Terminal,
 			title: 'Built-in HTTP/JSON',
 			description: 'No imports needed. httpGet, httpPost, parseJson all work out of the box.'
 		},
 		{
-			icon: 'Box',
+			icon: Box,
 			title: 'Compiles to binary',
 			description: 'lgs build script.lgs produces a single standalone executable.'
 		},
 		{
-			icon: 'FileCode',
+			icon: FileCode,
 			title: 'Readable syntax',
 			description: 'C-like syntax that reads like prose. You will actually understand it next week.'
 		}
@@ -87,16 +88,16 @@ spawn for url in urls {
 
 <Hero />
 
-<section class="bg-bg border-t border-border/30 py-12 sm:py-20">
-	<div class="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-8 text-center sm:mb-12">
-			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Modern features. Zero setup.</h2>
-			<p class="text-muted mt-3 text-sm sm:text-base">
-				v0.4.0 brings string interpolation, pipe operators, and try expressions.
+<section class="border-t border-white/5 py-20 sm:py-28">
+	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+		<div class="mb-14 text-center sm:mb-16">
+			<h2 class="text-2xl font-semibold sm:text-3xl">Modern features. Zero setup.</h2>
+			<p class="text-white/40 mt-4 text-sm sm:text-base max-w-lg mx-auto">
+				v0.4.3 brings const, range(), and regex builtins.
 			</p>
 		</div>
 
-		<div class="grid gap-4 sm:grid-cols-2 sm:gap-6 lg:grid-cols-3">
+		<div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
 			{#each features as feature, i}
 				<div
 					bind:this={featureCards[i]}
@@ -114,11 +115,11 @@ spawn for url in urls {
 	</div>
 </section>
 
-<section class="bg-subtle/30 border-t border-border/30 py-12 sm:py-20">
-	<div class="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-8 text-center sm:mb-10">
-			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Clean and readable</h2>
-			<p class="text-muted mt-3 text-sm sm:text-base">
+<section class="border-t border-white/5 py-20 sm:py-28">
+	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+		<div class="mb-14 text-center sm:mb-16">
+			<h2 class="text-2xl font-semibold sm:text-3xl">Clean and readable</h2>
+			<p class="text-white/40 mt-4 text-sm sm:text-base">
 				No boilerplate. No ceremony. Just code.
 			</p>
 		</div>
@@ -127,25 +128,25 @@ spawn for url in urls {
 	</div>
 </section>
 
-<section class="bg-bg border-t border-border/30 py-12 sm:py-20">
+<section class="border-t border-white/5 py-20 sm:py-28">
 	<div class="mx-auto max-w-2xl px-4 sm:px-6 lg:px-8">
-		<div class="mb-8 text-center sm:mb-10">
-			<h2 class="text-text text-2xl font-semibold sm:text-3xl">Install</h2>
-			<p class="text-muted mt-3 text-sm sm:text-base">One command. Linux and macOS.</p>
+		<div class="mb-10 text-center sm:mb-14">
+			<h2 class="text-2xl font-semibold sm:text-3xl">Install</h2>
+			<p class="text-white/40 mt-4 text-sm sm:text-base">One command. Linux and macOS.</p>
 		</div>
 
 		<InstallBlock />
 	</div>
 </section>
 
-<section class="border-t border-border/30 py-12 sm:py-20">
-	<div class="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
-		<h2 class="text-text text-2xl font-semibold sm:text-3xl">Ready to start?</h2>
-		<p class="text-muted mt-3 text-sm sm:text-base">Read the docs and write your first script in minutes.</p>
-		<div class="mt-6 flex flex-col items-center justify-center gap-3 sm:mt-8 sm:flex-row sm:gap-4">
+<section class="border-t border-white/5 py-20 sm:py-28">
+	<div class="mx-auto max-w-2xl text-center sm:px-6 lg:px-8">
+		<h2 class="text-2xl font-semibold sm:text-3xl">Ready to start?</h2>
+		<p class="text-white/40 mt-4 text-sm sm:text-base">Read the docs and write your first script in minutes.</p>
+		<div class="mt-8 flex flex-col items-center justify-center gap-4 sm:flex-row">
 			<a
 				href="/docs"
-				class="bg-text text-bg hover:bg-text/90 w-full rounded-lg px-6 py-3 text-sm font-medium transition-colors sm:w-auto"
+				class="bg-white text-black hover:bg-white/90 w-full rounded-xl px-8 py-3.5 text-sm font-medium transition-colors sm:w-auto"
 			>
 				Read the Docs
 			</a>
@@ -153,10 +154,20 @@ spawn for url in urls {
 				href="https://github.com/codetesla51/logos"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="text-muted hover:text-text text-sm font-medium transition-colors"
+				class="text-white/40 hover:text-white text-sm font-medium transition-colors"
 			>
 				View on GitHub &rarr;
 			</a>
+		</div>
+		<div class="mt-12 flex items-center justify-center gap-4">
+			<a
+				href="/docs/changelog"
+				class="text-white/30 hover:text-white/50 text-xs transition-colors"
+			>
+				Changelog
+			</a>
+			<span class="text-white/10">·</span>
+			<span class="text-white/30 text-xs">v0.4.3</span>
 		</div>
 	</div>
 </section>

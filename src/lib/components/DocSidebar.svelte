@@ -32,7 +32,8 @@
 		{
 			title: 'Resources',
 			items: [
-				{ title: 'LLM Reference', href: '/docs/llm', highlight: true }
+				{ title: 'LLM Reference', href: '/docs/llm' },
+				{ title: 'Changelog', href: '/docs/changelog' }
 			]
 		}
 	];
@@ -46,15 +47,22 @@
 	}
 </script>
 
-<aside class="bg-black border-r border-white/10 fixed top-0 left-0 z-40 hidden h-screen w-[240px] overflow-y-auto pt-14 lg:block">
-	<nav class="space-y-1 p-3 pb-20">
-		<a href="/" class="mb-4 flex items-center gap-2 px-2 py-1">
-			<img src={logo} alt="Logos" class="h-5 w-auto" />
+<!-- Desktop Sidebar -->
+<aside class="fixed top-0 left-0 z-40 hidden h-screen w-60 border-r border-white/5 bg-zinc-950/50 lg:block">
+	<!-- Subtle gradient overlay -->
+	<div class="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-transparent pointer-events-none"></div>
+
+	<nav class="relative h-full overflow-y-auto p-4">
+		<!-- Logo -->
+		<a href="/" class="mb-6 flex items-center gap-2.5 px-2 py-1">
+			<img src={logo} alt="Logos" class="h-6 w-auto" />
+			<span class="font-mono text-sm font-medium text-white/90">Docs</span>
 		</a>
 
+		<!-- Nav sections -->
 		{#each navSections as section}
-			<div class="pt-4">
-				<h3 class="text-white/40 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
+			<div class="mb-6">
+				<h3 class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
 					{section.title}
 				</h3>
 				<ul class="space-y-0.5">
@@ -62,16 +70,16 @@
 						<li>
 							<a
 								href={item.href}
-								class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all {isActive(item.href)
-									? 'bg-white text-black font-medium'
-									: item.highlight
-										? 'text-white/70 hover:bg-white/5 hover:text-white'
-										: 'text-white/50 hover:bg-white/5 hover:text-white'}"
+								class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
+									? 'bg-white/10 text-white font-medium'
+									: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
 							>
-								{item.title}
-								{#if item.highlight}
-									<span class="ml-auto rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
+								{#if isActive(item.href)}
+									<div class="h-1 w-1 rounded-full bg-white"></div>
+								{:else}
+									<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
 								{/if}
+								{item.title}
 							</a>
 						</li>
 					{/each}
@@ -81,32 +89,38 @@
 	</nav>
 </aside>
 
+<!-- Mobile Sidebar Overlay -->
 {#if isOpen}
 	<div class="fixed inset-0 z-50 lg:hidden">
+		<!-- Backdrop -->
 		<button
-			class="absolute inset-0 bg-black/80"
+			class="absolute inset-0 bg-black/60 backdrop-blur-sm"
 			onclick={onClose}
 			aria-label="Close sidebar"
 		></button>
 
-		<aside class="bg-black absolute top-0 left-0 h-full w-[280px] border-r border-white/10">
-			<div class="flex items-center justify-between border-b border-white/10 p-4">
-				<a href="/" class="flex items-center gap-2">
-					<img src={logo} alt="Logos" class="h-5 w-auto" />
+		<!-- Sidebar panel -->
+		<aside class="absolute top-0 left-0 h-full w-72 border-r border-white/5 bg-zinc-950 shadow-2xl">
+			<!-- Header -->
+			<div class="flex items-center justify-between border-b border-white/5 px-4 py-4">
+				<a href="/" class="flex items-center gap-2.5" onclick={onClose}>
+					<img src={logo} alt="Logos" class="h-6 w-auto" />
+					<span class="font-mono text-sm font-medium text-white/90">Docs</span>
 				</a>
 				<button
 					onclick={onClose}
-					class="rounded-lg p-1.5 text-white/50 transition-colors hover:bg-white/5 hover:text-white"
+					class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
 					aria-label="Close menu"
 				>
 					<X class="h-5 w-5" />
 				</button>
 			</div>
 
-			<nav class="space-y-1 p-3">
+			<!-- Nav -->
+			<nav class="overflow-y-auto p-4">
 				{#each navSections as section}
-					<div class="pt-4">
-						<h3 class="text-white/40 mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest">
+					<div class="mb-6">
+						<h3 class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
 							{section.title}
 						</h3>
 						<ul class="space-y-0.5">
@@ -115,16 +129,16 @@
 									<a
 										href={item.href}
 										onclick={onClose}
-										class="group flex items-center gap-2 rounded-lg px-3 py-2 text-sm transition-all {isActive(item.href)
-											? 'bg-white text-black font-medium'
-											: item.highlight
-												? 'text-white/70 hover:bg-white/5 hover:text-white'
-												: 'text-white/50 hover:bg-white/5 hover:text-white'}"
+										class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
+											? 'bg-white/10 text-white font-medium'
+											: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
 									>
-										{item.title}
-										{#if item.highlight}
-											<span class="ml-auto rounded bg-white/10 px-1.5 py-0.5 text-[9px] font-medium">NEW</span>
+										{#if isActive(item.href)}
+											<div class="h-1 w-1 rounded-full bg-white"></div>
+										{:else}
+											<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
 										{/if}
+										{item.title}
 									</a>
 								</li>
 							{/each}

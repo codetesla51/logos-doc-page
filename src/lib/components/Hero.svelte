@@ -2,96 +2,172 @@
 	import { Github, ArrowRight, Play } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { codeToHtml } from 'shiki';
+	import logo from '$lib/assets/logo.png';
 
 	let highlightedCode = $state('');
+	let isLoaded = $state(false);
 
-	const heroCode = `// Fetch and filter with pipe operator
-let res = try httpGet("https://api.example.com/users")
+	const heroCode = `// const for immutable values (v0.4.2)
+const API_URL = "https://api.example.com"
 
-let users = res.value.body
-    |> parseJson
-    |> filter(fn(u) -> u.active)
-
-for user in users {
-    print("\${user.name} is \${user.role}")
+// range() for numeric iteration
+for i in range(0, 10, 2) {
+    print(i)  // 0, 2, 4, 6, 8
 }
 
-// Clean, readable, powerful`;
+// Regex builtins (v0.4.3)
+let email = "user@domain.com"
+let parts = reGroups(\`(\\w+)@(\\w+)\`, email)
+print(parts)  // ["user", "domain"]`;
 
 	onMount(async () => {
 		highlightedCode = await codeToHtml(heroCode, {
 			lang: 'javascript',
 			theme: 'github-dark'
 		});
+		isLoaded = true;
 	});
 </script>
 
-<section class="bg-black text-white">
-	<div class="mx-auto max-w-6xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8 lg:py-16">
-		<div class="text-center">
-			<p class="mb-3 text-xs font-mono text-white/40 sm:mb-4">v0.4.0</p>
+<section class="relative overflow-hidden">
+	<!-- Background gradient mesh -->
+	<div class="absolute inset-0 -z-10">
+		<div class="absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-20%,rgba(120,119,198,0.15),transparent)]"></div>
+		<div class="absolute inset-0 bg-[radial-gradient(ellipse_60%_40%_at_80%_60%,rgba(99,102,241,0.08),transparent)]"></div>
+		<div class="absolute bottom-0 left-0 right-0 h-[500px] bg-[linear-gradient(to_top,rgba(9,9,11,1),transparent)]"></div>
+	</div>
 
-			<h1 class="mx-auto max-w-4xl text-2xl font-bold tracking-tight sm:text-3xl md:text-4xl lg:text-5xl leading-tight">
-				Scripts that read like thoughts.
-			</h1>
+	<div class="relative mx-auto max-w-5xl px-4 py-16 sm:py-24 lg:px-8">
+		<!-- Logo and version -->
+		<div class="mb-8 flex items-center justify-center gap-3 animate-slide-up" style="animation-delay: 0ms;">
+			<img src={logo} alt="Logos" class="h-10 w-auto" />
+			<span class="rounded-full border border-white/10 bg-white/5 px-3 py-1 font-mono text-xs text-zinc-400">
+				v0.4.3
+			</span>
+		</div>
 
-			<p class="text-white/60 mx-auto mt-4 max-w-2xl px-2 text-sm leading-relaxed sm:mt-6 sm:px-0 sm:text-base md:text-lg">
-				A lightweight scripting language built for clarity. Write expressive scripts with pipes, string interpolation, and clean error handling — then compile them to a single binary.
-			</p>
+		<!-- Headline -->
+		<h1
+			class="mb-6 text-center text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl lg:text-7xl animate-slide-up"
+			style="animation-delay: 100ms;"
+		>
+			<span class="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+				Scripts that
+			</span>
+			<br />
+			<span class="bg-gradient-to-b from-white to-zinc-400 bg-clip-text text-transparent">
+				read like thoughts.
+			</span>
+		</h1>
 
-			<div class="mt-6 flex flex-col items-center justify-center gap-2 sm:mt-8 sm:flex-row sm:gap-3">
-				<a href="/docs" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-medium text-black transition-opacity hover:opacity-90 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
-					Get Started
-					<ArrowRight class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-				</a>
-				<a href="/playground" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
-					<Play class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-					Try Online
-				</a>
-				<a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener noreferrer" class="inline-flex w-full items-center justify-center gap-1.5 rounded-lg border border-white/20 px-4 py-2 text-sm font-medium text-white transition-colors hover:border-white/40 sm:w-auto sm:px-5 sm:py-2.5 sm:text-sm">
-					<Github class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-					GitHub
-				</a>
-			</div>
+		<!-- Subheadline -->
+		<p
+			class="mx-auto mb-10 max-w-2xl text-center text-base text-zinc-400 sm:text-lg animate-slide-up"
+			style="animation-delay: 200ms;"
+		>
+			A lightweight scripting language built for clarity. String interpolation, pipes, try expressions — then compile to a single binary.
+		</p>
 
-			<div class="mt-6 px-2 sm:mt-8 sm:px-0">
-				<pre class="inline-flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-xs overflow-x-auto sm:text-sm max-w-full box-border"><code class="font-mono text-green-400 whitespace-nowrap sm:whitespace-normal">curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh</code></pre>
+		<!-- CTA Buttons -->
+		<div
+			class="mb-12 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4 animate-slide-up"
+			style="animation-delay: 300ms;"
+		>
+			<a
+				href="/docs"
+				class="group flex items-center gap-2 rounded-xl bg-white px-6 py-3 text-sm font-medium text-zinc-900 transition-all hover:bg-zinc-200 hover:shadow-lg hover:shadow-white/10"
+			>
+				Get Started
+				<ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
+			</a>
+			<a
+				href="/playground"
+				class="group flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/10"
+			>
+				<Play class="h-4 w-4" />
+				Try Online
+			</a>
+			<a
+				href="https://github.com/codetesla51/logos"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="flex items-center gap-2 rounded-xl border border-white/10 bg-white/5 px-6 py-3 text-sm font-medium text-white backdrop-blur-sm transition-all hover:bg-white/10"
+			>
+				<Github class="h-4 w-4" />
+				GitHub
+			</a>
+		</div>
+
+		<!-- Install command -->
+		<div
+			class="mx-auto max-w-xl animate-slide-up"
+			style="animation-delay: 400ms;"
+		>
+			<div class="group relative rounded-xl border border-white/10 bg-zinc-900/80 overflow-hidden backdrop-blur-sm">
+				<!-- Header -->
+				<div class="flex items-center justify-between border-b border-white/5 bg-zinc-900 px-4 py-2.5">
+					<div class="flex items-center gap-2">
+						<div class="flex gap-1.5">
+							<div class="h-2.5 w-2.5 rounded-full bg-red-500/80"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-yellow-500/80"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-green-500/80"></div>
+						</div>
+						<span class="font-mono text-[10px] text-zinc-500">terminal</span>
+					</div>
+					<span class="rounded bg-white/5 px-2 py-0.5 font-mono text-[10px] text-zinc-500">bash</span>
+				</div>
+				<!-- Command -->
+				<div class="flex items-center gap-3 px-4 py-3.5">
+					<span class="text-zinc-500 font-mono">$</span>
+					<code class="flex-1 font-mono text-sm text-emerald-400 break-all">
+						curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh
+					</code>
+				</div>
 			</div>
 		</div>
 
-		<!-- Code preview -->
-		<div class="mx-auto mt-8 max-w-2xl px-2 sm:mt-10 sm:px-0">
-			<div class="overflow-hidden rounded-lg border border-white/10 bg-[#0d1117]">
-				<div class="flex flex-col items-center justify-between gap-2 border-b border-white/10 bg-[#161b22] px-3 py-2 sm:flex-row sm:px-4 sm:py-3">
-					<div class="flex items-center gap-2">
+		<!-- Code Preview -->
+		<div
+			class="mx-auto mt-16 max-w-2xl animate-slide-up"
+			style="animation-delay: 500ms;"
+		>
+			<div class="rounded-2xl border border-white/10 bg-zinc-900/60 overflow-hidden backdrop-blur-xl shadow-2xl shadow-black/50">
+				<!-- Header -->
+				<div class="flex items-center justify-between border-b border-white/5 bg-zinc-900/90 px-4 py-3">
+					<div class="flex items-center gap-3">
 						<div class="flex gap-1.5">
-							<div class="h-2 w-2 rounded-full bg-red-500/80 sm:h-2.5 sm:w-2.5"></div>
-							<div class="h-2 w-2 rounded-full bg-yellow-500/80 sm:h-2.5 sm:w-2.5"></div>
-							<div class="h-2 w-2 rounded-full bg-green-500/80 sm:h-2.5 sm:w-2.5"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-red-500/80 shadow-lg shadow-red-500/20"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-yellow-500/80 shadow-lg shadow-yellow-500/20"></div>
+							<div class="h-2.5 w-2.5 rounded-full bg-green-500/80 shadow-lg shadow-green-500/20"></div>
 						</div>
-						<span class="font-mono text-[10px] text-white/40 sm:text-xs">example.lgs</span>
+						<span class="font-mono text-xs text-zinc-400">example.lgs</span>
 					</div>
-					<a href="/playground" class="flex items-center gap-1.5 rounded border border-white/10 bg-white/5 px-2 py-1 text-[10px] font-medium text-white transition-colors hover:bg-white/10 sm:text-xs">
-						<Play class="h-2.5 w-2.5 sm:h-3 sm:w-3" />
-						Open
+					<a
+						href="/playground"
+						class="flex items-center gap-1.5 rounded-lg bg-white/5 px-3 py-1.5 text-xs text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
+					>
+						<Play class="h-3 w-3" />
+						Open in Playground
 					</a>
 				</div>
 
-				<div class="font-mono text-[10px] leading-relaxed overflow-x-auto sm:text-xs">
+				<!-- Code -->
+				<div class="overflow-x-auto">
 					{#if highlightedCode}
-						<div class="min-w-0">
-							{@html highlightedCode}
-						</div>
+						{@html highlightedCode}
 					{:else}
-						<pre class="p-3 text-white/60 sm:p-4"><code>{heroCode}</code></pre>
+						<pre class="p-4 font-mono text-xs text-zinc-300"><code>{heroCode}</code></pre>
 					{/if}
 				</div>
 
-				<div class="border-t border-white/10 bg-[#161b22] px-3 py-1.5 sm:px-4 sm:py-2">
-					<div class="flex flex-wrap items-center gap-1.5 sm:gap-3">
-						<span class="rounded bg-green-500/20 px-1.5 py-0.5 text-[10px] font-semibold text-green-400 sm:text-xs">v0.4.0</span>
-						<span class="text-[10px] text-white/40 sm:text-xs">HTTP + JSON + try expressions</span>
-					</div>
+				<!-- Footer -->
+				<div class="flex items-center gap-3 border-t border-white/5 bg-zinc-900/50 px-4 py-2.5">
+					<span class="rounded bg-emerald-500/10 px-2 py-0.5 font-mono text-[10px] text-emerald-400">
+						v0.4.3
+					</span>
+					<span class="text-[10px] text-zinc-500">
+						const · range() · Regex builtins
+					</span>
 				</div>
 			</div>
 		</div>
@@ -101,16 +177,17 @@ for user in users {
 <style>
 	:global(pre.shiki) {
 		margin: 0;
-		padding: 0.75rem;
+		padding: 0.75rem 1.25rem;
 		background-color: transparent !important;
 		overflow-x: auto;
-		max-width: 100%;
+		line-height: 1.5;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
+		display: block;
 	}
 	:global(pre.shiki span) {
-		white-space: pre-wrap;
-		word-break: break-word;
+		white-space: pre;
+		word-break: normal;
 	}
 </style>

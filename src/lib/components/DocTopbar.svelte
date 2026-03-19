@@ -26,60 +26,58 @@
 	}
 </script>
 
-	<header class="bg-black border-b border-white/10 sticky top-0 z-40 lg:pl-[240px]">
-	<div class="flex h-12 items-center justify-between px-3 sm:h-14 sm:px-4">
-		<div class="flex items-center gap-2 sm:gap-3">
+<header class="sticky top-0 z-40 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl lg:pl-60">
+	<div class="flex h-14 items-center justify-between px-4 sm:h-16 sm:px-6">
+		<!-- Left side -->
+		<div class="flex items-center gap-4">
+			<!-- Mobile menu button -->
 			<button
 				onclick={onMenuToggle}
-				class="rounded p-1.5 text-white/50 transition-colors hover:bg-white/5 hover:text-white sm:rounded-lg sm:p-2 lg:hidden"
+				class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white lg:hidden"
 				aria-label="Toggle sidebar"
 			>
-				<Menu class="h-4 w-4 sm:h-5 sm:w-5" />
+				<Menu class="h-5 w-5" />
 			</button>
 
-			<a href="/" class="flex items-center gap-1.5 sm:gap-2">
-				<img src={logo} alt="Logos" class="h-4 w-auto sm:h-5" />
-				<span class="hidden text-white/30 sm:inline">/</span>
-				<span class="text-xs font-medium text-white sm:text-sm">Docs</span>
-			</a>
-			
-			<span class="hidden text-white/20 sm:inline">›</span>
-			
-			<span class="hidden text-xs font-medium text-white sm:text-sm sm:inline">{getCurrentPageName()}</span>
+			<!-- Breadcrumb -->
+			<div class="flex items-center gap-2">
+				<a href="/" class="flex items-center gap-2">
+					<img src={logo} alt="Logos" class="h-5 w-auto" />
+				</a>
+				<span class="text-zinc-600">/</span>
+				<span class="text-sm font-medium text-white">{getCurrentPageName()}</span>
+			</div>
 		</div>
 
-		<div class="flex items-center gap-1 sm:gap-2">
-			<a
-				href="/playground"
-				class="hidden rounded border border-white/10 px-2 py-1 text-[10px] font-medium text-white transition-colors hover:border-white/20 sm:inline-flex sm:items-center sm:gap-1.5 sm:px-3 sm:py-1.5 sm:text-xs"
+		<!-- Right side -->
+		<div class="flex items-center gap-2">
+			<!-- Search button -->
+			<button
+				onclick={onSearchOpen}
+				class="flex items-center gap-2 rounded-lg border border-white/5 bg-white/5 px-3 py-1.5 text-xs text-zinc-400 transition-all hover:border-white/10 hover:bg-white/10 hover:text-white sm:px-4"
 			>
-				Play
-			</a>
+				<Search class="h-3.5 w-3.5" />
+				<span class="hidden sm:inline">Search</span>
+				<kbd class="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] sm:inline">⌘K</kbd>
+			</button>
 
+			<!-- LLM Ref -->
 			<a
 				href="/docs/llm"
-				class="hidden rounded bg-white px-2 py-1 text-[10px] font-medium text-black transition-colors hover:bg-white/90 sm:px-3 sm:py-1.5 sm:text-xs"
+				class="hidden rounded-lg bg-white/5 px-3 py-1.5 text-xs font-medium text-white transition-all hover:bg-white/10 sm:inline-flex sm:items-center sm:gap-1.5"
 			>
 				LLM Ref
 			</a>
 
-			<button
-				onclick={onSearchOpen}
-				class="flex items-center gap-1 rounded border border-white/10 px-1.5 py-1 text-white/50 transition-colors hover:border-white/20 hover:text-white sm:gap-2 sm:rounded-lg sm:px-3 sm:py-1.5 sm:text-sm"
-			>
-				<Search class="h-3 w-3 sm:h-3.5 sm:w-3.5" />
-				<span class="hidden text-[10px] sm:inline sm:text-xs">Search</span>
-				<kbd class="hidden rounded border border-white/10 bg-white/5 px-1 py-0.5 text-[9px] sm:inline sm:text-[10px]">⌘K</kbd>
-			</button>
-
+			<!-- GitHub -->
 			<a
 				href="https://github.com/codetesla51/logos"
 				target="_blank"
 				rel="noopener noreferrer"
-				class="rounded p-1 text-white/50 transition-colors hover:bg-white/5 hover:text-white sm:rounded-lg sm:p-2"
+				class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
 				aria-label="GitHub"
 			>
-				<Github class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+				<Github class="h-4 w-4" />
 			</a>
 		</div>
 	</div>

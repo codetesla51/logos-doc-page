@@ -21,19 +21,31 @@
 	}
 </script>
 
-<nav class="bg-bg border-border sticky top-0 z-50 border-b">
-	<div class="mx-auto max-w-7xl px-3 sm:px-6 lg:px-8">
-		<div class="flex h-14 items-center justify-between sm:h-16">
+<nav class="sticky top-0 z-50 border-b border-white/5 bg-zinc-950/80 backdrop-blur-xl">
+	<div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+		<div class="flex h-16 items-center justify-between">
 			<!-- Logo -->
-			<a href="/" class="flex items-center gap-2">
-				<img src={logo} alt="Logos" class="h-7 w-auto sm:h-8" />
+			<a href="/" class="flex items-center gap-3">
+				<img src={logo} alt="Logos" class="h-8 w-auto" />
 			</a>
 
 			<!-- Desktop Nav -->
-			<div class="hidden items-center gap-4 md:flex">
+			<div class="hidden items-center gap-1 md:flex">
+				<a
+					href="/docs"
+					class="rounded-lg px-4 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+				>
+					Docs
+				</a>
+				<a
+					href="/docs/changelog"
+					class="rounded-lg px-4 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+				>
+					Changelog
+				</a>
 				<a
 					href="/playground"
-					class="text-muted hover:text-text flex items-center gap-1.5 text-base transition-colors"
+					class="rounded-lg px-4 py-2 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
 				>
 					Playground
 				</a>
@@ -41,25 +53,19 @@
 					href="https://github.com/codetesla51/logos"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="text-muted hover:text-text flex items-center gap-1.5 text-base transition-colors"
-				>
-					<Star class="h-4 w-4" />
-					<span>{stars}</span>
-				</a>
-				<a
-					href="https://github.com/codetesla51/logos"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="border-border text-muted hover:text-text hover:border-muted flex items-center gap-2 rounded-md border px-4 py-2 text-base transition-colors"
+					class="ml-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition-all hover:bg-white/10"
 				>
 					<Github class="h-4 w-4" />
-					<span>GitHub</span>
+					GitHub
+					{#if stars > 0}
+						<span class="rounded-full bg-white/10 px-1.5 py-0.5 text-xs">{stars}</span>
+					{/if}
 				</a>
 			</div>
 
 			<!-- Mobile Menu Button -->
 			<button
-				class="text-muted hover:text-text p-2 transition-colors md:hidden"
+				class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white md:hidden"
 				onclick={toggleMobileMenu}
 				aria-label="Toggle menu"
 			>
@@ -74,11 +80,26 @@
 
 	<!-- Mobile Menu -->
 	{#if mobileMenuOpen}
-		<div class="border-border bg-bg border-t md:hidden">
-			<div class="space-y-3 px-4 py-4">
+		<div class="border-t border-white/5 bg-zinc-950/95 backdrop-blur-xl md:hidden">
+			<div class="mx-auto max-w-7xl px-4 py-4 space-y-1">
+				<a
+					href="/docs"
+					onclick={toggleMobileMenu}
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+				>
+					Docs
+				</a>
+				<a
+					href="/docs/changelog"
+					onclick={toggleMobileMenu}
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+				>
+					Changelog
+				</a>
 				<a
 					href="/playground"
-					class="text-muted hover:text-text flex items-center gap-2 text-base transition-colors"
+					onclick={toggleMobileMenu}
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
 				>
 					Playground
 				</a>
@@ -86,19 +107,13 @@
 					href="https://github.com/codetesla51/logos"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="text-muted hover:text-text flex items-center gap-2 text-base transition-colors"
-				>
-					<Star class="h-4 w-4" />
-					<span>{stars} stars</span>
-				</a>
-				<a
-					href="https://github.com/codetesla51/logos"
-					target="_blank"
-					rel="noopener noreferrer"
-					class="text-muted hover:text-text flex items-center gap-2 text-base transition-colors"
+					class="flex items-center gap-3 rounded-lg px-4 py-3 text-sm text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
 				>
 					<Github class="h-4 w-4" />
-					<span>GitHub</span>
+					GitHub
+					{#if stars > 0}
+						<span class="rounded-full bg-white/10 px-1.5 py-0.5 text-xs">{stars}</span>
+					{/if}
 				</a>
 			</div>
 		</div>
