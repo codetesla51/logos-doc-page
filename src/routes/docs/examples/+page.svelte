@@ -11,8 +11,8 @@
 	<h1>Examples</h1>
 
 	<p>
-		Practical examples demonstrating Logos features. These examples use v0.4.0 syntax including
-		string interpolation, pipe operators, and try expressions.
+		Practical examples demonstrating Logos features. These examples use v0.4.3 syntax including
+		string interpolation, pipe operators, try expressions, and regex builtins.
 	</p>
 
 	<h2 id="modern-pipeline">Modern Pipeline with Try <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
@@ -21,6 +21,7 @@
 
 	<CodeBlock
 		code={`// modern_api.lgs - Pipe operator + try expressions
+use "std/array"
 
 // Fetch users and filter active ones
 let getActiveUsers = fn() {
@@ -54,18 +55,10 @@ print("\${len(users)} active users across \${len(roles)} roles")`}
 
 	<CodeBlock
 		code={`// formatting.lgs - String interpolation showcase
+use "std/array"
 
-let user = table{
-    name: "Alice",
-    age: 28,
-    scores: [95, 87, 92],
-}
-
-let product = table{
-    name: "Widget",
-    price: 29.99,
-    qty: 5,
-}
+let user = table{ name: "Alice", age: 28, scores: [95, 87, 92] }
+let product = table{ name: "Widget", price: 29.99, qty: 5 }
 
 // Basic interpolation
 print("Hello, \${user.name}!")
@@ -79,8 +72,8 @@ print("Order: \${product.name} x \${product.qty} = \$\${total}")
 let avgScore = arraySum(user.scores) / len(user.scores)
 print("\${user.name}'s average score: \${avgScore}")
 
-// Nested interpolation
-let greeting = "Welcome back, \${user.name}!"
+// String concatenation
+let greeting = "Welcome back, " + user.name + "!"
 print(greeting)
 
 // In function parameters
@@ -120,11 +113,11 @@ fn processData(url, key) {
         |> map(fn(d) -> d[key])
 }
 
-// Multiple fallbacks
-fn getSetting(key, default) {
+// Multiple fallbacks (using 'fallback' instead of reserved 'default')
+fn getSetting(key, fallback) {
     let config = try fileRead("config.json")
         |> try parseJson
-    return has(config, key) ? config[key] : default
+    return has(config, key) ? config[key] : fallback
 }
 
 // HTTP with proper error handling
@@ -145,6 +138,7 @@ fn downloadAndSave(url, path) {
 
 	<CodeBlock
 		code={`// transformations.lgs - Pipe operator examples
+use "std/array"
 
 let numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
 
@@ -160,7 +154,7 @@ let data = [100, 25, 50, 75, 125]
     |> filter(fn(x) -> x > 30)
     |> map(fn(x) -> x * 1.1)     // add 10%
     |> filter(fn(x) -> x > 50)   // filter again
-    |> map(fn(x) -> int(x))    // convert to int
+    |> map(fn(x) -> int(x))      // convert to int
 
 // String processing pipeline
 let words = ["hello", "WORLD", "LoGoS"]
@@ -171,10 +165,9 @@ let words = ["hello", "WORLD", "LoGoS"]
 print("Long words: \${words}")
 
 // Object transformation
-let users = [
-    table{ firstName: "John", lastName: "Doe", age: 30 },
-    table{ firstName: "Jane", lastName: "Smith", age: 25 },
-]
+let user1 = table{ firstName: "John", lastName: "Doe", age: 30 }
+let user2 = table{ firstName: "Jane", lastName: "Smith", age: 25 }
+let users = [user1, user2]
 
 let names = users
     |> map(fn(u) -> u.firstName + " " + u.lastName)
@@ -211,9 +204,11 @@ let loadTodos = fn() {
 }
 
 let saveTodos = fn() {
-    let json = toJson(todos)
-    let res = fileWrite(todoFile, json)
-    return res.ok
+    let res = toJson(todos)
+    if !res.ok {
+        return false
+    }
+    return fileWrite(todoFile, res.value).ok
 }
 
 let listTodos = fn() {
@@ -222,17 +217,15 @@ let listTodos = fn() {
         return null
     }
     for i, todo in todos {
+        let taskName = todo["task"]
         let status = todo["done"] ? colorGreen("[x]") : colorYellow("[ ]")
-        print("  \${i + 1}. \${status} \${todo["task"]}")
+        print("  \${i + 1}. \${status} \${taskName}")
     }
 }
 
 let addTodo = fn(task) {
-    let todo = table{
-        task: task,
-        done: false,
-        created: dateTimeStr(),
-    }
+    let ts = dateTimeStr()
+    let todo = table{ task: task, done: false, created: ts }
     todos = push(todos, todo)
     saveTodos()
     print(colorGreen("Added: \${task}"))
@@ -246,7 +239,8 @@ let completeTodo = fn(index) {
     let todo = todos[index - 1]
     todo["done"] = true
     saveTodos()
-    print(colorGreen("Completed: \${todo["task"]}"))
+    let taskName = todo["task"]
+    print(colorGreen("Completed: \${taskName}"))
 }
 
 // Main loop
@@ -351,18 +345,21 @@ let loadConfig = fn(path) {
     return parsed
 }
 
-let saveConfig = fn(path, config) {
-    let json = toJson(config)
-    let res = fileWrite(path, json)
-    return res.ok
+let saveConfig = fn(path, cfg) {
+    let res = toJson(cfg)
+    if !res.ok {
+        print("Error: " + res.error)
+        return false
+    }
+    return fileWrite(path, res.value).ok
 }
 
-let getConfigValue = fn(config, key, defaultValue) {
+let getConfigValue = fn(config, key, fallback) {
     if config == null {
-        return defaultValue
+        return fallback
     }
     if !has(config, key) {
-        return defaultValue
+        return fallback
     }
     return config[key]
 }
@@ -376,21 +373,13 @@ if fileExists(configPath) {
     print(colorGreen("Loaded config from: \${configPath}"))
 } else {
     print(colorYellow("Creating default config..."))
-    config = table{
-        app: table{
-            name: "MyApp",
-            version: "1.0.0",
-            debug: false,
-        },
-        server: table{
-            host: "localhost",
-            port: 8080,
-        },
-    }
+    let app = table{ name: "MyApp", version: "1.0.0", debug: false }
+    let server = table{ host: "localhost", port: 8080 }
+    config = table{ app: app, server: server }
     saveConfig(configPath, config)
 }
 
-// Access config values with dot notation
+// Access config values
 let appName = config.app.name
 let port = config.server.port
 
@@ -448,7 +437,7 @@ let dir = "."
 let pattern = ".lgs"
 let searchText = "fn"
 
-print(colorYellow("Searching for '\${pattern}' files containing '\${searchText}'..."))
+print(colorYellow("Searching for '" + pattern + "' files containing '" + searchText + "'..."))
 print("")
 
 let results = searchFiles(dir, pattern, searchText)
@@ -456,13 +445,17 @@ let results = searchFiles(dir, pattern, searchText)
 if len(results) == 0 {
     print(colorYellow("No matches found"))
 } else {
-    print(colorBold("Found \${len(results)} match(es):"))
+    print(colorBold("Found " + str(len(results)) + " match(es):"))
     for result in results {
         if has(result, "line") {
-            print(colorGreen("  \${result.path}:\${result.line}"))
-            print("    \${result.match}")
+            let rPath = result["path"]
+            let rLine = result["line"]
+            let rMatch = result["match"]
+            print(colorGreen("  " + rPath + ":" + str(rLine)))
+            print("    " + rMatch)
         } else {
-            print(colorGreen("  \${result.path}"))
+            let rPath = result["path"]
+            print(colorGreen("  " + rPath))
         }
     }
 }`}
@@ -544,7 +537,7 @@ print(loud ? colorBold(upper(greeting)) : greeting)`}
 // Loop from 1 to 30 and apply FizzBuzz rules
 
 let fizzbuzz = fn(n) {
-    for i = 1; i <= n; i++ {
+    for i in range(1, n + 1) {
         let result = i % 15 == 0 ? "FizzBuzz"
             : i % 3 == 0 ? "Fizz"
             : i % 5 == 0 ? "Buzz"
