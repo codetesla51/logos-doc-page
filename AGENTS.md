@@ -56,6 +56,26 @@ Violation of any rule below means the task is **incomplete**. Start over.
 
 ---
 
+### Self-Improvement
+
+After every session, before closing:
+
+1. **List every mistake you made this session** — wrong syntax, broken output, missed step, anything you had to correct
+2. **For each mistake, write one concrete rule** that would have prevented it
+3. **Add that rule to the appropriate section in this file immediately**
+4. **Append an entry to the log below**
+
+---
+
+## Session Log
+
+(agent appends here after every session)
+
+| Date | What went wrong | Rule added |
+| ---- | --------------- | ---------- |
+
+---
+
 ## Stack
 
 | Layer             | Technology                  |
