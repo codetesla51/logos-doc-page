@@ -102,9 +102,11 @@ let headers = table{
 }
 let data = try httpGet("https://api.example.com/private", headers)`;
 
-	const ioExample = `// print() - outputs to console (most common)
+	const ioExample = `// print() - outputs with trailing newline (v0.4.5, default)
+// printn() - outputs without trailing newline (v0.4.5)
 print("Hello!")
-print("Value:", 42)
+printn("No newline")
+print("Next line")
 
 // input() - reads one line from user (no prompt)
 let name = input()
@@ -301,7 +303,8 @@ let config = try fileRead("config.json")
 
 	const functions = {
 		io: [
-			{ name: 'print(value)', desc: 'Prints value to stdout' },
+			{ name: 'print(value)', desc: 'Prints value to stdout with trailing newline (v0.4.5)' },
+			{ name: 'printn(value)', desc: 'Prints without trailing newline (v0.4.5)' },
 			{ name: 'input()', desc: 'Reads a line from stdin' },
 			{ name: 'prompt(msg)', desc: 'Shows message, waits for input' },
 			{ name: 'confirm(msg)', desc: 'Shows (y/n), returns bool' },

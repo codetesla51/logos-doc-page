@@ -1,10 +1,14 @@
 <script>
-	import { Menu, X, Github, Star } from 'lucide-svelte';
+	import { Menu, X, Github, Search } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import logo from '$lib/assets/logo.png';
 
 	let stars = $state(0);
 	let mobileMenuOpen = $state(false);
+
+	function openSearch() {
+		document.dispatchEvent(new CustomEvent('open-search'));
+	}
 
 	onMount(async () => {
 		try {
@@ -49,14 +53,22 @@
 				>
 					Playground
 				</a>
+				<button
+					onclick={openSearch}
+					class="ml-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-3 py-2 text-sm text-zinc-400 transition-all hover:bg-white/10 hover:text-white"
+				>
+					<Search class="h-4 w-4" />
+					<span class="hidden lg:inline">Search</span>
+					<kbd class="hidden rounded border border-white/10 bg-white/5 px-1.5 py-0.5 font-mono text-[10px] lg:inline">⌘K</kbd>
+				</button>
 				<a
 					href="https://github.com/codetesla51/logos"
 					target="_blank"
 					rel="noopener noreferrer"
-					class="ml-2 flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition-all hover:bg-white/10"
+					class="flex items-center gap-2 rounded-lg border border-white/10 bg-white/5 px-4 py-2 text-sm text-white transition-all hover:bg-white/10"
 				>
 					<Github class="h-4 w-4" />
-					GitHub
+					<span class="hidden lg:inline">GitHub</span>
 					{#if stars > 0}
 						<span class="rounded-full bg-white/10 px-1.5 py-0.5 text-xs">{stars}</span>
 					{/if}

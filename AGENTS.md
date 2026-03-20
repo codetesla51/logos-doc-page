@@ -166,6 +166,7 @@ lang/                          # Localization files
   - `sort()` works on both string and numeric arrays
   - `args()` does not panic on empty arguments — has bounds checking
   - `print()` handles all types correctly including nested tables with proper indentation
+  - `print()` outputs with trailing newline (v0.4.5), `printn()` is without newline
 - The Known Limitations section must stay accurate — remove entries that are no longer true.
 - Never copy stale content from a previous `llms.txt` version into a new one.
 - Both `static/llms.txt` and `/docs/llm` must be in sync after every language change.
@@ -432,6 +433,10 @@ Source of truth. Never document anything not listed here.
 Update this after every sync.
 
 ```
+## [v0.4.5] - 2026-03-20
+### Added
+- printn builtin for printing without a trailing newline; print remains the default with newline
+
 ## [v0.4.3] - 2026-03-19
 ### Added
 - regex builtins: reMatch, reFind, reFindAll, reReplace, reSplit, reGroups

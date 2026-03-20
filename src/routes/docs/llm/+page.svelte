@@ -185,7 +185,7 @@ result := vm.GetVar("count")`;
 		<li><strong>File extension:</strong> <code>.lgs</code></li>
 		<li><strong>CLI:</strong> <code>lgs file.lgs</code> | <code>lgs build file.lgs</code> | <code>lgs fmt file.lgs</code></li>
 		<li><strong>GitHub:</strong> <a href="https://github.com/codetesla51/logos" target="_blank" rel="noopener">github.com/codetesla51/logos</a></li>
-		<li><strong>Version:</strong> v0.4.3</li>
+		<li><strong>Version:</strong> v0.4.5</li>
 	</ul>
 
 	<h2 id="variables">Variables</h2>
@@ -280,7 +280,8 @@ counter++  // OK
 	<h2 id="builtins">Builtins Reference</h2>
 
 	<h3>I/O</h3>
-	<p><code>print(args...)</code> · <code>input(prompt?)</code> · <code>prompt(msg)</code> · <code>confirm(msg)</code> · <code>select(msg, options[])</code></p>
+	<p><code>print(args...)</code> · <code>printn(args...)</code> · <code>input(prompt?)</code> · <code>prompt(msg)</code> · <code>confirm(msg)</code> · <code>select(msg, options[])</code></p>
+	<p><strong>Note (v0.4.5):</strong> <code>print()</code> outputs with a trailing newline (default). <code>printn()</code> outputs without a trailing newline.</p>
 
 	<h3>Type</h3>
 	<p><code>type(val)</code> · <code>len(str|arr)</code> · <code>keys(table)</code> · <code>values(table)</code> · <code>has(table, key)</code></p>

@@ -1,4 +1,4 @@
-# Logos Language Reference (v0.4.3)
+# Logos Language Reference (v0.4.5)
 
 ## Overview
 
@@ -7,7 +7,7 @@ Logos is a dynamically-typed, interpreted scripting language written in Go. It u
 - **File extension:** .lgs
 - **CLI:** `lgs file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
 - **GitHub:** github.com/codetesla51/logos
-- **Version:** v0.4.3
+- **Version:** v0.4.5
 
 ## Variables
 
@@ -215,7 +215,9 @@ fn fetchData() {
 ## Builtins Reference
 
 ### I/O
-`print(args...)` · `input(prompt?)` · `prompt(msg)` · `confirm(msg)` · `select(msg, options[])` · `clear()`
+`print(args...)` · `printn(args...)` · `input(prompt?)` · `prompt(msg)` · `confirm(msg)` · `select(msg, options[])` · `clear()`
+
+**Note (v0.4.5):** `print()` outputs with a trailing newline (default). `printn()` outputs without a trailing newline.
 
 ### Type
 `type(val)` · `len(str|arr)` · `keys(table)` · `values(table)` · `has(table, key)`
