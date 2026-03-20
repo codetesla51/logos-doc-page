@@ -19,6 +19,12 @@ let flag = true
 let nothing = null
 Variables are mutable. Reassign with =.
 
+### const Keyword (v0.4.2)
+const PI = 3.14159
+const API_KEY = "abc123"
+Reassignment throws a runtime error:
+PI = 3.14  // Error! Cannot reassign const
+
 ### Compound Assignment
 x += 5
 x -= 2
