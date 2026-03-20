@@ -38,16 +38,16 @@ spawn {
 	});
 </script>
 
-<section class="py-20 sm:py-28">
+<section class="overflow-hidden py-20 sm:py-28">
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
 		<div class="grid gap-12 lg:grid-cols-2 lg:items-center">
 			<div class="space-y-6">
-				<div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-4 py-1.5 text-xs text-white/60">
-					<span class="relative flex h-2 w-2">
+				<div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 overflow-hidden">
+					<span class="relative flex h-2 w-2 shrink-0">
 						<span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
 						<span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
 					</span>
-					v0.4.5 — New: printn() without newline
+					<span class="truncate">v0.4.5 — New: printn()</span>
 				</div>
 
 				<h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-white">
@@ -76,14 +76,14 @@ spawn {
 					</a>
 				</div>
 
-				<div class="flex items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-3">
-					<Terminal class="h-4 w-4 text-zinc-500" />
-					<code class="flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-mono text-sm text-emerald-400">
+				<div class="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-3">
+					<Terminal class="h-4 w-4 shrink-0 text-zinc-500" />
+					<code class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-mono text-xs text-emerald-400 sm:text-sm">
 						{installCmd}
 					</code>
 					<button
 						onclick={copyInstall}
-						class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-3 py-1.5 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white"
+						class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-2 py-1.5 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white sm:px-3"
 					>
 						{#if copied}
 							<Check class="h-3.5 w-3.5 text-emerald-400" />
@@ -95,18 +95,18 @@ spawn {
 					</button>
 				</div>
 
-				<div class="flex items-center gap-6 pt-2">
+				<div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-xs sm:text-sm">
 					<a
 						href="https://github.com/codetesla51/logos"
 						target="_blank"
 						rel="noopener noreferrer"
-						class="flex items-center gap-2 text-sm text-zinc-500 transition-colors hover:text-white"
+						class="flex items-center gap-1.5 text-zinc-500 transition-colors hover:text-white sm:gap-2"
 					>
-						<Github class="h-4 w-4" />
+						<Github class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
 						<span>Star on GitHub</span>
 					</a>
 					<span class="text-zinc-700">·</span>
-					<span class="text-sm text-zinc-500">MIT License</span>
+					<span class="text-zinc-500">MIT License</span>
 				</div>
 			</div>
 
