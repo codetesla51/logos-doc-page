@@ -40,7 +40,7 @@ spawn {
 
 <section class="overflow-hidden py-20 sm:py-28">
 	<div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-		<div class="grid gap-12 lg:grid-cols-2 lg:items-center">
+		<div class="grid gap-12 lg:grid-cols-2 lg:items-center min-w-0">
 			<div class="space-y-6">
 				<div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 overflow-hidden">
 					<span class="relative flex h-2 w-2 shrink-0">
@@ -110,7 +110,7 @@ spawn {
 				</div>
 			</div>
 
-			<div class="overflow-hidden rounded-lg border border-white/10 bg-zinc-900">
+			<div class="overflow-hidden rounded-lg border border-white/10 bg-zinc-900 min-w-0 max-w-full">
 				<div class="flex items-center justify-between border-b border-white/10 bg-zinc-900/80 px-4 py-3">
 					<div class="flex items-center gap-3">
 						<div class="flex gap-1.5">
