@@ -1,5 +1,5 @@
 <script>
-	import { Search, X, FileText, ArrowRight, Clock, Sparkles, Hash, Terminal, Code2, BookOpen, Zap, ExternalLink, Copy, Check } from 'lucide-svelte';
+	import { Search, X, FileText, ArrowRight, Clock, Sparkles, Hash, Terminal, Code2, BookOpen, Zap, ExternalLink, Copy, Check, FunctionSquare, Sparkle, Package, Play, FileCode } from 'lucide-svelte';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -796,11 +796,11 @@
 
 	function getTypeIcon(type) {
 		switch (type) {
-			case 'builtin': return '⌨️';
-			case 'feature': return '✨';
-			case 'module': return '📦';
-			case 'action': return '⚡';
-			default: return '📄';
+			case 'builtin': return FunctionSquare;
+			case 'feature': return Sparkle;
+			case 'module': return Package;
+			case 'action': return Play;
+			default: return FileCode;
 		}
 	}
 
@@ -900,12 +900,13 @@
 										<ul>
 											{#each typeResults as result, i}
 												{@const globalIndex = filteredResults().indexOf(result)}
+												{@const IconComponent = getTypeIcon(result.type)}
 												<li>
 													<button
 														onclick={() => navigateTo(result.href)}
 														class="hover:bg-white/5 flex w-full items-start gap-3 px-5 py-3 text-left transition-colors {globalIndex === selectedIndex ? 'bg-white/5' : ''}"
 													>
-														<span class="text-lg mt-0.5">{getTypeIcon(result.type)}</span>
+														<IconComponent class="h-5 w-5 mt-0.5 {getTypeColor(result.type)}" />
 														<div class="min-w-0 flex-1">
 															<div class="text-white text-sm flex items-center gap-2">
 																<span class={getTypeColor(result.type)}>{result.title}</span>
