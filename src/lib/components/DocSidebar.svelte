@@ -1,9 +1,9 @@
 <script>
 	import { page } from '$app/stores';
-	import { X } from 'lucide-svelte';
+	import { X, Search, ExternalLink } from 'lucide-svelte';
 	import logo from '$lib/assets/logo.png';
 
-	let { isOpen = false, onClose } = $props();
+	let { isOpen = false, onClose, onSearchOpen } = $props();
 
 	const navSections = [
 		{
@@ -33,7 +33,8 @@
 			title: 'Resources',
 			items: [
 				{ title: 'LLM Reference', href: '/docs/llm' },
-				{ title: 'Changelog', href: '/docs/changelog' }
+				{ title: 'Changelog', href: '/docs/changelog' },
+				{ title: 'Playground', href: '/playground', external: true }
 			]
 		}
 	];
@@ -107,13 +108,22 @@
 					<img src={logo} alt="Logos" class="h-6 w-auto" />
 					<span class="font-mono text-sm font-medium text-white/90">Docs</span>
 				</a>
-				<button
-					onclick={onClose}
-					class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-					aria-label="Close menu"
-				>
-					<X class="h-5 w-5" />
-				</button>
+				<div class="flex items-center gap-1">
+					<button
+						onclick={() => { onClose(); onSearchOpen?.(); }}
+						class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+						aria-label="Search"
+					>
+						<Search class="h-5 w-5" />
+					</button>
+					<button
+						onclick={onClose}
+						class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
+						aria-label="Close menu"
+					>
+						<X class="h-5 w-5" />
+					</button>
+				</div>
 			</div>
 
 			<!-- Nav -->
@@ -126,20 +136,25 @@
 						<ul class="space-y-0.5">
 							{#each section.items as item}
 								<li>
-									<a
-										href={item.href}
-										onclick={onClose}
-										class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
-											? 'bg-white/10 text-white font-medium'
-											: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
-									>
-										{#if isActive(item.href)}
-											<div class="h-1 w-1 rounded-full bg-white"></div>
-										{:else}
-											<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
-										{/if}
-										{item.title}
-									</a>
+						<a
+								href={item.href}
+								onclick={onClose}
+								target={item.external ? '_blank' : undefined}
+								rel={item.external ? 'noopener noreferrer' : undefined}
+								class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
+									? 'bg-white/10 text-white font-medium'
+									: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
+							>
+								{#if isActive(item.href)}
+									<div class="h-1 w-1 rounded-full bg-white"></div>
+								{:else}
+									<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
+								{/if}
+								{item.title}
+								{#if item.external}
+									<ExternalLink class="h-3 w-3 ml-auto opacity-50" />
+								{/if}
+							</a>
 								</li>
 							{/each}
 						</ul>

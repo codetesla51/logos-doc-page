@@ -207,6 +207,34 @@ for i, v in fruits {
 		language="javascript"
 	/>
 
+	<h3>Numeric Ranges <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4.2</span></h3>
+
+	<p>
+		Use <code>range(start, end, step?)</code> for numeric iteration. <strong>End is exclusive</strong> — 
+		it stops before reaching the end value:
+	</p>
+
+	<CodeBlock
+		code={`// 0 to 10 (exclusive), so prints 0-9
+for i in range(0, 10) {
+    print(i)
+}
+
+// With step (default is 1)
+for i in range(0, 10, 2) {
+    print(i)  // 0, 2, 4, 6, 8
+}
+
+// Countdown with step=-1
+for i in range(5, 0, -1) {
+    print(i)  // 5, 4, 3, 2, 1
+}
+
+// Note: range(0, 10) excludes 10
+// range(5, 0, -1) excludes 0`}
+		language="javascript"
+	/>
+
 	<h3>Switch</h3>
 
 	<p>
@@ -411,13 +439,24 @@ let msg = "Price: \${dollar + price}"`}
 	</p>
 
 	<CodeBlock
-		code={`// Without pipe — read inside-out
-let result = map(filter(double(numbers), fn(x) -> x > 0), fn(x) -> x * 2)
+		code={`// Without pipe — nested function calls (hard to read)
+let nums = [10, 20, 30]
+let doubled = []
+for n in nums {
+    push(doubled, n * 2)
+}
 
-// With pipe — read left-to-right
-let result = numbers
-    |> filter(fn(x) -> x > 0)   // [10, 20, 30]
-    |> map(fn(x) -> x * 2)       // [20, 40, 60]`}
+// With pipe — left to right
+let nums = [10, 20, 30]
+let doubled = nums
+    |> push(_, 10)
+    |> push(_, 20)
+    |> push(_, 30)
+
+// Or just use a loop
+for n in nums {
+    print(n * 2)
+}`}
 		language="javascript"
 	/>
 
@@ -426,14 +465,15 @@ let result = numbers
 	</p>
 
 	<CodeBlock
-		code={`let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+		code={`// Simple pipe — pass value to a function
+let name = "world"
+let greeting = "Hello, " + name  // Without pipe
+let greeting2 = name |> upper()  // With pipe
 
-let result = nums
-    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
-    |> map(fn(x) -> x * x)             // [4, 16, 36, 64, 100]
-    |> filter(fn(x) -> x > 30)        // [36, 64, 100]
-
-print(result)  // [36, 64, 100]`}
+// Chain transformations
+let nums = [1, 2, 3, 4, 5]
+let text = str(nums) |> upper() |> replace(" ", "-")
+print(text)  // [1,-2,-3,-4,-5]`}
 		language="javascript"
 	/>
 
@@ -444,12 +484,16 @@ print(result)  // [36, 64, 100]`}
 	</p>
 
 	<CodeBlock
-		code={`// Fetch, parse, and transform with one error handler
-fn getActiveUserNames() {
-    return try httpGet("https://api.example.com/users")
-        |> parseJson
-        |> filter(fn(u) -> u.active)
-        |> map(fn(u) -> u.name)
+		code={`// Fetch and parse with error handling
+let res = try httpGet("https://api.example.com/users")
+let data = try parseJson(res)
+
+// Filter and transform without std/array
+let active = []
+for user in data {
+    if user.active {
+        push(active, user.name)
+    }
 }
 
 // If httpGet fails, error propagates immediately
@@ -527,8 +571,8 @@ for i = 0; i < 3; i++ {
 	<h2 id="spawn">Concurrency</h2>
 
 	<p>
-		<code>spawn</code> runs code in parallel goroutines. Use it when you have independent
-		tasks that can run simultaneously:
+		<code>spawn</code> runs code asynchronously in parallel goroutines. The program waits for all
+		spawned tasks to complete before exiting. Use it when you have independent tasks:
 	</p>
 
 	<CodeBlock

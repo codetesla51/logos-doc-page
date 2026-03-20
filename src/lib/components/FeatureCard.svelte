@@ -6,20 +6,14 @@
 	const IconComponent = $derived(icons[icon] || icons.Box);
 </script>
 
-<div class="group relative overflow-hidden rounded-2xl border border-white/5 bg-gradient-to-b from-white/[0.03] to-transparent p-5 transition-all duration-300 hover:border-white/10 hover:bg-white/[0.05] hover:shadow-xl hover:shadow-black/20">
-	<!-- Subtle glow on hover -->
-	<div class="absolute inset-0 opacity-0 transition-opacity duration-300 group-hover:opacity-100 bg-[radial-gradient(circle_at_50%_0%,rgba(255,255,255,0.03),transparent_70%)]"></div>
-
-	<div class="relative flex items-start gap-4">
-		<!-- Icon -->
-		<div class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-white/10 to-white/5 border border-white/10 shadow-lg">
-			<IconComponent class="h-5 w-5 text-white/80" />
+<div class="rounded-xl border border-white/5 bg-white/[0.02] p-5 transition-colors hover:border-white/10 hover:bg-white/[0.04]">
+	<div class="flex items-start gap-4">
+		<div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg border border-white/10 bg-white/5">
+			<IconComponent class="h-5 w-5 text-white/70" />
 		</div>
-
-		<!-- Content -->
-		<div class="min-w-0 flex-1 pt-1">
-			<h3 class="mb-1.5 text-sm font-semibold text-white">{title}</h3>
-			<p class="text-xs leading-relaxed text-zinc-500">{description}</p>
+		<div class="min-w-0 flex-1">
+			<h3 class="text-sm font-medium text-white">{title}</h3>
+			<p class="mt-1 text-xs text-zinc-500 leading-relaxed">{description}</p>
 		</div>
 	</div>
 </div>

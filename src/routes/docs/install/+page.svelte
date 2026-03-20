@@ -116,7 +116,7 @@ print("Hello, \${name}!")`}
 	<p>This starts the interactive shell:</p>
 
 	<CodeBlock
-		code={`>_ Logos v0.4.1 (Mar 19 2026, 12:52:39) on linux
+		code={`>_ Logos v0.4.5 (Mar 20 2026) on linux
 Type "help" for more information
 >>>`}
 		language="text"

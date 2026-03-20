@@ -27,11 +27,10 @@ for i, task in tasks {
     print("\${i + 1}. \${task}")
 }
 
-// Pipe operator chains data transformations
-let nums = [1, 2, 3, 4, 5]
-let result = nums
-    |> filter(fn(x) -> x % 2 == 0)
-    |> map(fn(x) -> x * 10)
+// Range with step (0 to 10, exclusive)
+for i in range(0, 10, 2) {
+    print(i)  // 0, 2, 4, 6, 8
+}
 
 // Run tasks concurrently when order doesn't matter
 spawn for task in tasks {
@@ -60,8 +59,8 @@ spawn for task in tasks {
       <strong>Readable syntax</strong> — C-like structure that reads like English prose, not line noise
     </li>
     <li>
-      <strong>Sane error handling</strong> — Functions return result objects. Check <code>.ok&gt;&lt;/code&gt;,
-      handle <code>.error&gt;&lt;/code&gt;. No silent failures.
+      <strong>Sane error handling</strong> — Functions return result objects. Check <code>.ok</code>,
+      handle <code>.error</code>. No silent failures.
     </li>
     <li>
       <strong>Batteries included</strong> — File I/O, HTTP, JSON, shell execution all work without imports

@@ -11,7 +11,7 @@
 	<h1>Examples</h1>
 
 	<p>
-		Practical examples demonstrating Logos features. These examples use v0.4.3 syntax including
+		Practical examples demonstrating Logos features. These examples use v0.4.5 syntax including
 		string interpolation, pipe operators, try expressions, and regex builtins.
 	</p>
 
@@ -20,31 +20,35 @@
 	<p>Fetch, parse, filter, and transform data with pipes and try expressions:</p>
 
 	<CodeBlock
-		code={`// modern_api.lgs - Pipe operator + try expressions
-use "std/array"
+		code={`// modern_api.lgs - Fetch + try expressions
 
 // Fetch users and filter active ones
-let getActiveUsers = fn() {
-    return try httpGet("https://api.example.com/users")
-        |> parseJson
-        |> filter(fn(u) -> u.active && u.role != "guest")
-        |> map(fn(u) -> table{
-            name: u.name,
-            email: u.email,
-            role: u.role,
+let res = try httpGet("https://api.example.com/users")
+let allUsers = try parseJson(res)
+
+// Filter without std/array
+let activeUsers = []
+for user in allUsers {
+    if user.active && user.role != "guest" {
+        push(activeUsers, table{
+            name: user.name,
+            email: user.email,
+            role: user.role,
         })
+    }
 }
 
 // Display formatted user list
-let users = getActiveUsers()
-
-for i, user in users {
+for i, user in activeUsers {
     print("\${i + 1}. \${user.name} <\${user.email}> [\${user.role}]")
 }
 
 // Count statistics
-let roles = users |> map(fn(u) -> u.role)
-print("\${len(users)} active users across \${len(roles)} roles")`}
+let roleCount = 0
+for user in activeUsers {
+    roleCount = roleCount + 1
+}
+print("\${len(activeUsers)} active users")`}
 		language="javascript"
 		filename="modern_api.lgs"
 	/>
@@ -55,7 +59,6 @@ print("\${len(users)} active users across \${len(roles)} roles")`}
 
 	<CodeBlock
 		code={`// formatting.lgs - String interpolation showcase
-use "std/array"
 
 let user = table{ name: "Alice", age: 28, scores: [95, 87, 92] }
 let product = table{ name: "Widget", price: 29.99, qty: 5 }
@@ -69,7 +72,11 @@ let total = product.price * product.qty
 print("Order: \${product.name} x \${product.qty} = \$\${total}")
 
 // Array access in strings
-let avgScore = arraySum(user.scores) / len(user.scores)
+let sum = 0
+for score in user.scores {
+    sum = sum + score
+}
+let avgScore = sum / len(user.scores)
 print("\${user.name}'s average score: \${avgScore}")
 
 // String concatenation

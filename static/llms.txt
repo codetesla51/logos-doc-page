@@ -1,304 +1,608 @@
 # Logos Language Reference (v0.4.5)
 
-## Overview
+**For AI Code Generation** — Use this as the authoritative source when writing Logos code.
 
-Logos is a dynamically-typed, interpreted scripting language written in Go. It uses a Pratt parser and a tree-walking evaluator.
+## Quick Facts
 
-- **File extension:** .lgs
-- **CLI:** `lgs file.lgs` | `lgs build file.lgs` | `lgs fmt file.lgs`
+- **File extension:** `.lgs`
+- **CLI:** `lgs script.lgs` | `lgs build script.lgs` | `lgs fmt script.lgs`
+- **Interpreter:** Pratt parser + tree-walking evaluator in Go
 - **GitHub:** github.com/codetesla51/logos
-- **Version:** v0.4.5
+
+---
+
+## Playground vs CLI
+
+| Feature | Playground | CLI |
+|---------|-----------|-----|
+| File I/O | ❌ Disabled | ✅ Full |
+| HTTP | ❌ Disabled | ✅ Full |
+| Shell/exec | ❌ Disabled | ✅ Full |
+| std/array | ❌ Not available | ✅ Available |
+| std modules | ⚠️ Limited | ✅ Full |
+
+**IMPORTANT:** The web playground does NOT have `std/array` (map, filter, reduce, etc.). 
+Write playground examples using built-in array operations (push, pop, for loops).
+
+---
 
 ## Variables
 
-```
+```logos
 let x = 10
-let name = "Uthman"
+let name = "Alice"
 let pi = 3.14
-let flag = true
+let active = true
 let nothing = null
 
-x += 5
-x -= 2
+x += 5     // compound: 15
+x -= 2     // 13
+x *= 3     // 39
 ```
 
-Variables are mutable. Reassign with `=`.
-
-### const Keyword (v0.4.2)
-```
+**const (v0.4.2):** Immutable bindings — reassignment throws runtime error:
+```logos
 const PI = 3.14159
-const MAX_RETRIES = 3
+const API_KEY = "abc123"
 
-// Reassignment throws runtime error:
-// PI = 3.14  // Error!
+PI = 3.14  // Error! Cannot reassign const
 ```
 
-### Compound Assignment
-`x += 5` · `x -= 2` · `x *= 3` · `x /= 2` · `x %= 4`
+**Postfix operators (v0.4):** `i++` `i--`
 
-### Postfix Increment/Decrement
-`i++` · `i--`
+---
+
+## Types
+
+### Strings
+```logos
+let s = "hello world"
+let name = "Alice"
+
+// String interpolation (v0.4+)
+let greeting = "Hello, ${name}!"  // "Hello, Alice!"
+
+// No quoted strings inside ${}
+let dollar = "$"
+let price = "${dollar}10"  // CORRECT
+// let bad = "${"10"}"      // SYNTAX ERROR
+```
+
+### Arrays
+```logos
+let nums = [1, 2, 3, 4, 5]
+let mixed = [1, "hello", true, null]
+
+nums[0]         // 1 (zero-indexed)
+len(nums)       // 5
+contains(nums, 3)  // true
+
+// Mutations
+push(nums, 6)       // append
+prepend(nums, 0)    // prepend
+pop(nums)           // remove & return last
+first(nums)         // 1
+last(nums)          // 5
+tail(nums)          // [2, 3, 4, 5]
+reverse(nums)       // [5, 4, 3, 2, 1]
+sort(nums)          // sorted (strings OR numbers)
+```
+
+### Tables (Objects/Maps)
+```logos
+let user = table{
+    name: "Alice",
+    age: 30,
+    active: true,
+}
+
+// Dot access (string keys)
+user.name         // "Alice"
+user.name = "Bob" // mutate
+
+// Bracket access (dynamic keys)
+let key = "age"
+user[key]         // 30
+
+// Nested
+let company = table{
+    name: "Acme",
+    address: table{ city: "Seattle" },
+}
+company.address.city  // "Seattle"
+
+// Table utilities
+keys(user)           // ["name", "age", "active"]
+values(user)         // ["Alice", 30, true]
+has(user, "email")   // false
+tableDelete(user, "age")  // remove key
+merge(t1, t2)        // merge two tables
+
+// ⚠️ Bracket access is type-aware: t["1"] ≠ t[1]
+```
+
+---
 
 ## Operators
 
-- **Arithmetic:** `+`, `-`, `*`, `/`, `%`
-- **Comparison:** `==`, `!=`, `<`, `>`, `<=`, `>=`
-- **Logical:** `&&`, `||`, `!`
-- **Ternary:** `condition ? valueIfTrue : valueIfFalse`
-- **Pipe:** `arr |> filter(fn) |> map(fn)`
+| Category | Operators |
+|----------|-----------|
+| Arithmetic | `+`, `-`, `*`, `/`, `%` |
+| Comparison | `==`, `!=`, `<`, `>`, `<=`, `>=` |
+| Logical | `&&`, `||`, `!` |
+| Ternary | `condition ? trueVal : falseVal` |
 
-## Strings
-
-```
-let s = "hello world"
-
-// String interpolation (v0.4+)
-let name = "world"
-let greeting = "hello ${name}"
+**Ternary chaining (v0.3.2+):**
+```logos
+let grade = score >= 90 ? "A" : score >= 80 ? "B" : "C"
 ```
 
-## Arrays
+---
 
-```
-let arr = [1, 2, 3, "four", true]
-let first = arr[0]
-let last = arr[len(arr) - 1]
-```
+## Functions
 
-## Tables (Maps/Objects)
-
-```
-let user = table{
-  name: "Uthman",
-  age: 20,
-  active: true
+```logos
+// Named function
+fn greet(name) {
+    return "Hello, " + name
 }
 
-user.name = "New Name"  // dot assignment mutates field
-user.age = 21
+// Arrow function (implicit return)
+let double = fn(x) -> x * 2
 
-user.name       // "New Name" (dot access for string keys)
-user["name"]    // "New Name" (bracket access)
+// First-class: assign, pass, return
+let apply = fn(f, x) -> f(x)
+apply(double, 5)  // 10
 ```
 
-Bracket access is type-aware. `t["1"]` and `t[1]` are different keys.
+### Closures
+```logos
+let makeAdder = fn(x) {
+    return fn(y) -> x + y
+}
+
+let add5 = makeAdder(5)
+add5(3)    // 8
+add5(10)   // 15
+
+// Counter with mutable state
+let makeCounter = fn() {
+    let count = 0
+    return fn() {
+        count += 1
+        return count
+    }
+}
+```
+
+---
 
 ## Control Flow
 
-### If / Else
-```
-if x > 10 {
-  print("big")
-} else if x > 5 {
-  print("medium")
+### If/Else
+```logos
+if age >= 65 {
+    print("senior")
+} else if age >= 18 {
+    print("adult")
 } else {
-  print("small")
+    print("child")
+}
+```
+
+### For Loops
+```logos
+// While-style
+let i = 0
+for i < 5 {
+    print(i)
+    i += 1
+}
+
+// For-in (arrays)
+for item in items {
+    print(item)
+}
+
+// For-in with index
+for i, v in items {
+    print("${i}: ${v}")
+}
+
+// range() (v0.4.2) — end is EXCLUSIVE
+for i in range(0, 5) {
+    print(i)  // 0, 1, 2, 3, 4 (NOT 5)
+}
+
+// With step
+for i in range(0, 10, 2) {
+    print(i)  // 0, 2, 4, 6, 8
+}
+
+// Countdown
+for i in range(5, 0, -1) {
+    print(i)  // 5, 4, 3, 2, 1
 }
 ```
 
 ### Switch
-```
-switch x {
-  case 1 { print("one") }
-  case 2 { print("two") }
-  default { print("other") }
+```logos
+switch role {
+    case "admin" { print("full access") }
+    case "editor" { print("can edit") }
+    default { print("read only") }
 }
+// No fallthrough
 ```
 
-### For Loop
-```
-for i < 10 {
-  i += 1
-}
-```
-
-### For-In Loop
-```
-for item in arr {
-  print(item)
-}
-
-for i, v in arr {
-  print("${i}: ${v}")
-}
-```
-
-## Functions
-
-```
-let add = fn(x, y) {
-  return x + y
-}
-add(2, 3)   // 5
-
-let double = fn(x) -> x * 2
-```
-
-### Closures
-```
-fn makeCounter() {
-  let count = 0
-  return fn() {
-    count += 1
-    return count
-  }
-}
-let counter = makeCounter()
-counter()   // 1
-counter()   // 2
-```
+---
 
 ## Modules
 
-```
-use "filename"
+```logos
 use "std/math"
-use "std/array"
 use "std/string"
 use "std/path"
 use "std/time"
 use "std/type"
 use "std/log"
 use "std/testing"
+use "std/array"        // CLI only — NOT on playground
 ```
 
-## Concurrency
+---
 
+## Built-in Functions
+
+### I/O
+```logos
+print(x)         // with trailing newline (v0.4.5)
+printn(x)        // no trailing newline (v0.4.5)
+input()          // read line from stdin
+prompt(msg)      // show message, wait for input
+confirm(msg)     // yes/no prompt, returns bool
+select(msg, opts) // numbered menu, returns chosen value
+clear()           // clear terminal
 ```
-spawn {
-  print("task 1")
-  print("task 2")
-}
 
-spawn for item in jobs {
-  process(item)
-}
+### Type
+```logos
+type(val)      // "STRING", "INT", "FLOAT", "BOOL", "NULL", "ARRAY", "TABLE"
+len(arr)       // array/string length
+len(tbl)       // number of keys
+keys(tbl)      // array of keys
+values(tbl)    // array of values
+has(tbl, key)  // true if key exists
 ```
 
-## Result Pattern
-
-Functions like `httpGet`, `fileRead`, `parseJson` return result tables:
-
+### Type Conversion
+```logos
+str(val)       // to string (short alias, v0.4.1)
+int(val)       // to integer (short alias)
+float(val)     // to float (short alias)
+toStr(val)     // to string
+toInt(val)     // to integer
+toFloat(val)   // to float
+toBool(val)    // to boolean
 ```
-table{
-  ok: true/false,
-  value: <data or null>,
-  error: "<message or empty string>"
-}
 
-let res = httpGet("https://api.example.com/data")
+### String
+```logos
+upper(s)       // "HELLO"
+lower(s)       // "hello"
+trim(s)        // remove whitespace
+replace(s, old, new)  // replace all
+split(s, sep)  // ["a", "b", "c"]
+join(arr, sep) // "a,b,c"
+contains(s, sub)    // true/false
+startsWith(s, pre)  // true/false
+endsWith(s, suff)   // true/false
+indexOf(s, sub)     // position or -1
+repeat(s, n)    // "ha" -> "hahaha"
+slice(s, 1, 4)  // substring (1 to 4, exclusive)
+format(tmpl, args...)  // "Hello, {}" -> "Hello, Bob"
+```
+
+### Array
+```logos
+push(arr, val)      // append
+prepend(arr, val)   // prepend
+pop(arr)            // remove & return last
+first(arr)          // first element
+last(arr)           // last element
+tail(arr)           // all except first
+reverse(arr)        // reversed copy
+sort(arr)           // sorted (strings OR numbers)
+contains(arr, val)  // true/false
+range(start, end)   // [start, end) — end is EXCLUSIVE
+range(start, end, step)  // with step
+```
+
+### JSON
+```logos
+parseJson(s)     // returns {ok, value, error}
+toJson(val)      // returns {ok, value, error}
+prettyJson(val)  // formatted
+```
+
+### HTTP
+```logos
+httpGet(url)                  // returns {ok, value, error}
+httpGet(url, headers)         // with headers
+httpPost(url, body)           // POST
+httpPut(url, body)            // PUT
+httpPatch(url, body)          // PATCH
+httpDelete(url)               // DELETE
+```
+
+### File (CLI only)
+```logos
+fileRead(path)          // returns {ok, value, error}
+fileWrite(path, data)    // returns {ok, value, error}
+fileAppend(path, data)   // append
+fileDelete(path)         // returns {ok, value, error}
+fileExists(path)         // boolean
+fileMkdir(path)          // returns {ok, value, error}
+fileReadDir(path)        // list directory
+fileGlob(pattern)        // glob files
+fileCopy(src, dst)       // copy
+fileMove(src, dst)       // move
+```
+
+### Math
+```logos
+mathAbs(n)           // absolute value
+mathSqrt(n)          // square root
+mathPow(base, exp)   // power
+mathFloor(n)         // round down
+mathCeil(n)          // round up
+mathRound(n)         // round nearest
+mathMin(a, b)        // minimum
+mathMax(a, b)        // maximum
+mathRandom()         // 0.0 to 1.0
+mathRandomInt(a, b)  // integer in range
+mathPi()             // 3.14159...
+```
+
+### Time
+```logos
+timeNow()           // Unix timestamp (seconds)
+timeMs()            // Unix timestamp (milliseconds)
+timeStr()           // "15:04:05"
+dateStr()           // "2026-03-20"
+dateTimeStr()       // "2026-03-20 15:04:05"
+timeFormat(ts, fmt)  // Go time format
+sleep(ms)           // wait milliseconds
+```
+
+### System
+```logos
+osname()          // "linux" or "darwin"
+pwd()             // current directory
+cd(path)          // change directory
+env(name)         // get env var
+setenv(name, val) // set env var
+args()            // CLI args (user args start at index 0)
+exit(code)        // exit program
+run(cmd, args...) // execute command (no shell)
+shell(cmd)        // execute via shell
+```
+
+### Color Output
+```logos
+colorRed(s)       // red text
+colorGreen(s)     // green text
+colorYellow(s)    // yellow text
+colorBlue(s)      // blue text
+colorBold(s)      // bold text
+```
+
+### Regex (v0.4.3)
+```logos
+reMatch(pattern, text)       // true/false
+reFind(pattern, text)        // first match or null
+reFindAll(pattern, text)     // array of matches
+reReplace(pattern, text, repl) // replace all
+reSplit(pattern, text)       // split by pattern
+reGroups(pattern, text)      // capture groups
+
+// Use backticks for raw patterns (Go regexp)
+reMatch(`\d+`, "abc123")      // true
+reFind(`\d+`, "3 cats")       // "3"
+reFindAll(`\d+`, "1 and 2")    // ["1", "2"]
+reReplace(`\d+`, "3 cats", "X") // "X cats"
+reSplit(`\s+`, "a  b c")      // ["a", "b", "c"]
+reGroups(`(\w+)@(\w+)`, "a@b") // ["a", "b"]
+```
+
+---
+
+## Error Handling
+
+### Result Pattern
+Functions return `{ok, value, error}`:
+```logos
+let res = httpGet("https://api.example.com")
 if res.ok {
-  print(res.value.body)
+    print(res.value.body)
 } else {
-  print(res.error)
+    print("Error: " + res.error)
 }
 ```
 
 ### Try Expression (v0.4+)
-
-Unwraps result tables and propagates errors up the call stack:
-
-```
-fn fetchData() {
-  let res = try httpGet("https://api.example.com/data")
-  return res.value.body
+Unwrap and propagate errors:
+```logos
+// Without try — verbose
+fn readConfig(path) {
+    let res = fileRead(path)
+    if !res.ok { return res.error }
+    let json = parseJson(res.value)
+    if !json.ok { return json.error }
+    return json.value
 }
 
-// Without try, you need:
-fn fetchData() {
-  let res = httpGet("https://api.example.com/data")
-  if !res.ok { return res }
-  return res.value.body
+// With try — errors propagate automatically
+fn readConfig(path) {
+    let content = try fileRead(path)
+    let config = try parseJson(content)
+    return config
 }
 ```
 
-## Builtins Reference
+---
 
-### I/O
-`print(args...)` · `printn(args...)` · `input(prompt?)` · `prompt(msg)` · `confirm(msg)` · `select(msg, options[])` · `clear()`
+## Concurrency
 
-**Note (v0.4.5):** `print()` outputs with a trailing newline (default). `printn()` outputs without a trailing newline.
+```logos
+spawn {
+    print("runs in background")
+}
 
-### Type
-`type(val)` · `len(str|arr)` · `keys(table)` · `values(table)` · `has(table, key)`
+// Spawn loop — each iteration concurrent
+spawn for url in urls {
+    let data = try httpGet(url)
+    cache(url, data)
+}
 
-### Type Conversion
-`str(val)` · `int(val)` · `float(val)` · `toStr(val)` · `toInt(val)` · `toFloat(val)` · `toBool(val)`
-
-Note: `str()`, `int()`, `float()` are short aliases added in v0.4.1. The `to*` forms still work.
-
-### String
-`upper(s)` · `lower(s)` · `trim(s)` · `replace(s, old, new)` · `split(s, sep)` · `join(arr, sep)` · `contains(str|arr, val)` · `startsWith(s, prefix)` · `endsWith(s, suffix)` · `indexOf(s, sub)` · `repeat(s, n)` · `slice(str|arr, start, end)` · `format(tmpl, args...)`
-
-### Array
-`push(arr, val)` · `pop(arr)` · `first(arr)` · `last(arr)` · `tail(arr)` · `prepend(arr, val)` · `reverse(arr)` · `sort(arr)` · `slice(arr, start, end)` · `contains(arr, val)` · `range(start, end, step?)`
-
-Note: `range(start, end)` generates numbers from start (inclusive) to end (exclusive). Use `range(0, 10)` for 0-9, `range(0, 10, 2)` for 0,2,4,...,8, `range(5, 0, -1)` for countdown.
-
-### Math
-`mathAbs(n)` · `mathSqrt(n)` · `mathPow(base, exp)` · `mathFloor(n)` · `mathCeil(n)` · `mathRound(n)` · `mathMin(a, b)` · `mathMax(a, b)` · `mathRandom()` · `mathRandomInt(min, max)` · `mathPi()`
-
-### JSON
-`parseJson(str)` · `toJson(val)` · `prettyJson(val)`
-
-### File I/O
-`fileRead(path)` · `fileWrite(path, content)` · `fileAppend(path, content)` · `fileDelete(path)` · `fileCopy(src, dst)` · `fileMove(src, dst)` · `fileMkdir(path)` · `fileReadDir(path)` · `fileGlob(pattern)` · `fileExists(path)`
-
-### HTTP
-`httpGet(url, headers?)` · `httpPost(url, body, headers?)` · `httpPut(url, body, headers?)` · `httpPatch(url, body, headers?)` · `httpDelete(url, headers?)`
-
-### Time
-`timeNow()` · `timeMs()` · `timeStr()` · `dateStr()` · `dateTimeStr()` · `timeFormat(ts, fmt)` · `sleep(ms)`
-
-### System
-`osname()` · `pwd()` · `cd(path)` · `env(key)` · `setenv(key, val)` · `args()` · `exit(code?)` · `shell(cmd)` · `run(cmd, args...)`
-
-Note: `args()` does not work in compiled binaries. Use `lgs script.lgs` instead.
-
-### Color
-`colorRed(str)` · `colorGreen(str)` · `colorYellow(str)` · `colorBlue(str)` · `colorMagenta(str)` · `colorCyan(str)` · `colorWhite(str)` · `colorBold(str)`
-
-### Regex (v0.4.3)
-`reMatch(pattern, text)` · `reFind(pattern, text)` · `reFindAll(pattern, text)` · `reReplace(pattern, text, repl)` · `reSplit(pattern, text)` · `reGroups(pattern, text)`
-
-Uses Go regexp syntax. Patterns use backticks for raw strings.
-
-```
-reMatch(`\d+`, "hello 123")      // true
-reFind(`\d+`, "3 cats")           // "3"
-reFindAll(`\d+`, "3 and 12")      // ["3", "12"]
-reReplace(`\d+`, "3 cats", "X")   // "X cats"
-reSplit(`\s+`, "a   b c")         // ["a", "b", "c"]
-reGroups(`(\w+)@(\w+)`, "a@b")    // ["a", "b"]
+// Program waits for ALL spawns to complete
 ```
 
-## Standard Library
+---
+
+## Pipe Operator (v0.4+)
+
+Passes left value as first argument to right function:
+```logos
+// Simple pipe
+let name = "hello"
+name |> upper()  // "HELLO"
+
+// ⚠️ Playground: Use loops instead of map/filter
+// CLI only: 
+let evens = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
+
+// Playground equivalent:
+let evens = []
+for n in nums {
+    if n % 2 == 0 {
+        push(evens, n * 2)
+    }
+}
+
+// Pipe + try
+let data = try httpGet("https://api.example.com")
+    |> try parseJson
+    |> try filter(fn(u) -> u.active)
+```
+
+---
+
+## Standard Library (CLI Only — Not on Playground)
 
 ### std/array
-`map(arr, fn)` · `filter(arr, fn)` · `reduce(arr, fn, init)` · `unique(arr)` · `flat(arr)` · `sum(arr)` · `min(arr)` · `max(arr)` · `indexOf(arr, val)` · `containsAll(arr, items)`
-
-### std/string
-`strCapitalize(s)` · `strReverse(s)` · `strIsPalindrome(s)` · `strIsEmpty(s)` · `strCount(s, sub)` · `strRepeat(s, n)` · `strPadStart(s, len, c)` · `strPadEnd(s, len, c)`
+```logos
+use "std/array"
+map(arr, fn)         // transform each element
+filter(arr, fn)      // keep matching elements
+reduce(arr, fn, init) // combine to single value
+unique(arr)          // remove duplicates
+sum(arr)             // sum numbers
+min(arr)             // smallest
+max(arr)             // largest
+indexOf(arr, val)    // position or -1
+```
 
 ### std/math
-`mathFib(n)` · `mathFactorial(n)` · `mathMean(arr)` · `mathMedian(arr)` · `mathClamp(n, min, max)` · `mathIsPrime(n)` · `mathGcd(a, b)` · `mathLcm(a, b)`
+```logos
+use "std/math"
+mathFib(n)           // nth Fibonacci
+mathFactorial(n)     // n!
+mathIsPrime(n)       // true/false
+mathGcd(a, b)        // greatest common divisor
+mathLcm(a, b)        // least common multiple
+mathMean(arr)        // average
+mathMedian(arr)       // middle value
+mathClamp(n, min, max) // constrain to range
+mathLerp(a, b, t)    // linear interpolation
+```
+
+### std/string
+```logos
+use "std/string"
+strCapitalize(s)     // "hello" -> "Hello"
+strReverse(s)        // "hello" -> "olleh"
+strIsPalindrome(s)   // true/false
+strIsEmpty(s)        // true/false
+strCount(s, sub)     // occurrences
+strPadStart(s, len, c) // pad start
+strPadEnd(s, len, c)   // pad end
+```
 
 ### std/path
-`pathJoin(parts)` · `pathBase(path)` · `pathDir(path)` · `pathExt(path)` · `pathIsAbs(path)` · `pathClean(path)` · `pathExists(path)` · `pathWithoutExt(path)`
+```logos
+use "std/path"
+pathJoin(parts)       // join path components
+pathBase(path)        // filename
+pathDir(path)         // directory
+pathExt(path)         // extension (.txt)
+pathWithoutExt(path)  // without extension
+pathIsAbs(path)       // true if absolute
+pathExists(path)      // true if exists
+```
 
 ### std/time
-`datetimeNow()` · `datetimeFromTimestamp(ts)` · `datetimeFormat(dt, fmt)` · `datetimeIsAfter(dt1, dt2)` · `datetimeDiff(dt1, dt2, unit)` · `datetimeAdd(dt, amount, unit)` · `datetimeSubtract(dt, n, u)` · `datetimeIsBefore(d1, d2)` · `datetimeIsEqual(d1, d2)` · `datetimeToStr(dt)`
+```logos
+use "std/time"
+datetimeNow()                  // current datetime
+datetimeFromTimestamp(ts)      // from Unix
+datetimeFormat(dt, fmt)        // format (Go layout)
+datetimeAdd(dt, n, unit)       // add days/hours/etc
+datetimeSubtract(dt, n, unit)  // subtract
+datetimeDiff(d1, d2, unit)     // difference
+datetimeIsAfter(d1, d2)        // true/false
+datetimeIsBefore(d1, d2)       // true/false
+datetimeIsEqual(d1, d2)        // true/false
+datetimeToStr(dt)              // to string
+```
 
 ### std/type
-`isNull(val)` · `isString(val)` · `isInt(val)` · `isFloat(val)` · `isBool(val)` · `isArray(val)` · `isTable(val)` · `isNumber(val)` · `isCallable(val)`
+```logos
+use "std/type"
+isString(val)
+isInt(val)
+isFloat(val)
+isNumber(val)     // int OR float
+isBool(val)
+isArray(val)
+isTable(val)
+isNull(val)
+isCallable(val)
+```
 
 ### std/log
-`logDebug(msg)` · `logInfo(msg)` · `logWarn(msg)` · `logError(msg)`
+```logos
+use "std/log"
+logDebug(msg)     // white
+logInfo(msg)      // green
+logWarn(msg)      // yellow
+logError(msg)     // red
+```
 
 ### std/testing
-`assert(name, got, expected)` · `suite(name, fn)` · `summary()`
+```logos
+use "std/testing"
+assert(name, got, expected)
+suite(name, fn) {
+    assert("test1", fn1(), expected1)
+    assert("test2", fn2(), expected2)
+}
+summary()
+```
 
-## Embedding in Go
+---
+
+## Go Embedding
 
 ```go
 import "github.com/codetesla51/logos/logos"
@@ -316,7 +620,6 @@ result := vm.GetVar("count")
 ```
 
 ### Sandbox Mode
-
 ```go
 vm := logos.NewWithConfig(logos.SandboxConfig{
     AllowFileIO:  false,
@@ -326,98 +629,65 @@ vm := logos.NewWithConfig(logos.SandboxConfig{
 })
 ```
 
-In the web playground:
-- File I/O disabled
-- HTTP disabled
-- Shell/exec disabled
-- `exit()` disabled
+---
+
+## Common Patterns
+
+### args() — User Arguments Start at Index 0
+```logos
+// Running: lgs script.lgs --name "Alice" --verbose
+let cliArgs = args()
+
+print(cliArgs[0])    // "--name" (NOT the binary path!)
+print(cliArgs[1])    // "Alice"
+len(cliArgs)         // 2 (binary & script already removed)
+```
+
+### For-In Table Iteration
+```logos
+let user = table{ name: "Alice", age: 30 }
+
+// Iterate over keys
+for key in keys(user) {
+    print(key + ": " + str(user[key]))
+}
+```
+
+### Sorting Arrays
+```logos
+let nums = [3, 1, 4, 1, 5, 9]
+sort(nums)  // modifies in place: [1, 1, 3, 4, 5, 9]
+
+let strings = ["banana", "apple", "cherry"]
+sort(strings)  // ["apple", "banana", "cherry"]
+```
+
+---
 
 ## Known Limitations
 
-- Dot access only works with string-keyed table fields
-- Bracket access is type-aware (`t["1"]` ≠ `t[1]`)
-- No try/catch — use result pattern or try expression
-- No classes/structs — use tables
-- No variadic user functions — only builtins support `args...`
-- `spawn` waits for all goroutines
-- `sort()` handles both string and numeric arrays
+1. Dot access only works with string-keyed table fields
+2. Bracket access is type-aware: `t["1"]` ≠ `t[1]`
+3. No try/catch — use result pattern or try expression
+4. No classes/structs — use tables
+5. No variadic user functions — only builtins support `args...`
+6. `spawn` waits for all goroutines to complete before exit
+7. std/array not available on playground server
+8. `args()` does not work in compiled binaries — use `lgs script.lgs`
 
-## String Interpolation (v0.4+)
+---
 
-Embed expressions directly in strings:
+## Gotchas
 
-```
-let name = "world"
-let greeting = "Hello ${name}!"  // "Hello world!"
+| Issue | Wrong | Correct |
+|-------|-------|---------|
+| String interpolation | `"${"hi"}"` | `let hi="hi"; "${hi}"` |
+| range() end | `range(0, 10)` includes 10 | `range(0, 10)` excludes 10 |
+| Bracket keys | `t[1]` same as `t["1"]` | They are different keys |
+| Type-aware access | `t["1"]` gets number key | `t[1]` gets number key |
+| print() newline | `printn()` has no newline | v0.4.5: print() has newline |
+| args() index | `args()[0]` is script path | User args start at index 0 |
 
-let age = 25
-let bio = "${name} is ${age}"  // "world is 25"
+---
 
-// Works with any expression
-let nums = [1, 2, 3]
-print("Sum: ${nums[0] + nums[1] + nums[2]}")  // "Sum: 6"
-```
-
-Important: no quoted strings inside `${}` blocks. Use variables.
-
-## Pipe Operator (v0.4+)
-
-Chain function calls left to right:
-
-```
-let nums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
-
-let result = nums
-    |> filter(fn(x) -> x % 2 == 0)   // [2, 4, 6, 8, 10]
-    |> map(fn(x) -> x * x)            // [4, 16, 36, 64, 100]
-    |> filter(fn(x) -> x > 30)        // [36, 64, 100]
-```
-
-Works with try expressions for automatic error propagation:
-```
-let data = httpGet("https://api.example.com/users")
-    |> try parseJson
-    |> try filter(fn(u) -> u.active)
-    |> map(fn(u) -> u.name)
-```
-
-## Ternary Operator (v0.3.2+)
-
-```
-let age = 20
-let status = age >= 18 ? "adult" : "minor"
-print("You are " + (age >= 18 ? "an adult" : "a minor"))
-```
-
-Supports nesting and chaining.
-
-## For-In with Index (v0.3.1+)
-
-```
-for i, v in nums {
-    print("${i}: ${v}")
-}
-```
-
-## Dot Access on Tables (v0.3.1+)
-
-```
-let user = table{ name: "Uthman", age: 20 }
-print(user.name)  // "Uthman"
-user.name = "updated"
-print(user.name)  // "updated"
-```
-
-## Result Objects from JSON (v0.3.0+)
-
-`toJson` and `prettyJson` return `{ok, value, error}` result objects:
-
-```
-let obj = table{ name: "Alice", age: 30 }
-let json = toJson(obj)
-if json.ok {
-    print(json.value)
-} else {
-    print("Error: " + json.error)
-}
-```
+*Last updated: v0.4.5 — 2026-03-20*

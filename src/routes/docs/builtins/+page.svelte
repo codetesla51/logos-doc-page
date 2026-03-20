@@ -366,7 +366,7 @@ let config = try fileRead("config.json")
 			{ name: 'reverse(arr)', desc: 'Reverse order' },
 			{ name: 'sort(arr)', desc: 'Sort array (string or numeric)' },
 			{ name: 'contains(arr, val)', desc: 'Check membership' },
-			{ name: 'range(start, end, step?)', desc: 'Numeric iterator (v0.4.2)' },
+			{ name: 'range(start, end, step?)', desc: '0 to end (exclusive). Use step=-1 for countdown.' },
 		],
 		table: [
 			{ name: 'keys(t)', desc: 'Array of keys' },
@@ -398,7 +398,7 @@ let config = try fileRead("config.json")
 			{ name: 'cd(path)', desc: 'Change directory' },
 			{ name: 'env(name)', desc: 'Get env var' },
 			{ name: 'setenv(n, v)', desc: 'Set env var' },
-			{ name: 'args()', desc: 'CLI arguments' },
+			{ name: 'args()', desc: 'CLI args (user args at index 0). Not available in compiled binaries.' },
 			{ name: 'sleep(ms)', desc: 'Wait milliseconds' },
 			{ name: 'osname()', desc: '"linux"/"darwin"' },
 			{ name: 'exit(code)', desc: 'Exit program' },
@@ -624,6 +624,28 @@ print(str(mathRandomInt(1, 6)))`}
 			</div>
 		{/each}
 	</div>
+
+	<h3>args() <span class="bg-amber-500/20 text-amber-400 text-xs px-2 py-0.5 rounded ml-2">Important</span></h3>
+	
+	<p class="text-muted text-sm mt-2">
+		Args are sliced to remove the binary path and script path. User arguments start at index 0:
+	</p>
+
+	<CodeBlock
+		code={`// Running: lgs script.lgs --name "Alice" --verbose
+let cliArgs = args()
+
+print(len(cliArgs))  // 2 (not 4)
+print(cliArgs[0])    // "--name"
+print(cliArgs[1])    // "Alice"
+// Binary and script paths are already removed
+
+// Use with flags
+if contains(cliArgs, "--verbose") {
+    print("Verbose mode enabled")
+}`}
+		language="javascript"
+	/>
 
 	<h3>run() <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">try</span></h3>
 

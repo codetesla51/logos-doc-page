@@ -968,11 +968,12 @@
 								</div>
 								<div class="flex flex-wrap gap-2">
 									{#each quickActions as action}
+										{@const ActionIcon = action.icon}
 										<button
 											onclick={() => navigateTo(action.href || action.action)}
 											class="bg-white/5 text-white/60 hover:text-white rounded-lg border border-white/10 px-3 py-2 text-xs transition-colors hover:bg-white/10 hover:border-white/20 flex items-center gap-2"
 										>
-											<svelte:component this={action.icon} class="h-3.5 w-3.5" />
+											<ActionIcon class="h-3.5 w-3.5" />
 											{action.title}
 											<kbd class="bg-white/5 border border-white/10 rounded px-1 py-0.5 text-[9px] font-mono ml-1">{action.shortcut}</kbd>
 										</button>
