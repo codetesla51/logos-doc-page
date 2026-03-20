@@ -1,106 +1,600 @@
 <script>
 	import DocLayout from '$lib/components/DocLayout.svelte';
 	import CodeBlock from '$lib/components/CodeBlock.svelte';
-	import { Copy, Check, Sparkles, AlertTriangle, Info } from 'lucide-svelte';
+	import { Copy, Check, Sparkles } from 'lucide-svelte';
 
 	let refCopied = $state(false);
 	let copyTimeout = $state(null);
 
 	const fullReference = `# Logos Language Reference (v0.4.5)
 
-**For AI Code Generation** — Use this as the authoritative source when writing Logos code.
+Logos is a dynamically-typed, interpreted scripting language written in Go. It uses a Pratt parser and a tree-walking interpreter.
+File extension: .lgs
+CLI: lgs file.lgs | lgs build file.lgs | lgs fmt file.lgs
+GitHub: https://github.com/codetesla51/logos
+Docs: https://logos-lang.vercel.app/docs
+Version: v0.4.5
 
-## Quick Facts
-- File extension: .lgs
-- CLI: lgs script.lgs | lgs build script.lgs | lgs fmt script.lgs
-- Playground does NOT have std/array (map, filter, reduce) — use built-in operations instead
+---
 
-## Variables
+## SYNTAX OVERVIEW
+
+### Variables
 let x = 10
-const PI = 3.14159
-x += 5  // compound assignment
+let name = "Uthman"
+let pi = 3.14
+let flag = true
+let nothing = null
+Variables are mutable. Reassign with =.
 
-## Types
-Strings: "hello \${variable}" (interpolation, v0.4+)
-Arrays: [1, 2, 3] — push(), pop(), sort(), range()
-Tables: table{ name: "Alice", age: 30 } — dot or bracket access
+### Compound Assignment
+x += 5
+x -= 2
+x *= 3
+x /= 2
+x %= 4
 
-## Functions
-fn greet(name) { return "Hello, " + name }
+### Postfix Increment/Decrement
+let i = 0
+i++     // 1
+i--     // 0
+print(i)
+
+### Strings
+let s = "hello world"
+
+// String interpolation with \${} (v0.4+)
+let name = "world"
+let greeting = "hello \${name}"
+let age = 25
+let bio = "\${name} is \${age} years old"
+
+### Arrays
+let arr = [1, 2, 3, "four", true]
+let first = arr[0]
+let last = arr[len(arr) - 1]
+
+### Tables (Maps/Objects)
+let user = table{
+  name: "Uthman",
+  age: 20,
+  active: true
+}
+
+Dot access — works with string-keyed tables:
+user.name       // "Uthman"
+user.age        // 20
+
+Dot assignment — mutate table fields:
+user.name = "New Name"
+user.age = 21
+
+Bracket access — works on tables and is type-aware. The key type matters:
+user["name"]          // works — string key lookup
+table{1: "one"}[1]   // works — integer key lookup
+table{1: "one"}["1"] // returns null — different type, different key
+
+Nested tables render with proper indentation via print():
+let config = table{
+  db: table{
+    host: "localhost",
+    port: 5432
+  }
+}
+
+---
+
+## CONTROL FLOW
+
+### If / Else
+if x > 10 {
+  print("big")
+} else {
+  print("small")
+}
+
+You can chain else if:
+if x > 10 {
+  print("big")
+} else if x > 5 {
+  print("medium")
+} else {
+  print("small")
+}
+
+### Switch
+switch x {
+  case 1 { print("one") }
+  case 2 { print("two") }
+  default { print("other") }
+}
+
+### For Loop (while-style)
+for i < 10 {
+  i += 1
+}
+
+### For-In Loop
+for item in arr {
+  print(item)
+}
+
+Use index variable with for i, v in (v0.3.1+):
+for i, v in arr {
+  print("\${i}: \${v}")
+}
+
+When iterating a table, each item is a 2-element array [key, value]:
+for pair in user {
+  print(pair[0])   // key string
+  print(pair[1])   // value
+}
+
+### Break / Continue
+for item in arr {
+  if item == 3 { break }
+  if item == 1 { continue }
+  print(item)
+}
+
+---
+
+## FUNCTIONS
+
+### Anonymous Function
+let add = fn(x, y) {
+  return x + y
+}
+add(2, 3)   // 5
+
+### Named Function
+fn greet(name) {
+  return "Hello " + name
+}
+greet("Uthman")
+
+### Arrow Function (single expression)
 let double = fn(x) -> x * 2
+let square = fn(x) -> x * x
 
-## Control Flow
-if x > 10 { print("big") } else { print("small") }
-for i < 10 { i += 1 }
-for item in arr { print(item) }
-for i, v in arr { print("\${i}: \${v}") }
-range(0, 10) // 0-9 (end EXCLUSIVE, v0.4.2)
-switch x { case 1 { print("one") } default { print("other") } }
+### Closures
+fn makeCounter() {
+  let count = 0
+  return fn() {
+    count += 1
+    return count
+  }
+}
+let counter = makeCounter()
+counter()   // 1
+counter()   // 2
 
-## Pipe Operator (v0.4+)
-⚠️ Playground: Use loops instead of map/filter (std/array not available)
-CLI: arr |> filter(fn) |> map(fn)
+---
 
-## Try Expression (v0.4+)
-let res = try httpGet("url")  // unwraps result, propagates errors
+## OPERATORS
 
-## Concurrency
-spawn { print("async") }
-spawn for item in items { process(item) }
+Arithmetic: +, -, *, /, %
+Comparison: ==, !=, <, >, <=, >=
+Logical: &&, ||, !
+Ternary: ? : (v0.3.2+) e.g., condition ? valueIfTrue : valueIfFalse
+Pipe: |> (v0.4+) e.g., arr |> filter(fn) |> map(fn)
 
-## Builtins
-I/O: print(x) [newline], printn(x) [no newline], input(), prompt(msg), confirm(msg), select(msg, opts), clear()
-Type: type(val), len(), keys(), values(), has(), tableDelete(), merge()
-Conversion: str(val), int(val), float(val) [short aliases, v0.4.1]
-String: upper(), lower(), trim(), replace(), split(), join(), contains(), startsWith(), endsWith(), indexOf(), repeat(), slice(), format()
-Array: push(), pop(), first(), last(), tail(), reverse(), sort(), contains(), range(start, end, step?)
-JSON: parseJson(), toJson(), prettyJson()
-HTTP: httpGet(), httpPost(), httpPut(), httpPatch(), httpDelete()
-Math: mathAbs(), mathSqrt(), mathPow(), mathFloor(), mathCeil(), mathRound(), mathMin(), mathMax(), mathRandom(), mathRandomInt(), mathPi()
-Time: timeNow(), timeMs(), timeStr(), dateStr(), dateTimeStr(), timeFormat(), sleep()
-System: osname(), pwd(), cd(), env(), setenv(), args() [user args at index 0], exit(), run(), shell()
-Color: colorRed(), colorGreen(), colorYellow(), colorBlue(), colorBold()
-Regex: reMatch(), reFind(), reFindAll(), reReplace(), reSplit(), reGroups() (v0.4.3)
+### Pipe Operator (v0.4+)
+Chain function calls left to right:
+let nums = [1, 2, 3, 4, 5]
+let result = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
+print(result)  // [4, 8]
 
-## std/array (CLI only, NOT on playground)
-map(), filter(), reduce(), unique(), sum(), min(), max(), indexOf()
+---
 
-## std/math (CLI only)
-mathFib(), mathFactorial(), mathIsPrime(), mathGcd(), mathLcm(), mathMean(), mathMedian(), mathClamp(), mathLerp()
+## MODULES
 
-## std/string (CLI only)
-strCapitalize(), strReverse(), strIsPalindrome(), strIsEmpty(), strCount(), strPadStart(), strPadEnd()
+use "filename"       // loads filename.lgs from same directory
+use "std/math"       // loads from stdlib
+use "std/array"
+use "std/string"
+use "std/path"
+use "std/time"
+use "std/type"
+use "std/log"
+use "std/testing"
+Exports are implicit — everything defined at top level is accessible after use.
 
-## std/path (CLI only)
-pathJoin(), pathBase(), pathDir(), pathExt(), pathWithoutExt(), pathIsAbs(), pathExists()
+---
 
-## std/time (CLI only)
-datetimeNow(), datetimeFromTimestamp(), datetimeFormat(), datetimeAdd(), datetimeSubtract(), datetimeDiff(), datetimeIsAfter(), datetimeIsBefore(), datetimeIsEqual(), datetimeToStr()
+## ERROR HANDLING
 
-## std/type (CLI only)
-isString(), isInt(), isFloat(), isNumber(), isBool(), isArray(), isTable(), isNull(), isCallable()
+### Try Expression (v0.4+)
+Unwraps result tables and propagates errors up the call stack:
+fn fetchData() {
+  let res = try httpGet("https://api.example.com/data")
+  return res.value.body
+}
+Without try, you would need:
+fn fetchData() {
+  let res = httpGet("https://api.example.com/data")
+  if !res.ok { return res }
+  return res.value.body
+}
 
-## std/log (CLI only)
-logDebug(), logInfo(), logWarn(), logError()
+---
 
-## std/testing (CLI only)
-assert(), suite(), summary()
+## CONCURRENCY
 
-## Common Patterns
-// args() - user args START at index 0 (binary & script already removed)
-// lgs script.lgs --name "Alice" --verbose
-args()[0]  // "--name" (NOT binary path!)
+### Spawn Block
+Runs each statement concurrently as a goroutine. Waits for all to finish.
+spawn {
+  print("task 1")
+  print("task 2")
+}
 
-// For-in over tables
-for key in keys(table) { print(table[key]) }
+### Spawn For-In
+Runs each iteration concurrently. Arrays only.
+spawn for item in jobs {
+  process(item)
+}
 
-// range() end is EXCLUSIVE
-for i in range(0, 10) { print(i) }  // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 (NOT 10)
+---
 
-// Gotchas
-// WRONG: let bad = "$" + "hi"  // don't put strings inside interpolation
-// CORRECT: let hi = "hi"; "\${hi}"  // use backslash escape
-// t["1"] ≠ t[1]  // bracket access is type-aware`;
+## RESULT PATTERN
+
+All HTTP, file, and shell builtins return a result table:
+table{
+  ok: true/false,
+  value: <data or null>,
+  error: "<message or empty string>"
+}
+Always check ok before using value:
+let res = httpGet("https://api.example.com/data")
+if res.ok {
+  print(res.value.body)
+  print(res.value.status)
+} else {
+  print(res.error)
+}
+
+---
+
+## BUILTINS REFERENCE
+
+### I/O
+print(args...) — Prints all arguments with proper formatting. Handles all types including nested tables with indentation.
+input(prompt?) — Reads line from stdin, optional prompt
+prompt(msg) — Prints msg then reads a line
+confirm(msg) — Prints "msg (y/n):", returns bool
+select(msg, options[]) — Numbered menu, returns chosen element
+clear() — Clears terminal screen
+printn(args...) — Prints without trailing newline (v0.4.5)
+
+### Color Output
+All take 1 string argument and return string wrapped in ANSI codes.
+colorRed(str) — Red
+colorGreen(str) — Green
+colorYellow(str) — Yellow
+colorBlue(str) — Blue
+colorMagenta(str) — Magenta
+colorCyan(str) — Cyan
+colorWhite(str) — White
+colorBold(str) — Bold
+
+### Type / Inspection
+type(val) — Returns type name string: "INTEGER", "FLOAT", "STRING", "BOOLEAN", "NULL", "ARRAY", "TABLE", "FUNCTION"
+len(val) — Length of string or array
+keys(t) — Array of table keys as strings (without type prefix)
+values(t) — Array of table values
+has(t, key) — Returns bool — true if string key exists
+
+### Type Conversion (v0.4.1+)
+str(val) — Convert any value to string (short alias)
+int(val) — Convert to integer (short alias)
+float(val) — Convert to float (short alias)
+toStr(val) — Convert any value to its string representation
+toInt(val) — Converts string/float/bool to integer
+toFloat(val) — Converts string/int/bool to float
+toBool(val) — Converts value to boolean
+Note: str(), int(), float() are short aliases added in v0.4.1. The to* forms still work.
+
+### String
+upper(s) — Uppercase
+lower(s) — Lowercase
+trim(s) — Trim leading/trailing whitespace
+replace(s, old, new) — Replace all occurrences
+split(s, sep) — Split string into array
+join(arr, sep) — Join array of strings into one string
+contains(val, sub) — True if string contains substring OR array contains value
+startsWith(s, prefix) — Returns bool
+endsWith(s, suffix) — Returns bool
+indexOf(s, sub) — Index of first occurrence, -1 if not found
+repeat(s, n) — Repeat string n times
+slice(val, s, e) — Substring or sub-array (end is exclusive)
+format(tmpl, args...) — Printf-style formatting with {} placeholders
+
+### Array
+push(arr, val) — Returns new array with val appended
+pop(arr) — Returns last element, null if empty
+first(arr) — Returns first element, null if empty
+last(arr) — Returns last element, null if empty
+tail(arr) — Returns all but first, null if empty
+prepend(arr, val) — Returns new array with val at front
+reverse(arr) — Returns reversed array
+sort(arr) — Returns sorted array. Handles both string and numeric arrays (v0.4.1+)
+slice(arr, s, e) — Sub-array from start to end (exclusive)
+contains(arr, val) — Returns bool
+range(start, end, step?) — Generates numeric sequence. End is EXCLUSIVE.
+
+### Table
+keys(t) — Returns array of key strings
+values(t) — Returns array of values
+has(t, key) — Returns bool
+tableDelete(t, key) — Returns new table without that key
+merge(t1, t2) — Merges two tables; t2 overwrites on conflict
+
+### Math
+mathAbs(n) — Absolute value
+mathSqrt(n) — Square root
+mathPow(base, exp) — Power
+mathFloor(n) — Floor (returns integer)
+mathCeil(n) — Ceiling (returns integer)
+mathRound(n) — Round (returns integer)
+mathMin(a, b) — Minimum of two numbers (returns float)
+mathMax(a, b) — Maximum of two numbers (returns float)
+mathRandom() — Random float between 0.0 and 1.0
+mathRandomInt(min, max) — Random integer between min and max inclusive
+mathPi() — Returns pi (3.14159...)
+
+### JSON
+parseJson(str) — Parses JSON string. Returns {ok, value, error}. Arrays -> Array, objects -> Table.
+toJson(val) — Returns {ok, value, error}. Converts Logos value to compact JSON string.
+prettyJson(val) — Returns {ok, value, error}. Pretty-printed JSON string.
+
+### File I/O (disabled in sandbox)
+All file builtins except fileExists return a result table {ok, value, error}.
+fileRead(path) — Returns result with file content as string in value
+fileWrite(path, content) — Overwrites file
+fileAppend(path, content) — Appends to file
+fileDelete(path) — Deletes file or empty directory
+fileMkdir(path) — Creates directory and all parents
+fileReadDir(path) — Returns result with array of filenames in value
+fileGlob(pattern) — Returns result with matching path strings in value
+fileCopy(src, dst) — Copies file
+fileMove(src, dst) — Moves/renames file or directory
+fileExists(path) — Returns bool directly (not a result table)
+
+### HTTP (disabled in sandbox)
+All HTTP builtins return a result table: {ok, value: {body, status}, error}
+body is a string. status is an integer HTTP status code.
+httpGet(url, headers?) — GET request
+httpPost(url, body, headers?) — POST request
+httpPut(url, body, headers?) — PUT request
+httpPatch(url, body, headers?) — PATCH request
+httpDelete(url, headers?) — DELETE request
+headers is an optional table of string key-value pairs. body must be a string (typically JSON).
+
+### Regex (v0.4.3)
+reMatch(pattern, text) — Returns true if pattern matches
+reFind(pattern, text) — Returns first match or null
+reFindAll(pattern, text) — Returns array of all matches
+reReplace(pattern, text, repl) — Replace all matches
+reSplit(pattern, text) — Split by pattern
+reGroups(pattern, text) — Returns capture groups array
+Uses Go regexp syntax. Patterns use backticks for raw strings.
+
+### Time
+timeNow() — Current Unix timestamp in seconds (integer)
+timeMs() — Current Unix timestamp in milliseconds (integer)
+timeStr() — Current time string e.g. "15:04:05"
+dateStr() — Current date string e.g. "2026-03-16"
+dateTimeStr() — Current date+time string e.g. "2026-03-16 15:04:05"
+timeFormat(ts, fmt) — Formats a unix timestamp using Go time layout string
+sleep(ms) — Pauses execution for given milliseconds
+
+### System / OS (disabled in sandbox)
+osname() — Returns OS string: "linux", "darwin", "windows"
+pwd() — Returns current working directory string
+cd(path) — Changes current working directory
+env(key) — Returns env variable value string or null
+setenv(key, val) — Sets environment variable
+args() — Returns CLI arguments as array (index 0 onward). Has bounds checking — returns empty array if no arguments.
+exit(code?) — Exits process, optional integer code (default 0)
+shell(cmd) — Runs shell command string, returns result table with output string in value
+run(cmd, args...) — Runs command with separate args, returns result table
+
+---
+
+## STDLIB REFERENCE
+
+Stdlib modules must be imported with use before their functions are available.
+
+### std/array
+use "std/array"
+map(arr, func) — Transform each element
+filter(arr, func) — Keep passing elements
+reduce(arr, func, initial) — Combine to single value
+unique(arr) — Remove duplicates
+flat(arr) — Flatten nested arrays
+sum(arr) — Sum all numbers
+min(arr) — Smallest number
+max(arr) — Largest number
+indexOf(arr, val) — Find position
+containsAll(arr, items) — Check all present
+
+### std/string
+use "std/string"
+strCapitalize(str) — Capitalize first letter
+strReverse(str) — Reverse characters
+strIsPalindrome(str) — Returns true if palindrome
+strIsEmpty(str) — Returns true if empty or whitespace
+strCount(str, sub) — Count occurrences
+strRepeat(str, n) — Repeat string n times
+strPadStart(str, length, char) — Pad start
+strPadEnd(str, length, char) — Pad end
+
+### std/math
+use "std/math"
+mathFib(n) — nth Fibonacci number
+mathFactorial(n) — n!
+mathMean(arr) — Average
+mathMedian(arr) — Middle value
+mathMode(arr) — Most common value
+mathClamp(n, min, max) — Constrain to range
+mathLerp(a, b, t) — Linear interpolation
+mathIsPrime(n) — Returns true if prime
+mathGcd(a, b) — Greatest common divisor
+mathLcm(a, b) — Least common multiple
+
+### std/path
+use "std/path"
+pathJoin(arr) — Joins array of path parts with /
+pathBase(path) — Filename portion of path
+pathDir(path) — Directory portion of path
+pathExt(path) — File extension e.g. ".lgs"
+pathIsAbs(path) — Returns true if absolute
+pathClean(path) — Simplify path
+pathExists(path) — Returns true if exists
+pathWithoutExt(path) — Path without extension
+
+### std/time
+use "std/time"
+All datetime functions work with datetime objects: table{timestamp, str, date, time}.
+datetimeNow() — Current datetime
+datetimeFromTimestamp(ts) — From Unix timestamp
+datetimeFormat(dt, fmt) — Custom format
+datetimeIsAfter(dt1, dt2) — Returns bool
+datetimeIsBefore(dt1, dt2) — Returns bool
+datetimeIsEqual(dt1, dt2) — Returns bool
+datetimeDiff(dt1, dt2, unit) — Difference
+datetimeAdd(dt, amount, unit) — Add time
+datetimeSubtract(dt, n, u) — Subtract time
+datetimeToStr(dt) — To string
+
+### std/type
+use "std/type"
+isNull(val) — Check null
+isString(val) — Check string
+isInt(val) — Check integer
+isFloat(val) — Check float
+isBool(val) — Check boolean
+isArray(val) — Check array
+isTable(val) — Check table
+isNumber(val) — Check int or float
+isCallable(val) — Check function
+
+### std/log
+use "std/log"
+logDebug(msg) — Debug level (white)
+logInfo(msg) — Info level (green)
+logWarn(msg) — Warn level (yellow)
+logError(msg) — Error level (red)
+
+### std/testing
+use "std/testing"
+assert(name, got, expected) — Check equality
+suite(name, func) — Group tests
+summary() — Print results
+
+---
+
+## EMBEDDING LOGOS IN GO
+
+import "github.com/codetesla51/logos/logos"
+
+// Create VM (all capabilities enabled)
+vm := logos.New()
+
+// Create sandboxed VM
+vm := logos.NewWithConfig(logos.SandboxConfig{
+    AllowFileIO:  false,
+    AllowNetwork: false,
+    AllowShell:   false,
+    AllowExit:    false,
+})
+
+// Register a Go function callable from Logos
+vm.Register("greet", func(args ...logos.Object) logos.Object {
+    name := args[0].(*logos.String).Value
+    return &logos.String{Value: "Hello, " + name}
+})
+
+// Set a variable in the Logos environment
+vm.SetVar("count", 42)
+vm.SetVar("config", map[string]interface{}{"port": 8080})
+
+// Run a script string
+err := vm.Run(\`print(greet("World"))\`)
+
+// Get a variable back as a Go value
+result := vm.GetVar("count") // returns interface{}
+
+// Call a Logos function from Go
+result, err := vm.Call("myFunction", arg1, arg2)
+
+Supported Go <-> Logos type conversions:
+- int, int64 <-> Integer
+- float64 <-> Float
+- string <-> String
+- bool <-> Bool
+- []interface{} <-> Array
+- map[string]interface{} <-> Table
+- nil <-> Null
+
+---
+
+## SANDBOX MODE
+
+When running in the Logos playground (web), sandbox mode is active:
+- File I/O builtins disabled (fileRead, fileWrite, etc.)
+- HTTP builtins disabled (httpGet, httpPost, etc.)
+- Shell/exec builtins disabled (shell, run)
+- exit() disabled
+- Calling a sandboxed function returns an error object: "function 'X' is not available in sandbox mode"
+
+---
+
+## COMMON PATTERNS
+
+### HTTP + JSON + Pipe
+let users = try httpGet("https://api.example.com/users")
+    |> try parseJson
+    |> filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)
+print(users)
+
+### String Interpolation
+let name = "Alice"
+let age = 28
+print("\${name} is \${age} years old")
+
+### Error Handling with try
+fn safeFetch(url) {
+    let res = try httpGet(url)
+    let data = try parseJson(res.value.body)
+    return data
+}
+
+### File Operations
+let content = try fileRead("config.json")
+let config = try parseJson(content)
+print(config.port)
+
+### CLI Arguments
+// Running: lgs script.lgs --name "Alice" --verbose
+let cliArgs = args()
+print(cliArgs[0])    // "--name" (NOT binary path!)
+print(cliArgs[1])    // "Alice"
+// Binary and script paths are already removed
+
+---
+
+## KNOWN LIMITATIONS
+
+- Dot access only works with string-keyed table fields. Integer or boolean keys must use bracket access.
+- Bracket access on tables is type-aware: t["1"] and t[1] are different keys.
+- No try/catch — use the result pattern or try expression.
+- No classes or structs — use tables as data containers.
+- No variadic user-defined functions — only builtins support args....
+- spawn waits for all goroutines (no fire-and-forget).
+- spawn for item in only supports arrays, not tables or strings.
+- args() does not work in compiled binaries — use lgs script.lgs`;
 
 	async function copyReference() {
 		try {
@@ -112,21 +606,6 @@ for i in range(0, 10) { print(i) }  // 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 (NOT 10)
 			console.error('Failed to copy:', e);
 		}
 	}
-
-	const playgroundWarning = `// ⚠️ PLAYGROUND LIMITATIONS
-// std/array (map, filter, reduce, etc.) is NOT available
-// Use built-in operations and loops instead
-
-// WRONG for playground:
-let evens = nums |> filter(fn(x) -> x % 2 == 0) |> map(fn(x) -> x * 2)
-
-// CORRECT for playground:
-let evens = []
-for n in nums {
-    if n % 2 == 0 {
-        push(evens, n * 2)
-    }
-}`;
 
 	const variablesCode = `// Basic variables
 let x = 10
@@ -579,19 +1058,6 @@ result := vm.GetVar("count")`;
 		This reference is the authoritative source for generating accurate Logos code. All examples are validated against the v0.4.5 interpreter.
 	</p>
 
-	<div class="not-prose my-6 rounded-lg border border-amber-500/30 bg-amber-500/10 p-4">
-		<div class="flex items-start gap-3">
-			<AlertTriangle class="h-5 w-5 text-amber-400 shrink-0 mt-0.5" />
-			<div>
-				<p class="text-sm text-amber-200 mb-2">
-					<strong>Critical:</strong> The web playground does NOT have <code>std/array</code> (map, filter, reduce, etc.).
-					Use built-in array operations and loops for playground-compatible code.
-				</p>
-				<CodeBlock code={playgroundWarning} language="javascript" />
-			</div>
-		</div>
-	</div>
-
 	<h2 id="quick-facts">Quick Facts</h2>
 
 	<ul>
@@ -755,14 +1221,7 @@ print(colorBold(colorYellow("Warning")))`} language="javascript" />
 
 	<CodeBlock code={regexCode} language="javascript" />
 
-	<h2 id="stdlib">Standard Library <span class="bg-red-500/20 text-red-400 text-xs px-2 py-0.5 rounded ml-2">CLI Only</span></h2>
-
-	<div class="not-prose my-4 p-4 bg-amber-500/10 border border-amber-500/30 rounded-lg">
-		<div class="flex items-center gap-2 mb-2">
-			<Info class="h-4 w-4 text-amber-400" />
-			<span class="text-sm text-amber-200"><strong>Note:</strong> Standard library modules are NOT available on the web playground. Use built-in operations and loops instead.</span>
-		</div>
-	</div>
+	<h2 id="stdlib">Standard Library</h2>
 
 	<h3>std/array</h3>
 	<p><code>map(arr, fn)</code> · <code>filter(arr, fn)</code> · <code>reduce(arr, fn, init)</code> · <code>unique(arr)</code> · <code>sum(arr)</code> · <code>min(arr)</code> · <code>max(arr)</code> · <code>indexOf(arr, val)</code></p>
