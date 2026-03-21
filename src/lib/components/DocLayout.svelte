@@ -9,7 +9,6 @@
 	let { prev = null, next = null, children } = $props();
 
 	let sidebarOpen = $state(false);
-	let sidebarCollapsed = $state(false);
 	let searchOpen = $state(false);
 	let scrollProgress = $state(0);
 	let showScrollTop = $state(false);
@@ -73,10 +72,10 @@
 	></div>
 
 	<DocTopbar onMenuToggle={toggleSidebar} onSearchOpen={openSearch} />
-	<DocSidebar isOpen={sidebarOpen} bind:collapsed={sidebarCollapsed} onClose={closeSidebar} onSearchOpen={openSearch} />
+	<DocSidebar isOpen={sidebarOpen} onClose={closeSidebar} onSearchOpen={openSearch} />
 	<SearchModal isOpen={searchOpen} onClose={closeSearch} />
 
-	<main class="lg:transition-all lg:duration-300 {sidebarCollapsed ? 'lg:pl-16' : 'lg:pl-60'}" id="main-content">
+	<main class="lg:pl-60" id="main-content">
 		<div class="mx-auto max-w-3xl px-4 py-8 sm:px-6 sm:py-12 lg:px-8">
 			<article class="prose prose-sm sm:prose-base max-w-none prose-invert prose-headings:font-semibold prose-headings:text-white prose-h1:text-3xl prose-h1:mb-4 prose-h2:text-2xl prose-h2:mt-12 prose-h2:mb-4 prose-h2:border-b prose-h2:border-white/5 prose-h2:pb-2 prose-h3:text-lg prose-p:text-zinc-400 prose-a:text-white prose-a:no-underline hover:prose-a:underline prose-code:text-emerald-400 prose-code:bg-emerald-500/10 prose-code:rounded prose-code:px-1.5 prose-code:py-0.5 prose-code:before:content-none prose-code:after:content-none prose-pre:rounded-xl prose-pre:bg-zinc-900/80 prose-pre:border prose-pre:border-white/5 prose-pre:shadow-xl prose-ul:text-zinc-400 prose-ol:text-zinc-400 prose-li:text-zinc-400 prose-strong:text-white prose-strong:font-medium">
 				{@render children()}

@@ -1,14 +1,9 @@
 <script>
 	import { page } from '$app/stores';
-	import { X, Search, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-svelte';
-	import { fly } from 'svelte/transition';
+	import { X, Search, ExternalLink } from 'lucide-svelte';
 	import logo from '$lib/assets/logo.png';
 
-	let { isOpen = false, collapsed = $bindable(false), onClose, onSearchOpen } = $props();
-
-	function toggleCollapse() {
-		collapsed = !collapsed;
-	}
+	let { isOpen = false, onClose, onSearchOpen } = $props();
 
 	const navSections = [
 		{
@@ -54,61 +49,44 @@
 </script>
 
 <!-- Desktop Sidebar -->
-<aside class="fixed top-0 left-0 z-40 hidden h-screen border-r border-white/5 bg-zinc-950/50 lg:block transition-all duration-300 {collapsed ? 'w-0 lg:w-16' : 'w-60'}">
+<aside class="fixed top-0 left-0 z-40 hidden h-screen w-60 border-r border-white/5 bg-zinc-950/50 lg:block">
 	<!-- Subtle gradient overlay -->
 	<div class="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-transparent pointer-events-none"></div>
 
-	<nav class="relative h-full overflow-hidden p-3">
+	<nav class="relative h-full overflow-y-auto p-4">
 		<!-- Logo -->
-		<a href="/" class="mb-4 flex items-center gap-2.5 px-2 py-1 {collapsed ? 'justify-center' : ''}">
+		<a href="/" class="mb-6 flex items-center gap-2.5 px-2 py-1">
 			<img src={logo} alt="Logos" class="h-6 w-auto" />
-			{#if !collapsed}
-				<span class="font-mono text-sm font-medium text-white/90">Docs</span>
-			{/if}
+			<span class="font-mono text-sm font-medium text-white/90">Docs</span>
 		</a>
 
 		<!-- Nav sections -->
-		<div class="overflow-y-auto {collapsed ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200">
-			{#each navSections as section}
-				<div class="mb-4">
-					<h3 class="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-						{section.title}
-					</h3>
-					<ul class="space-y-0.5">
-						{#each section.items as item}
-							<li>
-								<a
-									href={item.href}
-									class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
-										? 'bg-white/10 text-white font-medium'
-										: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
-								>
-									{#if isActive(item.href)}
-										<div class="h-1 w-1 rounded-full bg-white shrink-0"></div>
-									{:else}
-										<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100 shrink-0"></div>
-									{/if}
-									<span class="truncate">{item.title}</span>
-								</a>
-							</li>
-						{/each}
-					</ul>
-				</div>
-			{/each}
-		</div>
-
-		<!-- Collapse toggle -->
-		<button
-			onclick={toggleCollapse}
-			class="absolute bottom-4 {collapsed ? 'left-1/2 -translate-x-1/2' : 'right-3'} flex items-center justify-center rounded-lg p-2 text-zinc-500 transition-all hover:bg-white/5 hover:text-white"
-			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
-		>
-			{#if collapsed}
-				<ChevronRight class="h-4 w-4" />
-			{:else}
-				<ChevronLeft class="h-4 w-4" />
-			{/if}
-		</button>
+		{#each navSections as section}
+			<div class="mb-6">
+				<h3 class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+					{section.title}
+				</h3>
+				<ul class="space-y-0.5">
+					{#each section.items as item}
+						<li>
+							<a
+								href={item.href}
+								class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
+									? 'bg-white/10 text-white font-medium'
+									: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
+							>
+								{#if isActive(item.href)}
+									<div class="h-1 w-1 rounded-full bg-white"></div>
+								{:else}
+									<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
+								{/if}
+								{item.title}
+							</a>
+						</li>
+					{/each}
+				</ul>
+			</div>
+		{/each}
 	</nav>
 </aside>
 
@@ -116,7 +94,7 @@
 {#if isOpen}
 	<!-- Backdrop -->
 	<div 
-		class="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-md animate-[fadeIn_200ms_ease-out]"
+		class="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-md"
 		onclick={onClose}
 		onkeydown={(e) => e.key === 'Escape' && onClose()}
 		role="button"
@@ -127,7 +105,6 @@
 	<!-- Sidebar panel -->
 	<aside 
 		class="fixed top-0 left-0 z-50 h-full w-[85vw] max-w-[320px] bg-zinc-950/95 backdrop-blur-xl border-r border-white/10 shadow-2xl shadow-black/50 lg:hidden"
-		style="transform: translateX(0);"
 	>
 		<!-- Header with gradient -->
 		<div class="relative border-b border-white/5">
