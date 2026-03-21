@@ -76,24 +76,24 @@ spawn {
 					</a>
 				</div>
 
-				<div class="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-3">
-					<Terminal class="h-4 w-4 shrink-0 text-zinc-500" />
-					<code class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap font-mono text-xs text-emerald-400 sm:text-sm">
-						{installCmd}
-					</code>
-					<button
-						onclick={copyInstall}
-						class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-2 py-1.5 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white sm:px-3"
-					>
-						{#if copied}
-							<Check class="h-3.5 w-3.5 text-emerald-400" />
-							<span class="hidden sm:inline">Copied</span>
-						{:else}
-							<Copy class="h-3.5 w-3.5" />
-							<span class="hidden sm:inline">Copy</span>
-						{/if}
-					</button>
-				</div>
+<div class="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-3">
+  <Terminal class="h-4 w-4 shrink-0 text-zinc-500" />
+  <code class="min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-normal sm:whitespace-nowrap font-mono text-xs text-emerald-400 sm:text-sm">
+    {installCmd}
+  </code>
+  <button
+    onclick={copyInstall}
+    class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-2 py-1.5 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white sm:px-3"
+  >
+    {#if copied}
+      <Check class="h-3.5 w-3.5 text-emerald-400" />
+      <span class="hidden sm:inline">Copied</span>
+    {:else}
+      <Copy class="h-3.5 w-3.5" />
+      <span class="hidden sm:inline">Copy</span>
+    {/if}
+  </button>
+</div>
 
 				<div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-xs sm:text-sm">
 					<a
@@ -110,7 +110,7 @@ spawn {
 				</div>
 			</div>
 
-			<div class="overflow-hidden rounded-lg border border-white/10 bg-zinc-900 min-w-0 max-w-full">
+			<div class="overflow-hidden rounded-lg border border-white/10 bg-zinc-900">
 				<div class="flex items-center justify-between border-b border-white/10 bg-zinc-900/80 px-4 py-3">
 					<div class="flex items-center gap-3">
 						<div class="flex gap-1.5">
@@ -129,7 +129,7 @@ spawn {
 					</a>
 				</div>
 
-				<div class="overflow-x-auto">
+				<div class="code-container overflow-x-auto max-w-full min-w-0">
 					{#if highlightedCode}
 						{@html highlightedCode}
 					{:else}
@@ -143,18 +143,25 @@ spawn {
 
 <style>
 	:global(pre.shiki) {
-		margin: 0;
-		padding: 1.25rem;
+		margin: 0 !important;
+		padding: 1.25rem !important;
 		background-color: transparent !important;
-		overflow-x: auto;
+		overflow-x: auto !important;
 		line-height: 1.6;
+		max-width: 100% !important;
+		width: auto !important;
+		min-width: 0 !important;
 	}
 	:global(pre.shiki code) {
 		background: transparent !important;
 		display: block;
+		min-width: 0;
 	}
 	:global(pre.shiki span) {
 		white-space: pre;
 		word-break: normal;
+	}
+	:global(.code-container pre.shiki) {
+		max-width: calc(100vw - 4rem) !important;
 	}
 </style>
