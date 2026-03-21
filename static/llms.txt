@@ -18,6 +18,7 @@ let pi = 3.14
 let flag = true
 let nothing = null
 Variables are mutable. Reassign with =.
+null and nil are both valid — null is the canonical form used internally.
 
 ### const Keyword (v0.4.2)
 const PI = 3.14159
@@ -79,6 +80,8 @@ let config = table{
     port: 5432
   }
 }
+
+⚠️ Note: Table key ordering is non-deterministic. Go maps don't preserve insertion order. This affects table comparisons — two tables with the same keys/values may appear different if compared as strings. Use explicit key-by-key comparison when order matters.
 
 ---
 
@@ -214,6 +217,12 @@ fn fetchData() {
   if !res.ok { return res }
   return res.value.body
 }
+
+Functions that return result tables (use try or check .ok manually):
+- File I/O: fileRead, fileWrite, fileAppend, fileDelete, fileMkdir, fileReadDir, fileGlob, fileCopy, fileMove
+- System: run, shell
+- JSON: parseJson, toJson, prettyJson
+- HTTP: httpGet, httpPost, httpPut, httpPatch, httpDelete
 
 ---
 
@@ -393,7 +402,7 @@ cd(path) — Changes current working directory
 env(key) — Returns env variable value string or null
 setenv(key, val) — Sets environment variable
 args() — Returns CLI arguments as array (index 0 onward). Has bounds checking — returns empty array if no arguments.
-exit(code?) — Exits process, optional integer code (default 0)
+exit(code?) — Exits process, optional integer code (default 1)
 shell(cmd) — Runs shell command string, returns result table with output string in value
 run(cmd, args...) — Runs command with separate args, returns result table
 

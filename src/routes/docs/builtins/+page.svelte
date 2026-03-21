@@ -343,6 +343,8 @@ let config = try fileRead("config.json")
 			{ name: 'join(arr, sep)', desc: 'Join with separator' },
 			{ name: 'contains(s, sub)', desc: 'Check substring' },
 			{ name: 'indexOf(s, sub)', desc: 'Find index (-1 if none)' },
+			{ name: 'startsWith(s, prefix)', desc: 'Check prefix' },
+			{ name: 'endsWith(s, suffix)', desc: 'Check suffix' },
 			{ name: 'repeat(s, n)', desc: 'Repeat string' },
 			{ name: 'slice(s, start, end)', desc: 'Substring' },
 			{ name: 'format(tmpl, ...)', desc: 'Format with {}' },
@@ -401,7 +403,7 @@ let config = try fileRead("config.json")
 			{ name: 'args()', desc: 'CLI args (user args at index 0). Not available in compiled binaries.' },
 			{ name: 'sleep(ms)', desc: 'Wait milliseconds' },
 			{ name: 'osname()', desc: '"linux"/"darwin"' },
-			{ name: 'exit(code)', desc: 'Exit program' },
+			{ name: 'exit(code?)', desc: 'Exit program (default code 1)' },
 			{ name: 'run(cmd, ...)', desc: 'Run command (try)' },
 			{ name: 'shell(cmd)', desc: 'Shell command (try)' },
 		],
@@ -452,6 +454,17 @@ let config = try fileRead("config.json")
 		Functions marked (try) return <code>{'{'}ok, value, error{'}'}</code>. Use <code>try</code> to unwrap
 		and propagate errors:
 	</p>
+
+	<p>
+		<strong>Functions that return result tables:</strong>
+	</p>
+
+	<ul class="list-disc list-inside space-y-1 text-muted text-sm mb-4">
+		<li><strong>File I/O:</strong> fileRead, fileWrite, fileAppend, fileDelete, fileMkdir, fileReadDir, fileGlob, fileCopy, fileMove</li>
+		<li><strong>System:</strong> run, shell</li>
+		<li><strong>JSON:</strong> parseJson, toJson, prettyJson</li>
+		<li><strong>HTTP:</strong> httpGet, httpPost, httpPut, httpPatch, httpDelete</li>
+	</ul>
 
 	<CodeBlock
 		code={`// Verbose error checking:

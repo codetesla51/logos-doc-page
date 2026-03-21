@@ -257,6 +257,7 @@ summary()`;
 	<h2 id="std-array">std/array</h2>
 
 	<p>
+		Import with <code>use "std/array"</code> at the top of your script.
 		Functional array operations. These work on arrays of any type, making data transformations
 		declarative and readable.
 	</p>
@@ -275,6 +276,7 @@ summary()`;
 	<h2 id="std-math">std/math</h2>
 
 	<p>
+		Import with <code>use "std/math"</code> at the top of your script.
 		Math utilities, number theory, and statistics. Great for algorithmic tasks without importing
 		external libraries.
 	</p>
@@ -293,6 +295,7 @@ summary()`;
 	<h2 id="std-string">std/string</h2>
 
 	<p>
+		Import with <code>use "std/string"</code> at the top of your script.
 		String manipulation for formatting, analysis, and transformation. Complement to the built-in
 		string functions.
 	</p>
@@ -311,6 +314,7 @@ summary()`;
 	<h2 id="std-path">std/path</h2>
 
 	<p>
+		Import with <code>use "std/path"</code> at the top of your script.
 		Cross-platform path manipulation. Handles separators and normalization automatically.
 	</p>
 
@@ -328,6 +332,7 @@ summary()`;
 	<h2 id="std-time">std/time</h2>
 
 	<p>
+		Import with <code>use "std/time"</code> at the top of your script.
 		Date and time handling. <code>datetimeNow()</code> returns a table with <code>date</code>,
 		<code>str</code>, and <code>ts</code> (Unix timestamp) keys.
 	</p>
@@ -346,6 +351,7 @@ summary()`;
 	<h2 id="std-log">std/log</h2>
 
 	<p>
+		Import with <code>use "std/log"</code> at the top of your script.
 		Colored, timestamped log messages. Useful for CLI tools and background scripts where you
 		want structured output.
 	</p>
@@ -364,6 +370,7 @@ summary()`;
 	<h2 id="std-type">std/type</h2>
 
 	<p>
+		Import with <code>use "std/type"</code> at the top of your script.
 		Runtime type checking. Useful for type-safe utilities and handling mixed-type data.
 	</p>
 
@@ -381,6 +388,7 @@ summary()`;
 	<h2 id="std-testing">std/testing</h2>
 
 	<p>
+		Import with <code>use "std/testing"</code> at the top of your script.
 		Simple test framework. Group assertions with <code>suite</code>, run with <code>summary</code>.
 		Prints a report showing which tests passed or failed.
 	</p>

@@ -31,7 +31,10 @@ let name = "Uthman"     // string
 let age = 20           // integer
 let score = 3.14       // float
 let active = true      // boolean
-let nothing = null     // null
+	let nothing = null     // null
+
+// nil is also accepted (canonical form is null)
+let empty = nil
 
 // Reassign freely — no type annotations needed
 age = 21
@@ -42,11 +45,16 @@ count += 5   // 5
 count -= 2   // 3
 
 // Postfix increment/decrement (v0.4+)
-let i = 0
+	let i = 0
 i++   // 1
 i--   // 0`}
 		language="javascript"
 	/>
+
+	<p>
+		<strong>Note:</strong> Both <code>null</code> and <code>nil</code> are valid. <code>null</code> is the
+		canonical form used internally.
+	</p>
 
 	<p>
 		<strong>Gotcha:</strong> Use <code>const</code> for immutable bindings. Reassignment throws a runtime error.
@@ -100,6 +108,15 @@ print(str(double(5)))  // 10`}
 		map/filter callbacks, simple calculations. Use full <code>fn(x) &#123; ... &#125;</code> syntax
 		for multi-statement functions, loops, or complex logic.
 	</p>
+
+	<p>Both forms are equivalent — choose based on readability:</p>
+
+	<CodeBlock
+		code={`// These two functions do the same thing:
+fn double(x) -> x * 2     // arrow syntax (implicit return)
+fn double(x) { return x * 2 }  // block syntax (explicit return)`}
+		language="javascript"
+	/>
 
 	<h2 id="closures">Closures</h2>
 
@@ -373,6 +390,12 @@ let merged = merge(config, extra)`}
 	<p>
 		Use tables for structured data — user profiles, API responses, configuration, game entities.
 		They're more expressive than arrays when each item has named fields.
+	</p>
+
+	<p class="text-amber-400 text-sm">
+		<strong>Note:</strong> Table key ordering is non-deterministic. Go maps don't preserve insertion order.
+		This affects table comparisons — two tables with the same keys/values may appear different
+		if compared as strings. Use explicit key-by-key comparison when order matters.
 	</p>
 
 	<h2 id="string-interpolation">String Interpolation <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>

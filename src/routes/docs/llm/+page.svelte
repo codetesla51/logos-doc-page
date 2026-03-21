@@ -26,6 +26,8 @@ let pi = 3.14
 let flag = true
 let nothing = null
 Variables are mutable. Reassign with =.
+null and nil are both valid — null is the canonical form used internally.
+null and nil are both valid — null is the canonical form used internally.
 
 ### const Keyword (v0.4.2)
 const PI = 3.14159
@@ -401,7 +403,7 @@ cd(path) — Changes current working directory
 env(key) — Returns env variable value string or null
 setenv(key, val) — Sets environment variable
 args() — Returns CLI arguments as array (index 0 onward). Has bounds checking — returns empty array if no arguments.
-exit(code?) — Exits process, optional integer code (default 0)
+exit(code?) — Exits process, optional integer code (default 1)
 shell(cmd) — Runs shell command string, returns result table with output string in value
 run(cmd, args...) — Runs command with separate args, returns result table
 
@@ -624,6 +626,9 @@ let nothing = null
 x += 5     // 15
 x -= 2     // 13
 
+// Both null and nil are valid — null is canonical
+let empty = nil
+
 // const - immutable binding (v0.4.2)
 const PI = 3.14159
 const API_KEY = "abc123"
@@ -702,7 +707,10 @@ merge(t1, t2)          // merge two tables
 // ⚠️ Bracket access is type-aware
 let t = table{ "1": "one", 1: "one-again" }
 t["1"]  // "one" (string key)
-t[1]    // "one-again" (number key)`;
+t[1]    // "one-again" (number key)
+
+// ⚠️ Table key ordering is non-deterministic (Go maps)
+// Comparisons may fail unexpectedly — use explicit key-by-key comparison`;
 
 	const forLoopsCode = `// While-style
 let i = 0
@@ -1121,6 +1129,16 @@ result := vm.GetVar("count")`;
 
 // If httpGet fails, the whole chain returns the error`} language="javascript" />
 
+	<p class="mt-4">
+		<strong>Functions that return result tables</strong> (use try or check <code>.ok</code> manually):
+	</p>
+	<ul class="list-disc list-inside space-y-1 text-sm text-muted mb-4">
+		<li><strong>File I/O:</strong> fileRead, fileWrite, fileAppend, fileDelete, fileMkdir, fileReadDir, fileGlob, fileCopy, fileMove</li>
+		<li><strong>System:</strong> run, shell</li>
+		<li><strong>JSON:</strong> parseJson, toJson, prettyJson</li>
+		<li><strong>HTTP:</strong> httpGet, httpPost, httpPut, httpPatch, httpDelete</li>
+	</ul>
+
 	<h2 id="concurrency">Concurrency</h2>
 
 	<CodeBlock code={concurrencyCode} language="javascript" />
@@ -1208,7 +1226,7 @@ let color = select("Pick:", ["red", "green", "blue"])`} language="javascript" />
 	<p><code>timeNow()</code> · <code>timeMs()</code> · <code>timeStr()</code> · <code>dateStr()</code> · <code>dateTimeStr()</code> · <code>timeFormat(ts, fmt)</code> · <code>sleep(ms)</code></p>
 
 	<h3>System</h3>
-	<p><code>osname()</code> · <code>pwd()</code> · <code>cd(path)</code> · <code>env(key)</code> · <code>setenv(key, val)</code> · <code>args()</code> · <code>exit(code)</code> · <code>run(cmd, args...)</code> · <code>shell(cmd)</code></p>
+	<p><code>osname()</code> · <code>pwd()</code> · <code>cd(path)</code> · <code>env(key)</code> · <code>setenv(key, val)</code> · <code>args()</code> · <code>exit(code?)</code> (default 1) · <code>run(cmd, args...)</code> · <code>shell(cmd)</code></p>
 
 	<h3>Color Output</h3>
 	<p><code>colorRed(s)</code> · <code>colorGreen(s)</code> · <code>colorYellow(s)</code> · <code>colorBlue(s)</code> · <code>colorBold(s)</code></p>
