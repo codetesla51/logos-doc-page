@@ -64,7 +64,7 @@ spawn {
 						href="/docs"
 						class="group inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
 					>
-						Get Started
+						Documentation
 						<ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
 					</a>
 					<a
