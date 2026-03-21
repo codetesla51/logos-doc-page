@@ -1,9 +1,14 @@
 <script>
 	import { page } from '$app/stores';
-	import { X, Search, ExternalLink } from 'lucide-svelte';
+	import { X, Search, ExternalLink, ChevronLeft, ChevronRight } from 'lucide-svelte';
+	import { fly } from 'svelte/transition';
 	import logo from '$lib/assets/logo.png';
 
-	let { isOpen = false, onClose, onSearchOpen } = $props();
+	let { isOpen = false, collapsed = $bindable(false), onClose, onSearchOpen } = $props();
+
+	function toggleCollapse() {
+		collapsed = !collapsed;
+	}
 
 	const navSections = [
 		{
@@ -49,118 +54,168 @@
 </script>
 
 <!-- Desktop Sidebar -->
-<aside class="fixed top-0 left-0 z-40 hidden h-screen w-60 border-r border-white/5 bg-zinc-950/50 lg:block">
+<aside class="fixed top-0 left-0 z-40 hidden h-screen border-r border-white/5 bg-zinc-950/50 lg:block transition-all duration-300 {collapsed ? 'w-0 lg:w-16' : 'w-60'}">
 	<!-- Subtle gradient overlay -->
 	<div class="absolute inset-0 bg-gradient-to-b from-zinc-900/50 to-transparent pointer-events-none"></div>
 
-	<nav class="relative h-full overflow-y-auto p-4">
+	<nav class="relative h-full overflow-hidden p-3">
 		<!-- Logo -->
-		<a href="/" class="mb-6 flex items-center gap-2.5 px-2 py-1">
+		<a href="/" class="mb-4 flex items-center gap-2.5 px-2 py-1 {collapsed ? 'justify-center' : ''}">
 			<img src={logo} alt="Logos" class="h-6 w-auto" />
-			<span class="font-mono text-sm font-medium text-white/90">Docs</span>
+			{#if !collapsed}
+				<span class="font-mono text-sm font-medium text-white/90">Docs</span>
+			{/if}
 		</a>
 
 		<!-- Nav sections -->
-		{#each navSections as section}
-			<div class="mb-6">
-				<h3 class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-					{section.title}
-				</h3>
-				<ul class="space-y-0.5">
-					{#each section.items as item}
-						<li>
-							<a
-								href={item.href}
-								class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
-									? 'bg-white/10 text-white font-medium'
-									: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
-							>
-								{#if isActive(item.href)}
-									<div class="h-1 w-1 rounded-full bg-white"></div>
-								{:else}
-									<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
-								{/if}
-								{item.title}
-							</a>
-						</li>
-					{/each}
-				</ul>
-			</div>
-		{/each}
+		<div class="overflow-y-auto {collapsed ? 'opacity-0' : 'opacity-100'} transition-opacity duration-200">
+			{#each navSections as section}
+				<div class="mb-4">
+					<h3 class="mb-1 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
+						{section.title}
+					</h3>
+					<ul class="space-y-0.5">
+						{#each section.items as item}
+							<li>
+								<a
+									href={item.href}
+									class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
+										? 'bg-white/10 text-white font-medium'
+										: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
+								>
+									{#if isActive(item.href)}
+										<div class="h-1 w-1 rounded-full bg-white shrink-0"></div>
+									{:else}
+										<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100 shrink-0"></div>
+									{/if}
+									<span class="truncate">{item.title}</span>
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/each}
+		</div>
+
+		<!-- Collapse toggle -->
+		<button
+			onclick={toggleCollapse}
+			class="absolute bottom-4 {collapsed ? 'left-1/2 -translate-x-1/2' : 'right-3'} flex items-center justify-center rounded-lg p-2 text-zinc-500 transition-all hover:bg-white/5 hover:text-white"
+			aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+		>
+			{#if collapsed}
+				<ChevronRight class="h-4 w-4" />
+			{:else}
+				<ChevronLeft class="h-4 w-4" />
+			{/if}
+		</button>
 	</nav>
 </aside>
 
 <!-- Mobile Sidebar Overlay -->
 {#if isOpen}
-	<div class="fixed inset-0 z-50 lg:hidden">
-		<!-- Backdrop -->
-		<button
-			class="absolute inset-0 bg-black/60 backdrop-blur-sm"
-			onclick={onClose}
-			aria-label="Close sidebar"
-		></button>
+	<!-- Backdrop -->
+	<div 
+		class="fixed inset-0 z-50 lg:hidden bg-black/80 backdrop-blur-md animate-[fadeIn_200ms_ease-out]"
+		onclick={onClose}
+		onkeydown={(e) => e.key === 'Escape' && onClose()}
+		role="button"
+		tabindex="0"
+		aria-label="Close sidebar"
+	></div>
 
-		<!-- Sidebar panel -->
-		<aside class="absolute top-0 left-0 h-full w-72 border-r border-white/5 bg-zinc-950 shadow-2xl">
-			<!-- Header -->
-			<div class="flex items-center justify-between border-b border-white/5 px-4 py-4">
-				<a href="/" class="flex items-center gap-2.5" onclick={onClose}>
-					<img src={logo} alt="Logos" class="h-6 w-auto" />
-					<span class="font-mono text-sm font-medium text-white/90">Docs</span>
-				</a>
-				<div class="flex items-center gap-1">
-					<button
-						onclick={() => { onClose(); onSearchOpen?.(); }}
-						class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-						aria-label="Search"
-					>
-						<Search class="h-5 w-5" />
-					</button>
-					<button
-						onclick={onClose}
-						class="rounded-lg p-2 text-zinc-400 transition-colors hover:bg-white/5 hover:text-white"
-						aria-label="Close menu"
-					>
-						<X class="h-5 w-5" />
-					</button>
-				</div>
-			</div>
-
-			<!-- Nav -->
-			<nav class="overflow-y-auto p-4">
-				{#each navSections as section}
-					<div class="mb-6">
-						<h3 class="mb-2 px-2 text-[10px] font-semibold uppercase tracking-widest text-zinc-500">
-							{section.title}
-						</h3>
-						<ul class="space-y-0.5">
-							{#each section.items as item}
-								<li>
-						<a
-								href={item.href}
-								onclick={onClose}
-								target={item.external ? '_blank' : undefined}
-								rel={item.external ? 'noopener noreferrer' : undefined}
-								class="group flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-all duration-150 {isActive(item.href)
-									? 'bg-white/10 text-white font-medium'
-									: 'text-zinc-400 hover:bg-white/5 hover:text-white'}"
-							>
-								{#if isActive(item.href)}
-									<div class="h-1 w-1 rounded-full bg-white"></div>
-								{:else}
-									<div class="h-1 w-1 rounded-full bg-zinc-700 opacity-0 transition-opacity group-hover:opacity-100"></div>
-								{/if}
-								{item.title}
-								{#if item.external}
-									<ExternalLink class="h-3 w-3 ml-auto opacity-50" />
-								{/if}
-							</a>
-								</li>
-							{/each}
-						</ul>
+	<!-- Sidebar panel -->
+	<aside 
+		class="fixed top-0 left-0 z-50 h-full w-[85vw] max-w-[320px] bg-zinc-950/95 backdrop-blur-xl border-r border-white/10 shadow-2xl shadow-black/50 lg:hidden"
+		style="transform: translateX(0);"
+	>
+		<!-- Header with gradient -->
+		<div class="relative border-b border-white/5">
+			<div class="absolute inset-x-0 top-0 h-20 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none"></div>
+			<div class="flex items-center justify-between px-5 py-5">
+				<a href="/" class="flex items-center gap-3 group" onclick={onClose}>
+					<div class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 group-hover:bg-white/10 transition-colors">
+						<img src={logo} alt="Logos" class="h-5 w-auto" />
 					</div>
-				{/each}
-			</nav>
-		</aside>
-	</div>
+					<div class="flex flex-col">
+						<span class="font-mono text-sm font-semibold text-white">Logos</span>
+						<span class="text-[10px] text-zinc-500">Documentation</span>
+					</div>
+				</a>
+				<button
+					onclick={onClose}
+					class="flex h-9 w-9 items-center justify-center rounded-xl bg-white/5 border border-white/10 text-zinc-400 hover:bg-white/10 hover:text-white transition-all active:scale-95"
+					aria-label="Close menu"
+				>
+					<X class="h-4 w-4" />
+				</button>
+			</div>
+		</div>
+
+		<!-- Search button -->
+		<div class="px-5 py-3">
+			<button
+				onclick={() => { onClose(); onSearchOpen?.(); }}
+				class="flex w-full items-center gap-3 rounded-xl border border-white/5 bg-white/[0.02] px-4 py-3 text-sm text-zinc-500 transition-all hover:bg-white/[0.05] hover:text-zinc-300"
+			>
+				<Search class="h-4 w-4" />
+				<span>Search docs...</span>
+				<kbd class="ml-auto rounded-md bg-white/5 px-1.5 py-0.5 text-[10px] font-medium text-zinc-500">⌘K</kbd>
+			</button>
+		</div>
+
+		<!-- Nav with custom scrollbar -->
+		<nav class="overflow-y-auto px-3 pb-8" style="height: calc(100vh - 180px);">
+			{#each navSections as section, i}
+				<div class="mb-2">
+					<h3 class="mb-1 px-3 text-[11px] font-semibold uppercase tracking-wider text-zinc-600">
+						{section.title}
+					</h3>
+					<ul class="space-y-0.5">
+						{#each section.items as item}
+							<li>
+								<a
+									href={item.href}
+									onclick={onClose}
+									target={item.external ? '_blank' : undefined}
+									rel={item.external ? 'noopener noreferrer' : undefined}
+									class="group flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm transition-all duration-150 {isActive(item.href)
+										? 'bg-white/10 text-white font-medium shadow-sm shadow-white/5'
+										: 'text-zinc-400 hover:bg-white/[0.03] hover:text-zinc-200'}"
+								>
+									{#if isActive(item.href)}
+										<div class="flex h-5 w-5 items-center justify-center rounded-md bg-emerald-500/20 text-emerald-400">
+											<div class="h-1.5 w-1.5 rounded-full bg-current"></div>
+										</div>
+									{:else}
+										<div class="flex h-5 w-5 items-center justify-center rounded-md bg-white/5 text-zinc-600 group-hover:bg-white/10 group-hover:text-zinc-400 transition-colors">
+											<div class="h-1 w-1 rounded-full bg-current"></div>
+										</div>
+									{/if}
+									<span class="flex-1">{item.title}</span>
+									{#if item.external}
+										<ExternalLink class="h-3.5 w-3.5 text-zinc-600" />
+									{/if}
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</div>
+				{#if i < navSections.length - 1}
+					<div class="my-3 h-px bg-gradient-to-r from-transparent via-white/5 to-transparent"></div>
+				{/if}
+			{/each}
+		</nav>
+
+		<!-- Footer -->
+		<div class="absolute bottom-0 inset-x-0 border-t border-white/5 bg-zinc-950/80 backdrop-blur-sm p-4">
+			<div class="flex items-center justify-between text-[11px] text-zinc-600">
+				<span>Logos v0.4.5</span>
+				<span class="flex items-center gap-1">
+					<span class="h-1.5 w-1.5 rounded-full bg-emerald-500"></span>
+					Online
+				</span>
+			</div>
+		</div>
+	</aside>
 {/if}
