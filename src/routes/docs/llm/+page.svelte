@@ -1327,6 +1327,6 @@ print(colorBold(colorYellow("Warning")))`} language="javascript" />
 	</div>
 
 	<p class="mt-8 text-sm text-zinc-500">
-		<strong>Full reference:</strong> See <a href="/llm.txt" target="_blank">llm.txt</a> for the complete reference.
+		<strong>Full reference:</strong> See <a href="/llms.txt" target="_blank">llms.txt</a> for the complete reference.
 	</p>
 </DocLayout>
