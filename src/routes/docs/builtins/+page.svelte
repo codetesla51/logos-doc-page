@@ -75,32 +75,54 @@ print(jsonStr)
 let parsed = try parseJson("{\\"user\\": {\\"name\\": \\"Alice\\"}}")
 print(try prettyJson(parsed))`;
 
-	const httpExample = `// HTTP functions return {ok, value, error}
-// Use try + pipe for elegant data pipelines (v0.4+)
+	const httpExample = `// HTTP functions return {ok, value: {body, status}, error}
+// body is a string, status is an integer HTTP status code
 
-// Simple request
+// GET - fetch data
 let body = try httpGet("https://api.example.com/users")
 print(body)
 
-// With pipes - fetch, parse, filter, transform
-let activeUsers = try httpGet("https://api.example.com/users")
-    |> try parseJson
-    |> filter(fn(u) -> u.active)
-    |> map(fn(u) -> u.name)
-
-print("Active users: \${activeUsers}")
-
-// POST request
-let payload = try toJson(table{ name: "Alice", email: "alice@example.com" })
-let response = try httpPost("https://api.example.com/users", payload)
-print("Created! Status: \${response.status}")
-
-// With headers
+// GET with headers (authentication, custom headers)
 let headers = table{
     "Authorization": "Bearer " + env("API_TOKEN"),
     "Content-Type": "application/json"
 }
-let data = try httpGet("https://api.example.com/private", headers)`;
+let data = try httpGet("https://api.example.com/private", headers)
+
+// POST - create resource
+let payload = try toJson(table{ name: "Alice", email: "alice@example.com" })
+let res = try httpPost("https://api.example.com/users", payload)
+print("Created! Status: " + str(res.value.status))
+
+// PUT - replace resource entirely
+let update = try toJson(table{ name: "Alice", id: 1 })
+let putRes = try httpPut("https://api.example.com/users/1", update)
+print("Updated! Status: " + str(putRes.value.status))
+
+// PATCH - partial update
+let patch = try toJson(table{ email: "newemail@example.com" })
+let patchRes = try httpPatch("https://api.example.com/users/1", patch)
+print("Patched! Status: " + str(patchRes.value.status))
+
+// DELETE - remove resource
+let delRes = try httpDelete("https://api.example.com/users/1")
+print("Deleted! Status: " + str(delRes.value.status))
+
+// Handle non-2xx responses (status is included in response)
+let res = httpGet("https://api.example.com/not-found")
+if !res.ok {
+    print("Error: " + res.error)
+} else if res.value.status >= 400 {
+    print("HTTP error: " + str(res.value.status))
+} else {
+    print("Success: " + res.value.body)
+}
+
+// Pipes - fetch, parse, transform
+let users = try httpGet("https://api.example.com/users")
+    |> try parseJson
+    |> filter(fn(u) -> u.active)
+    |> map(fn(u) -> u.name)`;
 
 	const ioExample = `// print() - outputs with trailing newline (v0.4.5, default)
 // printn() - outputs without trailing newline (v0.4.5)

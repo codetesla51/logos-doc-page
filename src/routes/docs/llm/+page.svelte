@@ -371,12 +371,13 @@ fileExists(path) — Returns bool directly (not a result table)
 ### HTTP (disabled in sandbox)
 All HTTP builtins return a result table: {ok, value: {body, status}, error}
 body is a string. status is an integer HTTP status code.
-httpGet(url, headers?) — GET request
-httpPost(url, body, headers?) — POST request
-httpPut(url, body, headers?) — PUT request
-httpPatch(url, body, headers?) — PATCH request
-httpDelete(url, headers?) — DELETE request
+httpGet(url, headers?) — GET request (fetch data)
+httpPost(url, body, headers?) — POST request (create resource)
+httpPut(url, body, headers?) — PUT request (replace resource entirely)
+httpPatch(url, body, headers?) — PATCH request (partial update)
+httpDelete(url, headers?) — DELETE request (remove resource)
 headers is an optional table of string key-value pairs. body must be a string (typically JSON).
+Non-2xx responses still return ok=true; check response.value.status for HTTP errors.
 
 ### Regex (v0.4.3)
 reMatch(pattern, text) — Returns true if pattern matches
