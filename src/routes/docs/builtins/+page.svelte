@@ -456,11 +456,11 @@ let config = try fileRead("config.json")
 		],
 		http: [
 			{ name: 'httpGet(url)', desc: 'GET request (try)' },
-			{ name: 'httpGet(url, headers)', desc: 'GET with headers' },
-			{ name: 'httpPost(url, body)', desc: 'POST request' },
-			{ name: 'httpPut(url, body)', desc: 'PUT request' },
-			{ name: 'httpPatch(url, body)', desc: 'PATCH request' },
-			{ name: 'httpDelete(url)', desc: 'DELETE request' },
+			{ name: 'httpGet(url, header)', desc: 'GET with header' },
+			{ name: 'httpPost(url, body, header)', desc: 'POST request' },
+			{ name: 'httpPut(url, body, header)', desc: 'PUT request' },
+			{ name: 'httpPatch(url, body, header)', desc: 'PATCH request' },
+			{ name: 'httpDelete(url, header)', desc: 'DELETE request' },
 		],
 		regex: [
 			{ name: 'reMatch(pattern, text)', desc: 'True if pattern matches' },
