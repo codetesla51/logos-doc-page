@@ -254,6 +254,17 @@ summary()`;
 		These modules provide functional programming utilities, math algorithms, and more.
 	</p>
 
+	<div class="flex flex-wrap gap-2 mb-8 mt-6">
+		<a href="#std-array" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/array</a>
+		<a href="#std-math" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/math</a>
+		<a href="#std-string" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/string</a>
+		<a href="#std-path" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/path</a>
+		<a href="#std-time" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/time</a>
+		<a href="#std-log" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/log</a>
+		<a href="#std-type" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/type</a>
+		<a href="#std-testing" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">std/testing</a>
+	</div>
+
 	<h2 id="std-array">std/array</h2>
 
 	<p>
