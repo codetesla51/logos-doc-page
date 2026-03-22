@@ -266,7 +266,8 @@ if res.ok {
 ## BUILTINS REFERENCE
 
 ### I/O
-print(args...) — Prints all arguments with proper formatting. Handles all types including nested tables with indentation.
+print(args...) — Prints all arguments with trailing newline (v0.4.5)
+printn(args...) — Prints without trailing newline (v0.4.5)
 input(prompt?) — Reads line from stdin, optional prompt
 prompt(msg) — Prints msg then reads a line
 confirm(msg) — Prints "msg (y/n):", returns bool
@@ -371,12 +372,16 @@ fileExists(path) — Returns bool directly (not a result table)
 ### HTTP (disabled in sandbox)
 All HTTP builtins return a result table: {ok, value: {body, status}, error}
 body is a string. status is an integer HTTP status code.
+All functions accept: (url, body?, headers?)
+- GET/DELETE: url and optional headers (body ignored)
+- POST/PUT/PATCH: url, body, and optional headers
+headers is a table of string key-value pairs.
+body can be a table (auto-serialized to JSON, v0.4.6) or a string.
 httpGet(url, headers?) — GET request (fetch data)
 httpPost(url, body, headers?) — POST request (create resource)
 httpPut(url, body, headers?) — PUT request (replace resource entirely)
 httpPatch(url, body, headers?) — PATCH request (partial update)
 httpDelete(url, headers?) — DELETE request (remove resource)
-headers is an optional table of string key-value pairs. body must be a string (typically JSON).
 Non-2xx responses still return ok=true; check response.value.status for HTTP errors.
 
 ### Regex (v0.4.3)

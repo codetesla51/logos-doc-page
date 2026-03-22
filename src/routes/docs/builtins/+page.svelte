@@ -78,6 +78,9 @@ print(try prettyJson(parsed))`;
 	const httpExample = `// HTTP functions return {ok, value: {body, status}, error}
 // body is a string, status is an integer HTTP status code
 
+// All HTTP functions accept: (url, body?, headers?)
+// body is optional for GET/DELETE; headers always optional
+
 // GET - fetch data
 let body = try httpGet("https://api.example.com/users")
 print(body)
@@ -89,24 +92,38 @@ let headers = table{
 }
 let data = try httpGet("https://api.example.com/private", headers)
 
-// POST - create resource
+// POST - create resource (url, body, headers?)
 let payload = try toJson(table{ name: "Alice", email: "alice@example.com" })
 let res = try httpPost("https://api.example.com/users", payload)
 print("Created! Status: " + str(res.value.status))
 
-// PUT - replace resource entirely
+// POST with all three args (url, body, headers)
+let authHeaders = table{ "Authorization": "Bearer " + env("API_TOKEN") }
+let createRes = try httpPost("https://api.example.com/users", payload, authHeaders)
+
+// Tables are auto-serialized to JSON — no need for toJson() (v0.4.6)
+let tablePayload = table{ name: "Alice", email: "alice@example.com" }
+let autoRes = try httpPost("https://api.example.com/users", tablePayload)
+
+// PUT - replace resource entirely (url, body, headers?)
 let update = try toJson(table{ name: "Alice", id: 1 })
 let putRes = try httpPut("https://api.example.com/users/1", update)
-print("Updated! Status: " + str(putRes.value.status))
 
-// PATCH - partial update
+// PUT with headers
+let putAuth = table{ "Authorization": "Bearer " + env("API_TOKEN") }
+let putRes2 = try httpPut("https://api.example.com/users/1", update, putAuth)
+
+// PATCH - partial update (url, body, headers?)
 let patch = try toJson(table{ email: "newemail@example.com" })
 let patchRes = try httpPatch("https://api.example.com/users/1", patch)
-print("Patched! Status: " + str(patchRes.value.status))
 
-// DELETE - remove resource
+// DELETE - remove resource (url, headers?)
 let delRes = try httpDelete("https://api.example.com/users/1")
 print("Deleted! Status: " + str(delRes.value.status))
+
+// DELETE with headers
+let delAuth = table{ "Authorization": "Bearer " + env("API_TOKEN") }
+let delRes2 = try httpDelete("https://api.example.com/users/1", delAuth)
 
 // Handle non-2xx responses (status is included in response)
 let res = httpGet("https://api.example.com/not-found")
@@ -147,8 +164,8 @@ if confirm("Delete all files?") {
 let choice = select("Pick a color:", ["red", "green", "blue"])
 print("You chose: " + choice)
 
-// clear() - clear the terminal
-clear()`;
+	// clear() - clear the terminal
+	clear()`;
 
 	const arrayExample = `let nums = [1, 2, 3, 4, 5]
 
@@ -325,9 +342,9 @@ let config = try fileRead("config.json")
 
 	const functions = {
 		io: [
-			{ name: 'print(value)', desc: 'Prints value to stdout with trailing newline (v0.4.5)' },
-			{ name: 'printn(value)', desc: 'Prints without trailing newline (v0.4.5)' },
-			{ name: 'input()', desc: 'Reads a line from stdin' },
+			{ name: 'print(args...)', desc: 'Prints all args with trailing newline (v0.4.5)' },
+			{ name: 'printn(args...)', desc: 'Prints without trailing newline (v0.4.5)' },
+			{ name: 'input(prompt?)', desc: 'Reads line from stdin, optional prompt' },
 			{ name: 'prompt(msg)', desc: 'Shows message, waits for input' },
 			{ name: 'confirm(msg)', desc: 'Shows (y/n), returns bool' },
 			{ name: 'select(msg, opts)', desc: 'Numbered menu, returns choice' },

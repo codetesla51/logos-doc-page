@@ -433,6 +433,10 @@ Source of truth. Never document anything not listed here.
 Update this after every sync.
 
 ```
+## [v0.4.6] - 2026-03-22
+### Fixed
+- HTTP builtins accept table as body — auto-serialized to JSON
+
 ## [v0.4.5] - 2026-03-20
 ### Added
 - printn builtin for printing without a trailing newline; print remains the default with newline
