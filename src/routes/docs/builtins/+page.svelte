@@ -470,6 +470,24 @@ let config = try fileRead("config.json")
 		Logos built-in functions. Use <code>try</code> for error handling on functions marked (try).
 	</p>
 
+	<div class="flex flex-wrap gap-2 mb-8 mt-6">
+		<a href="#try" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Try</a>
+		<a href="#io" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">I/O</a>
+		<a href="#color-output" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Color</a>
+		<a href="#type-functions" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Type</a>
+		<a href="#file-operations" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">File</a>
+		<a href="#string-operations" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">String</a>
+		<a href="#type-conversion" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Conversion</a>
+		<a href="#array-operations" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Array</a>
+		<a href="#table-operations" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Table</a>
+		<a href="#json" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">JSON</a>
+		<a href="#math" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Math</a>
+		<a href="#os-system" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">OS</a>
+		<a href="#time" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Time</a>
+		<a href="#http" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">HTTP</a>
+		<a href="#regex" class="text-xs px-3 py-1.5 bg-subtle/50 hover:bg-subtle rounded-full transition-colors">Regex</a>
+	</div>
+
 	<h2 id="try">Try Expressions <span class="bg-green-500/20 text-green-400 text-xs px-2 py-0.5 rounded ml-2">v0.4</span></h2>
 
 	<p>
