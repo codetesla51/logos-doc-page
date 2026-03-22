@@ -3,6 +3,28 @@
 
 	const changelog = [
 		{
+			version: 'v0.4.6',
+			date: '2026-03-22',
+			type: 'patch',
+			changes: [
+				{
+					type: 'fixed',
+					text: 'HTTP builtins now accept a table as the request body — automatically serialized to JSON'
+				}
+			]
+		},
+		{
+			version: 'v0.4.5',
+			date: '2026-03-20',
+			type: 'patch',
+			changes: [
+				{
+					type: 'added',
+					text: 'printn builtin for printing without a trailing newline; print remains the default with newline'
+				}
+			]
+		},
+		{
 			version: 'v0.4.3',
 			date: '2026-03-19',
 			type: 'patch',
