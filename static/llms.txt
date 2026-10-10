@@ -1,11 +1,11 @@
-# Logos Language Reference (v0.4.5)
+# Logos Language Reference (v0.4.9)
 
 Logos is a dynamically-typed, interpreted scripting language written in Go. It uses a Pratt parser and a tree-walking interpreter.
 File extension: .lgs
 CLI: lgs file.lgs | lgs build file.lgs | lgs fmt file.lgs
 GitHub: https://github.com/codetesla51/logos
 Docs: https://logos-lang.vercel.app/docs
-Version: v0.4.5
+Version: v0.4.9
 
 ---
 
@@ -47,6 +47,7 @@ let name = "world"
 let greeting = "hello ${name}"
 let age = 25
 let bio = "${name} is ${age} years old"
+Interpolation can be followed by literal text: "hello ${name}! Welcome back." (v0.4.8+)
 
 ### Arrays
 let arr = [1, 2, 3, "four", true]
@@ -176,6 +177,7 @@ counter()   // 2
 
 Arithmetic: +, -, *, /, %
 Comparison: ==, !=, <, >, <=, >=
+Booleans compare by value, including bools returned from builtins (v0.4.9). Conditions treat a returned false as falsy (v0.4.7+).
 Logical: &&, ||, !
 Ternary: ? : (v0.3.2+) e.g., condition ? valueIfTrue : valueIfFalse
 Pipe: |> (v0.4+) e.g., arr |> filter(fn) |> map(fn)
@@ -526,6 +528,7 @@ vm.Register("greet", func(args ...logos.Object) logos.Object {
     name := args[0].(*logos.String).Value
     return &logos.String{Value: "Hello, " + name}
 })
+Return &logos.Bool{Value: ...} from callbacks — fresh bools compare by value (v0.4.7+).
 
 // Set a variable in the Logos environment
 vm.SetVar("count", 42)
@@ -610,4 +613,4 @@ print(cliArgs[1])    // "Alice"
 
 ---
 
-*Last updated: v0.4.5 — 2026-03-20*
+*Last updated: v0.4.9 — 2026-08-22*

@@ -1,164 +1,164 @@
 <script>
-        import { Github, ArrowRight, Play, Copy, Check, Terminal } from 'lucide-svelte';
-        import { onMount } from 'svelte';
-        import { codeToHtml } from 'shiki';
+  import { Copy, Check } from "lucide-svelte";
+  import { onMount } from "svelte";
+  import { codeToHtml } from "shiki";
+  import PipesCanvas from "$lib/components/PipesCanvas.svelte";
+  let copied = $state(false);
+  let highlightedCode = $state("");
 
-        let highlightedCode = $state('');
-        let copied = $state(false);
+  const installCmd =
+    "curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh";
 
-        const installCmd = 'curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh';
+  const heroCode = `use "std/array"
 
-        const heroCode = `// String interpolation
-let name = "World"
-print("Hello, \${name}!")
+let devs = [
+  table{name: "Ama", lang: "Go", years: 2},
+  table{name: "Bob", lang: "Python", years: 1},
+]
 
-// Table operations
-let user = table{ name: "Alice", score: 95 }
-print(user.name)
+let gophers = devs
+  |> filter(fn(d) -> d.lang == "Go")
+  |> map(fn(d) -> d.name)
 
-// Built-in HTTP (sandboxed in playground)
-let data = try httpGet("https://api.example.com")
-print(data.status)
+print("gophers: \${gophers}")
 
 spawn {
-    print("Running concurrently")
+  let url = "https://api.example.com"
+  let res = try httpGet(url)
+  print(res.status)
 }`;
 
-        async function copyInstall() {
-                await navigator.clipboard.writeText(installCmd);
-                copied = true;
-                setTimeout(() => { copied = false; }, 2000);
-        }
+  const usedFor = [
+    {
+      name: "logos2d",
+      desc: "2D game engine. Games written in Logos, Go runs underneath.",
+      href: "https://github.com/codetesla51/logos2d",
+    },
+    {
+      name: "kyfram",
+      desc: "Keyframe video renderer. Motion declared in Logos.",
+      href: "https://gitlab.com/codetesla51/kyfram",
+    },
+  ];
 
-        onMount(async () => {
-                highlightedCode = await codeToHtml(heroCode, {
-                        lang: 'javascript',
-                        theme: 'github-dark'
-                });
-        });
+  async function copyInstall() {
+    await navigator.clipboard.writeText(installCmd);
+    copied = true;
+    setTimeout(() => {
+      copied = false;
+    }, 2000);
+  }
+
+  onMount(async () => {
+    highlightedCode = await codeToHtml(heroCode, {
+      lang: "javascript",
+      theme: "github-dark",
+    });
+  });
 </script>
 
-<section class="overflow-hidden py-20 sm:py-28">
-        <div class="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
-                <div class="grid gap-12 lg:grid-cols-2 lg:items-center min-w-0">
-                        <div class="space-y-6 min-w-0">
-                                <div class="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs text-white/60 overflow-hidden">
-                                        <span class="relative flex h-2 w-2 shrink-0">
-                                                <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-75"></span>
-                                                <span class="relative inline-flex h-2 w-2 rounded-full bg-emerald-500"></span>
-                                        </span>
-                                        <span class="truncate">v0.4.6 — New: printn()</span>
-                                </div>
+<section class="px-4 py-16 sm:px-6 sm:py-24">
+  <div class="mx-auto max-w-5xl">
+    <div class="grid items-center gap-10 lg:grid-cols-2">
+      <div>
+        <p class="text-sm text-muted">logos v0.5.0</p>
 
-                                <h1 class="text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl text-white">
-                                        Scripting that flows.
-                                </h1>
+        <h1
+          class="mt-4 text-4xl leading-tight font-medium tracking-tight text-balance sm:text-5xl"
+        >
+          Scripts that read like thoughts.
+        </h1>
 
-                                <p class="max-w-lg text-base text-zinc-400">
-                                        A lightweight scripting language with pipes, try expressions, and string interpolation. 
-                                        HTTP, JSON, concurrency — all built in. Compile to a single binary.
-                                </p>
+        <p class="mt-4 max-w-xl text-base leading-relaxed text-muted">
+          A small scripting language for automation and CLIs. Interpolation,
+          pipes, and errors you can follow a week later.
+        </p>
 
-                                <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
-                                        <a
-                                                href="/docs"
-                                                class="group inline-flex items-center justify-center gap-2 rounded-lg bg-white px-6 py-2.5 text-sm font-medium text-zinc-900 transition-colors hover:bg-zinc-100"
-                                        >
-                                                Documentation
-                                                <ArrowRight class="h-4 w-4 transition-transform group-hover:translate-x-1" />
-                                        </a>
-                                        <a
-                                                href="/playground"
-                                                class="group inline-flex items-center justify-center gap-2 rounded-lg border border-white/10 bg-white/5 px-6 py-2.5 text-sm font-medium text-white transition-colors hover:bg-white/10"
-                                        >
-                                                <Play class="h-4 w-4" />
-                                                Try in Playground
-                                        </a>
-                                </div>
-
-                                <div class="flex min-w-0 items-center gap-2 rounded-lg border border-white/10 bg-zinc-900/80 p-3">
-                                        <Terminal class="h-4 w-4 shrink-0 text-zinc-500" />
-                                        <code class="min-w-0 flex-1 truncate font-mono text-xs text-emerald-400 sm:text-sm">
-                                                {installCmd}
-                                        </code>
-                                        <button
-                                                onclick={copyInstall}
-                                                class="flex shrink-0 items-center gap-1.5 rounded-md bg-white/5 px-2 py-1.5 text-xs text-zinc-400 transition-colors hover:bg-white/10 hover:text-white sm:px-3"
-                                        >
-                                                {#if copied}
-                                                        <Check class="h-3.5 w-3.5 text-emerald-400" />
-                                                        <span class="hidden sm:inline">Copied</span>
-                                                {:else}
-                                                        <Copy class="h-3.5 w-3.5" />
-                                                        <span class="hidden sm:inline">Copy</span>
-                                                {/if}
-                                        </button>
-                                </div>
-
-                                <div class="flex flex-wrap items-center gap-x-4 gap-y-2 pt-2 text-xs sm:text-sm">
-                                        <a
-                                                href="https://github.com/codetesla51/logos"
-                                                target="_blank"
-                                                rel="noopener noreferrer"
-                                                class="flex items-center gap-1.5 text-zinc-500 transition-colors hover:text-white sm:gap-2"
-                                        >
-                                                <Github class="h-3.5 w-3.5 sm:h-4 sm:w-4" />
-                                                <span>Star on GitHub</span>
-                                        </a>
-                                        <span class="text-zinc-700">·</span>
-                                        <span class="text-zinc-500">MIT License</span>
-                                </div>
-                        </div>
-
-                        <div class="overflow-hidden rounded-lg border border-white/10 bg-zinc-900 min-w-0">
-                                <div class="flex items-center justify-between border-b border-white/10 bg-zinc-900/80 px-4 py-3">
-                                        <div class="flex items-center gap-3">
-                                                <div class="flex gap-1.5">
-                                                        <div class="h-3 w-3 rounded-full bg-red-500/80"></div>
-                                                        <div class="h-3 w-3 rounded-full bg-yellow-500/80"></div>
-                                                        <div class="h-3 w-3 rounded-full bg-green-500/80"></div>
-                                                </div>
-                                                <span class="font-mono text-xs text-zinc-500">example.lgs</span>
-                                        </div>
-                                        <a
-                                                href="/playground"
-                                                class="flex items-center gap-1.5 text-xs text-zinc-500 transition-colors hover:text-white"
-                                        >
-                                                <Play class="h-3 w-3" />
-                                                Run
-                                        </a>
-                                </div>
-
-                                <div class="overflow-x-auto w-full">
-                                        {#if highlightedCode}
-                                                {@html highlightedCode}
-                                        {:else}
-                                                <pre class="p-4 font-mono text-sm text-zinc-300"><code>{heroCode}</code></pre>
-                                        {/if}
-                                </div>
-                        </div>
-                </div>
+        <div class="mt-8 flex flex-col gap-3 sm:flex-row">
+          <a
+            href="/docs/intro"
+            class="inline-flex min-h-[44px] items-center justify-center rounded-md bg-text px-5 py-2.5 text-sm font-medium text-bg"
+          >
+            Read the docs
+          </a>
+          <a
+            href="/playground"
+            class="inline-flex min-h-[44px] items-center justify-center rounded-md border border-border px-5 py-2.5 text-sm text-text"
+          >
+            Open playground
+          </a>
         </div>
+      </div>
+
+      <PipesCanvas />
+    </div>
+
+    <div class="mt-8">
+      <p class="text-sm text-muted">used in</p>
+      <div class="mt-3 border-t border-border">
+        {#each usedFor as project}
+          <a
+            href={project.href}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="flex min-h-[44px] flex-col justify-center gap-0.5 border-b border-border py-3 sm:flex-row sm:items-baseline sm:gap-3"
+          >
+            <span class="shrink-0 text-sm text-text">{project.name}</span>
+            <span class="text-sm text-muted">{project.desc}</span>
+          </a>
+        {/each}
+      </div>
+    </div>
+
+    <div class="mt-8 border border-border bg-surface">
+      <div class="border-b border-border px-4 py-2">
+        <span class="text-xs text-muted">example.lgs</span>
+      </div>
+      <div class="overflow-x-auto">
+        {#if highlightedCode}
+          {@html highlightedCode}
+        {:else}
+          <pre class="p-4 text-sm leading-relaxed text-zinc-300"><code
+              >{heroCode}</code
+            ></pre>
+        {/if}
+      </div>
+    </div>
+
+    <div
+      class="mt-4 flex items-center gap-2 border border-border px-3 py-2.5"
+    >
+      <code class="min-w-0 flex-1 truncate text-xs text-muted"
+        >{installCmd}</code
+      >
+      <button
+        onclick={copyInstall}
+        aria-label="Copy install command"
+        class="flex min-h-[44px] min-w-[44px] items-center justify-center px-2 text-xs text-muted"
+      >
+        {#if copied}
+          <Check class="h-4 w-4" />
+        {:else}
+          <Copy class="h-4 w-4" />
+        {/if}
+      </button>
+    </div>
+  </div>
 </section>
 
 <style>
-        :global(pre.shiki) {
-                margin: 0 !important;
-                padding: 1.25rem !important;
-                background-color: transparent !important;
-                overflow-x: auto !important;
-                line-height: 1.6;
-                max-width: 100% !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-        }
-        :global(pre.shiki code) {
-                background: transparent !important;
-                display: block;
-                width: 100%;
-        }
-        :global(pre.shiki span) {
-                white-space: pre;
-                word-break: normal;
-        }
+  :global(pre.shiki) {
+    margin: 0;
+    padding: 12px 16px;
+    background-color: transparent;
+    overflow-x: auto;
+    font-size: 13px;
+    line-height: 1.5;
+    white-space: pre;
+    tab-size: 2;
+  }
+  :global(pre.shiki code) {
+    background: transparent;
+    display: block;
+  }
 </style>

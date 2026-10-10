@@ -62,16 +62,16 @@ that doesn't meet the quality bar. If you notice it, you fix it. Then you report
 
 Violation of any rule below means the task is **incomplete**. Start over.
 
-| #   | Rule                                                                                                                                           |
-| --- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
-| 1   | Every task ends with a full health check. All routes must return 200. Fix any that don't before reporting done.                                |
-| 2   | `static/llms.txt` and `/docs/llm` must always be in sync with the current state of the language. Update both on every language-related change. |
-| 3   | Every code example uses current Logos syntax only. Old syntax is a bug.                                                                        |
-| 4   | Every page must be fully responsive — mobile (375px), tablet (768px), desktop (1280px). Test all three.                                        |
-| 5   | No placeholder content. No "coming soon". No "TODO". Every example is real, runnable Logos code.                                               |
-| 6   | The stored changelog is the only source of truth. Never document a feature not listed there.                                                   |
-| 7   | Never report "done" if there are known unfixed issues. List blockers explicitly.                                                               |
-| 8   | Every page you touch must leave in better visual condition than you found it.                                                                  |
+| #   | Rule                                                                                                                                                                                                                          |
+| --- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| 1   | Every task ends with a full health check. All routes must return 200. Fix any that don't before reporting done.                                                                                                               |
+| 2   | `static/llms.txt` + `static/SKILL.md` are the AI references and must stay in sync with the language. `/docs/llm` is a copy/download page serving `SKILL.md`, not a mirror. Update all three on every language-related change. |
+| 3   | Every code example uses current Logos syntax only. Old syntax is a bug.                                                                                                                                                       |
+| 4   | Every page must be fully responsive — mobile (375px), tablet (768px), desktop (1280px). Test all three.                                                                                                                       |
+| 5   | No placeholder content. No "coming soon". No "TODO". Every example is real, runnable Logos code.                                                                                                                              |
+| 6   | The stored changelog is the only source of truth. Never document a feature not listed there.                                                                                                                                  |
+| 7   | Never report "done" if there are known unfixed issues. List blockers explicitly.                                                                                                                                              |
+| 8   | Every page you touch must leave in better visual condition than you found it.                                                                                                                                                 |
 
 ---
 
@@ -90,8 +90,10 @@ After every session, before closing:
 
 (agent appends here after every session)
 
-| Date | What went wrong | Rule added |
-| ---- | --------------- | ---------- |
+| Date       | What went wrong                                                                                                                                                                                     | Rule added                                                                                                                              |
+| ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------- |
+| 2026-10-10 | Shipped CodeBlock without `not-prose` — Typography drew a second bordered box inside it; left stale `all: revert` Shiki CSS fighting component styles; built a glass pill nav the brief didn't need | Verify code blocks render as ONE box (check prose leakage); delete dead CSS instead of layering overrides; build the simplest nav first |
+| 2026-10-10 | Wrote raw backticks and `{}` inside Svelte template/markup (broke pages); documented `println` and old-value `++` without running them; shipped a light theme the user didn't want | Verify every Logos sample through the real interpreter before documenting; escape-check Svelte files; don't build what wasn't asked for |
 
 ---
 
@@ -159,8 +161,9 @@ lang/                          # Localization files
 
 ## LLM Reference Rules
 
-- `static/llms.txt` is the authoritative AI reference. It must always match the actual language.
-- After every changelog sync, audit `llms.txt` line by line against the stored changelog.
+- `static/llms.txt` (full reference) and `static/SKILL.md` (skill format, frontmatter + condensed) are the authoritative AI references. Both must match the actual language.
+- `/docs/llm` is a minimal copy/download page serving `SKILL.md` — it does not render reference content inline.
+- After every changelog sync, audit both files line by line against the stored changelog.
 - Known permanent corrections — never reintroduce these:
   - CLI is `lgs file.lgs` — there is **no** `lgs run` command
   - `sort()` works on both string and numeric arrays
@@ -301,9 +304,9 @@ fn double(x) -> x * 2
 # Closures
 let adder = fn(x) -> fn(y) -> x + y
 
-# For loops
+# For loops (while-style and for-in only — no C-style for)
 for i, v in arr {}
-for i = 0; i < 10; i++ {}
+for i < 10 { i++ }
 
 # range() for numeric iteration (v0.4.2)
 for i in range(0, 10) { print(i) }
@@ -433,6 +436,18 @@ Source of truth. Never document anything not listed here.
 Update this after every sync.
 
 ```
+## [v0.4.9] - 2026-08-22
+### Fixed
+- == / != on booleans compare by value, including bools returned from builtins
+
+## [v0.4.8] - 2026-08-21
+### Fixed
+- Interpolated strings can be followed by literal text ("${a}x${b} done" parses)
+
+## [v0.4.7] - 2026-08-21
+### Fixed
+- Conditions treat freshly created booleans (Go callback returns) by value — false is falsy
+
 ## [v0.4.6] - 2026-03-22
 ### Fixed
 - HTTP builtins accept table as body — auto-serialized to JSON
@@ -440,6 +455,10 @@ Update this after every sync.
 ## [v0.4.5] - 2026-03-20
 ### Added
 - printn builtin for printing without a trailing newline; print remains the default with newline
+
+## [v0.4.4] - 2026-03-20
+### Added
+- println added as a print alias — renamed to printn in v0.4.5 (println no longer exists)
 
 ## [v0.4.3] - 2026-03-19
 ### Added
