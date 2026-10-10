@@ -12,6 +12,7 @@
   const isPlayground = $derived(
     $page.url.pathname.startsWith("/playground"),
   );
+  const isHome = $derived($page.url.pathname === "/");
   let searchOpen = $state(false);
 
   function openSearch() {
@@ -47,7 +48,9 @@
   {@render children()}
 {:else}
   <div class="flex min-h-screen flex-col bg-bg">
-    <Navbar />
+    {#if !isHome}
+      <Navbar />
+    {/if}
     <main class="flex-1">
       {@render children()}
     </main>

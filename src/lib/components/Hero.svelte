@@ -1,10 +1,12 @@
 <script>
-  import { Copy, Check } from "lucide-svelte";
+  import { Copy, Check, Github, Star } from "lucide-svelte";
   import { onMount } from "svelte";
   import { codeToHtml } from "shiki";
   import PipesCanvas from "$lib/components/PipesCanvas.svelte";
+  import logo from "$lib/assets/logo.png";
   let copied = $state(false);
   let highlightedCode = $state("");
+  let stars = $state(0);
 
   const installCmd =
     "curl -fsSL https://raw.githubusercontent.com/codetesla51/logos/main/install.sh | sh";
@@ -54,12 +56,39 @@ spawn {
       lang: "javascript",
       theme: "github-dark",
     });
+    try {
+      const res = await fetch(
+        "https://api.github.com/repos/codetesla51/logos",
+      );
+      const data = await res.json();
+      stars = data.stargazers_count || 0;
+    } catch {
+      stars = 0;
+    }
   });
 </script>
 
-<section class="px-4 py-16 sm:px-6 sm:py-24">
+<section class="px-4 pt-6 sm:px-6 sm:pt-8">
   <div class="mx-auto max-w-5xl">
-    <div class="grid items-center gap-10 lg:grid-cols-2">
+    <div class="flex items-center justify-between">
+      <img src={logo} alt="Logos" class="h-5 w-auto" />
+      <a
+        href="https://github.com/codetesla51/logos"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="flex min-h-[44px] items-center gap-1.5 text-sm text-text"
+        aria-label="Logos on GitHub"
+      >
+        <Github class="h-4 w-4" />
+        {#if stars > 0}
+          <span class="flex items-center gap-1 text-xs text-muted">
+            <Star class="h-3 w-3" />
+            {stars}
+          </span>
+        {/if}
+      </a>
+    </div>
+    <div class="grid items-center gap-10 pt-10 sm:pt-14 lg:grid-cols-2">
       <div>
         <p class="text-sm text-muted">logos v0.5.0</p>
 
